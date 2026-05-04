@@ -1,0 +1,39 @@
+---
+import { tiptapToHtml } from '../../lib/cms'
+
+interface Props {
+  label?: string
+  heading?: string
+  body?: any
+  ctaLabel?: string
+  ctaUrl?: string
+}
+
+const { label, heading, body, ctaLabel, ctaUrl } = Astro.props
+const bodyHtml = tiptapToHtml(body)
+---
+
+<section class="py-20 md:py-28">
+  <div class="mx-auto max-w-[680px] px-6 md:px-8">
+    {label && <h4 class="mb-3">{label}</h4>}
+    {heading && (
+      <h2 class="mb-6 font-display text-[1.75rem] text-text-primary md:text-[2.25rem]">
+        {heading}
+      </h2>
+    )}
+    {bodyHtml && (
+      <div class="prose-custom" set:html={bodyHtml} />
+    )}
+    {ctaLabel && ctaUrl && (
+      <a
+        href={ctaUrl}
+        class="mt-8 inline-block font-body text-[13px] text-accent no-underline transition-colors hover:text-accent-hover"
+      >
+        {ctaLabel} →
+      </a>
+    )}
+  </div>
+  <div class="mx-auto mt-20 max-w-[1080px] px-6 md:mt-28 md:px-8">
+    <div class="h-px bg-border"></div>
+  </div>
+</section>

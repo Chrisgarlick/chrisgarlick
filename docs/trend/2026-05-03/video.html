@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=450" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0A0A0A;
+      --bg-secondary: #111111;
+      --bg-tertiary: #1A1A1A;
+      --text-primary: #F0EDE8;
+      --text-secondary: #8A8580;
+      --text-tertiary: #4A4845;
+      --accent: #E8D5A3;
+      --neutral-700: #333330;
+      --video-duration: 32s;
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    html {
+      width: 450px;
+      height: 800px;
+      overflow: hidden;
+    }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      font-family: 'DM Mono', monospace;
+      position: relative;
+      transform: scale(0.41667);
+      transform-origin: top left;
+      background: var(--bg-primary);
+    }
+
+    .canvas {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Atmosphere */
+    .atmosphere {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-1 {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: #E8D5A3;
+      filter: blur(150px);
+      opacity: 0.03;
+      top: -150px;
+      right: -150px;
+      animation: drift1 8s ease-in-out infinite;
+    }
+
+    .glow-2 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: #E8D5A3;
+      filter: blur(120px);
+      opacity: 0.025;
+      bottom: 300px;
+      left: -100px;
+      animation: drift2 10s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.03; }
+      50% { transform: translate(-30px, 20px) scale(1.05); opacity: 0.05; }
+    }
+
+    @keyframes drift2 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.025; }
+      50% { transform: translate(20px, -15px) scale(0.95); opacity: 0.04; }
+    }
+
+    /* Content */
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 100px;
+      height: calc(1920px - 60px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* Label */
+    .label {
+      font-weight: 500;
+      font-size: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 50px;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 0.5s;
+    }
+
+    /* Main stat */
+    .stat-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: stat-enter var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 1s;
+    }
+
+    .stat-number {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 200px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 0.85;
+    }
+
+    .stat-symbol {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 120px;
+      font-weight: 400;
+      color: var(--accent);
+      line-height: 0.85;
+    }
+
+    /* Divider */
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--bg-tertiary);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 1.5s;
+    }
+
+    /* Headline */
+    .headline {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 64px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 60px;
+      max-width: 800px;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 2s;
+    }
+
+    /* Supporting stats */
+    .support-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-bottom: 60px;
+    }
+
+    .support-stat {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+    }
+
+    .support-stat:nth-child(1) { animation-delay: 3.5s; }
+    .support-stat:nth-child(2) { animation-delay: 4.2s; }
+    .support-stat:nth-child(3) { animation-delay: 4.9s; }
+
+    .support-num {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 56px;
+      font-weight: 400;
+      color: var(--accent);
+      min-width: 180px;
+    }
+
+    .support-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Punchline */
+    .punchline {
+      font-family: 'DM Mono', monospace;
+      font-size: 32px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.6;
+      max-width: 750px;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 7s;
+    }
+
+    .punchline em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    /* Source */
+    .source {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      color: var(--text-tertiary);
+      margin-top: auto;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      animation: lifecycle var(--video-duration) var(--ease-smooth) infinite;
+      animation-delay: 1s;
+    }
+
+    /* Brand reserve */
+    .brand-reserve {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .wordmark {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      animation: wordmark-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes wordmark-pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Lifecycle animation */
+    @keyframes lifecycle {
+      0%   { opacity: 0; transform: translateY(30px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      78%  { opacity: 1; transform: translateY(0); }
+      92%  { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 0; transform: translateY(30px); }
+    }
+
+    @keyframes stat-enter {
+      0%   { opacity: 0; transform: translateY(40px) scale(0.9); }
+      6%   { opacity: 1; transform: translateY(0) scale(1); }
+      78%  { opacity: 1; transform: translateY(0) scale(1); }
+      92%  { opacity: 0; transform: translateY(-20px) scale(0.95); }
+      100% { opacity: 0; transform: translateY(40px) scale(0.9); }
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+
+    <div class="atmosphere">
+      <div class="glow-1"></div>
+      <div class="glow-2"></div>
+    </div>
+
+    <div class="content">
+      <div class="label">AI Strategy & Adoption</div>
+
+      <div class="stat-row">
+        <span class="stat-number">48</span>
+        <span class="stat-symbol">%</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="headline">of enterprises call AI adoption a "massive disappointment"</div>
+
+      <div class="support-stats">
+        <div class="support-stat">
+          <span class="support-num">93%</span>
+          <span class="support-text">of developers use AI tools</span>
+        </div>
+        <div class="support-stat">
+          <span class="support-num">10%</span>
+          <span class="support-text">actual productivity gain</span>
+        </div>
+        <div class="support-stat">
+          <span class="support-num">9hrs</span>
+          <span class="support-text">saved/week by super-users</span>
+        </div>
+      </div>
+
+      <div class="punchline">The tools work. The <em>implementation</em> doesn't.</div>
+
+      <div class="source">Source: Writer 2026 / METR / Faros AI</div>
+    </div>
+
+    <div class="brand-reserve">
+      <span class="wordmark">chrisgarlick.com</span>
+    </div>
+
+  </div>
+</body>
+</html>

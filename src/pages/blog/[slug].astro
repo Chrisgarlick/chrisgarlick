@@ -1,0 +1,121 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import CTASection from '../../components/CTASection.astro'
+import { cms, formatDate, estimateReadTime, tiptapToHtml } from '../../lib/cms'
+
+const { slug } = Astro.params
+const client = cms()
+
+const doc = await client.collection('article').findOne({ where: { slug } })
+if (!doc) return Astro.redirect('/404')
+
+// Body may be JSON string, object with .html, or TipTap JSON
+const rawBody = typeof doc.body === 'string' ? JSON.parse(doc.body) : doc.body
+const bodyHtml = rawBody?.html || tiptapToHtml(rawBody)
+const readTime = estimateReadTime(bodyHtml)
+const authorName = doc.author_name || 'Chris Garlick'
+const seoTitle = doc.seo?.metaTitle || `${doc.title} — Chris Garlick`
+const seoDesc = doc.seo?.metaDescription || doc.excerpt?.slice(0, 155) || ''
+
+const seoKeywords = [
+  doc.seo?.focusKeyword,
+  ...(doc.seo?.secondaryKeywords ? doc.seo.secondaryKeywords.split(',').map((k: string) => k.trim()) : []),
+].filter(Boolean).join(', ') || undefined
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: doc.title,
+  description: doc.excerpt || '',
+  author: {
+    '@type': 'Person',
+    name: authorName,
+    url: 'https://chrisgarlick.com/about',
+  },
+  publisher: { '@type': 'Person', name: authorName },
+  datePublished: doc.publishedAt || '',
+  dateModified: doc.updatedAt || doc.publishedAt || '',
+  ...(seoKeywords ? { keywords: seoKeywords } : {}),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://chrisgarlick.com/blog/${slug}`,
+  },
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={seoTitle}
+    description={seoDesc}
+    ogType="article"
+    publishedTime={doc.publishedAt?.toString()}
+    keywords={seoKeywords}
+    jsonLd={jsonLd}
+  />
+
+  <article class="py-20 md:py-24">
+    <div class="mx-auto max-w-[720px] px-5 md:px-8">
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="mb-4 flex items-center gap-3 text-sm text-text-secondary">
+          <span class="text-text-primary font-body font-medium">{authorName}</span>
+          <span class="text-text-tertiary" aria-hidden="true">&middot;</span>
+          <time datetime={doc.publishedAt?.toString()}>{formatDate(doc.publishedAt)}</time>
+          <span class="text-text-tertiary" aria-hidden="true">&middot;</span>
+          <span>{readTime} min read</span>
+        </div>
+        <h1 class="mb-4 font-display text-[36px] leading-[1.15] text-text-primary md:text-[48px]">{doc.title}</h1>
+        {doc.excerpt && (
+          <p class="text-lg italic text-text-secondary" style="line-height: 1.8;">{doc.excerpt}</p>
+        )}
+      </div>
+
+      <!-- Body -->
+      {bodyHtml && (
+        <div class="prose-custom text-base leading-[1.75] text-text-secondary" set:html={bodyHtml} />
+      )}
+
+      <!-- Tags -->
+      {doc.tags && doc.tags.length > 0 && (
+        <div class="mt-12 flex flex-wrap gap-2 border-t border-border pt-8">
+          {doc.tags.map((tag: string) => (
+            <span class="rounded-[3px] bg-bg-muted px-2.5 py-1 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <!-- Contextual CTA -->
+      <div class="mt-12 border border-border bg-bg-surface p-6 md:p-8" style="border-radius: 3px;">
+        <h3 class="mb-2 font-display text-2xl text-text-primary">Want this for your business?</h3>
+        <p class="mb-4 text-sm text-text-secondary">
+          I build software like what's described above. Fixed pricing, transparent process.
+        </p>
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-1 text-sm text-accent no-underline transition-colors duration-200 hover:text-accent-hover"
+        >
+          <span aria-hidden="true">&rarr;</span> Get in touch
+        </a>
+      </div>
+
+      <!-- Back link -->
+      <div class="mt-8">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-1 text-sm text-text-secondary no-underline transition-colors duration-200 hover:text-text-primary"
+        >
+          <span aria-hidden="true">&larr;</span> Back to blog
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <CTASection
+    heading="Software that actually gets used."
+    body="If you want to know whether software can cut real time from your operations, apply. I review every application personally."
+  />
+</Base>

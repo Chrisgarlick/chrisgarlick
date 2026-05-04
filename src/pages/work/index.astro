@@ -1,0 +1,120 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import CaseStudyCard from '../../components/CaseStudyCard.astro'
+import CTASection from '../../components/CTASection.astro'
+import { cms } from '../../lib/cms'
+
+const client = cms()
+
+const caseStudies = await client.collection('caseStudy').findMany({
+  where: { status: 'published' },
+  orderBy: { publishedAt: 'desc' },
+  limit: 50,
+})
+
+const cases = caseStudies?.data ?? []
+
+const categories = ['All', 'Legal', 'Accountancy', 'Agency', 'Internal']
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title="Case Studies | Chris Garlick"
+    description="Real projects for service businesses. Architecture shown. Outcomes measured. Architecture, outcomes, and transparent process."
+    canonical="https://chrisgarlick.com/work"
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[1100px] px-5 md:px-8">
+      <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">Portfolio</p>
+      <h1 class="mb-8 font-display text-[36px] text-text-primary md:text-[48px]">Work</h1>
+
+      <!-- Category filters -->
+      <div class="mb-12 flex flex-wrap gap-2" role="tablist" aria-label="Filter by category">
+        {categories.map((cat) => (
+          <button
+            role="tab"
+            aria-selected={cat === 'All' ? 'true' : 'false'}
+            data-filter={cat}
+            class={`px-3 py-1.5 font-body text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
+              cat === 'All'
+                ? 'border border-accent bg-accent text-white'
+                : 'border border-border bg-bg-muted text-text-secondary hover:text-text-primary hover:border-border-hover'
+            }`}
+            style="border-radius: 3px;"
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <!-- Case study grid -->
+      {cases.length > 0 ? (
+        <div id="work-grid" class="grid gap-6 md:grid-cols-2">
+          {cases.map((cs) => (
+            <CaseStudyCard
+              title={cs.title}
+              slug={cs.slug}
+              category={cs.category}
+              result={cs.result}
+              summary={cs.summary}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="py-12 text-center text-text-secondary">Case studies coming soon.</p>
+      )}
+
+      <!-- Empty state per filter -->
+      <p id="work-empty" class="hidden py-12 text-center text-text-secondary">
+        No case studies in this category yet.
+      </p>
+    </div>
+  </section>
+
+  <CTASection />
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll('[data-filter]')
+  const grid = document.getElementById('work-grid')
+  const empty = document.getElementById('work-empty')
+  const cards = grid?.querySelectorAll('[data-category]') ?? []
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = (btn as HTMLElement).dataset.filter
+
+      // Update active state
+      buttons.forEach((b) => {
+        const isActive = b === btn
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false')
+        b.className = `px-3 py-1.5 font-body text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
+          isActive
+            ? 'border border-accent bg-accent text-white'
+            : 'border border-border bg-bg-muted text-text-secondary hover:text-text-primary hover:border-border-hover'
+        }`
+        ;(b as HTMLElement).style.borderRadius = '3px'
+      })
+
+      // Filter cards
+      let visibleCount = 0
+      cards.forEach((card) => {
+        const category = (card as HTMLElement).dataset.category
+        const show = filter === 'All' || category === filter
+        ;(card as HTMLElement).style.display = show ? '' : 'none'
+        if (show) visibleCount++
+      })
+
+      // Empty state
+      if (empty) {
+        empty.classList.toggle('hidden', visibleCount > 0)
+      }
+      if (grid) {
+        (grid as HTMLElement).classList.toggle('hidden', visibleCount === 0)
+      }
+    })
+  })
+</script>

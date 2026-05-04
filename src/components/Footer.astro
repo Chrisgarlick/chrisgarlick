@@ -1,0 +1,34 @@
+---
+const year = new Date().getFullYear()
+---
+
+<footer class="border-t border-border bg-bg-muted">
+  <div class="mx-auto max-w-[1080px] px-6 py-14 md:px-8">
+    <div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+      <!-- Left -->
+      <div class="space-y-1">
+        <p class="font-display text-lg font-bold text-text-primary">
+          Chris Garlick<span class="text-accent">.</span>
+        </p>
+        <p class="font-body text-[13px] text-text-secondary">Software Developer · UK</p>
+      </div>
+
+      <!-- Nav links -->
+      <div class="flex gap-7">
+        <a href="/work" class="font-body text-[13px] uppercase tracking-wider text-text-secondary no-underline hover:text-text-primary">Work</a>
+        <a href="/blog" class="font-body text-[13px] uppercase tracking-wider text-text-secondary no-underline hover:text-text-primary">Blog</a>
+        <a href="/about" class="font-body text-[13px] uppercase tracking-wider text-text-secondary no-underline hover:text-text-primary">About</a>
+        <a href="/contact" class="font-body text-[13px] uppercase tracking-wider text-text-secondary no-underline hover:text-text-primary">Contact</a>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-3 border-t border-border pt-8 text-[12px] text-text-tertiary md:flex-row md:items-center md:justify-between">
+      <span>&copy; {year} Chris Garlick</span>
+      <div class="flex gap-6">
+        <a href="/privacy" class="text-text-tertiary no-underline hover:text-text-secondary">Privacy</a>
+        <a href="/terms" class="text-text-tertiary no-underline hover:text-text-secondary">Terms</a>
+      </div>
+      <span>Built on <a href="https://github.com/Kritano/Kritano-cms" class="text-text-tertiary no-underline hover:text-text-secondary">Kritano CMS</a></span>
+    </div>
+  </div>
+</footer>

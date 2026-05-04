@@ -1,0 +1,72 @@
+THREAD
+
+1/ 48% of enterprises now call their AI adoption "a massive disappointment."
+
+Up from 34% last year.
+
+The tools aren't the problem. The implementation is.
+
+2/ Here's the data: 93% of developers use AI coding tools. 97% of executives have deployed AI agents.
+
+But only 29% report significant ROI from gen AI. Only 23% from agents.
+
+Near-universal adoption. Marginal returns.
+
+3/ It gets wilder. A randomised controlled trial from METR found that AI actually slowed experienced developers down by 19%.
+
+The kicker? Those same developers estimated they were 20% faster.
+
+We feel productive. The data says otherwise.
+
+4/ But here's the split that matters: AI super-users save 9 hours per week. That's 4.5x more than everyone else.
+
+Same tools. Wildly different results.
+
+The gap isn't the technology. It's how teams integrate it into their actual workflow.
+
+5/ The pattern I keep seeing: companies buy AI tools, hand them to developers, and call it "AI transformation."
+
+No workflow redesign. No training beyond "here's your licence." No measurement beyond adoption rates.
+
+That's not transformation. That's hope.
+
+6/ Laura Tacho, CTO at DX, nailed it: "This is really a management problem."
+
+The five things that actually work:
+- Workflow design (not just tool installation)
+- Governance frameworks
+- Infrastructure investment
+- Proper training
+- Cross-functional alignment
+
+7/ The companies getting real value from AI aren't the ones with the most tools. They're the ones who redesigned how work actually gets done.
+
+If your AI strategy is "buy Copilot licences and see what happens" - that's why 48% are disappointed.
+
+What's your team's approach?
+
+
+---
+
+
+STANDALONE TWEETS
+
+1. [THE STAT] 48% of enterprises call AI adoption "a massive disappointment." Up from 34% last year. The tools work. The implementation doesn't.
+
+2. [THE HOT TAKE] AI didn't fail these companies. Their implementation strategy did. You can't layer AI onto broken workflows and expect transformation.
+
+3. [THE QUESTION] Genuine question for CTOs: are you measuring AI adoption rates or AI outcome improvements? Because those are very different numbers.
+
+4. [THE TIP] Before buying another AI tool, map your team's actual workflow end to end. Identify the bottlenecks. Then ask which ones AI can genuinely solve. Most companies skip this step entirely.
+
+5. [THE COMPARISON] 2024: "We need to adopt AI." 2026: "We adopted AI and nothing changed." The missing step was always workflow redesign, not tool selection.
+
+6. [THE WARNING] AI super-users save 9 hours per week. Everyone else saves 2. Same tools, same cost. The difference is training and workflow design. Most companies invest in neither.
+
+7. [THE MYTH BUSTER] "We gave everyone Copilot so we've done AI transformation." No. You've done AI distribution. Transformation requires redesigning how work gets done, not just adding tools to existing processes.
+
+8. [THE PREDICTION] Within 12 months, "AI Integration Specialist" will be one of the most hired roles in tech. Companies are realising tools alone don't deliver ROI.
+
+9. [THE ANALOGY] Giving your team AI tools without workflow redesign is like buying a Formula 1 car and driving it on country lanes. The capability is there. The infrastructure isn't.
+
+10. [THE PERSONAL] I've been deep in AI-powered dev workflows for the past year. The pattern is clear - teams that succeed always start with process mapping, not tool selection. Every single time. The tool is never the bottleneck.

@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title="Privacy Policy — Chris Garlick"
+    description="How I handle your data. UK GDPR compliant. No cookies. No tracking."
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[720px] px-5 md:px-8">
+      <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">Legal</p>
+      <h1 class="mb-4 font-display text-[36px] text-text-primary md:text-[48px]">Privacy Policy</h1>
+      <p class="mb-12 text-sm text-text-tertiary">Last updated: 2 May 2026</p>
+
+      <div class="prose-custom space-y-8 text-base leading-[1.75] text-text-secondary">
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Who I am</h2>
+          <p>This site is operated by Chris Garlick, an AI workflow partner based in the United Kingdom.</p>
+          <p class="mt-2">Website: <a href="https://chrisgarlick.com" class="text-accent hover:text-accent-hover">chrisgarlick.com</a> · Contact: <a href="mailto:chris@chrisgarlick.com" class="text-accent hover:text-accent-hover">chris@chrisgarlick.com</a></p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">What data I collect and why</h2>
+          <p>When you submit the application form on <a href="/contact" class="text-accent hover:text-accent-hover">/contact</a>, I collect: your name, email address, business name, industry, number of employees, revenue range, a description of your biggest operational bottleneck, and optionally how you found this site.</p>
+          <p class="mt-2">I use this data to respond to your application and assess whether my services are a fit for your business.</p>
+          <p class="mt-2"><strong class="text-text-primary">Lawful basis:</strong> Legitimate interest (UK GDPR Article 6(1)(f)). You are contacting me about my services; I need your details to respond.</p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Analytics</h2>
+          <p>This site uses Plausible Analytics, a privacy-focused analytics tool that does not use cookies, does not collect personal data, and does not track individuals across sites.</p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Who has access to your data</h2>
+          <p><strong class="text-text-primary">Resend</strong> (email delivery) — processes your name and email address to send confirmation emails. Based in the US with Standard Contractual Clauses.</p>
+          <p class="mt-2"><strong class="text-text-primary">DigitalOcean</strong> (hosting) — server logs may contain IP addresses in transit.</p>
+          <p class="mt-2">I do not sell, rent, or share your personal data with anyone else.</p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">How long I keep your data</h2>
+          <p>Form submissions are retained until the purpose is fulfilled. After that, data is deleted within 90 days unless there is a legal reason to retain it.</p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Your rights</h2>
+          <p>Under UK GDPR, you have the right to access, rectify, erase, restrict, object to processing of, and port your data. To exercise any of these rights, email <a href="mailto:chris@chrisgarlick.com" class="text-accent hover:text-accent-hover">chris@chrisgarlick.com</a>. I will respond within 30 days.</p>
+          <p class="mt-2">If you are not satisfied with my response, you can complain to the Information Commissioner's Office (ICO): <a href="https://ico.org.uk" class="text-accent hover:text-accent-hover" target="_blank" rel="noopener">ico.org.uk</a></p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Cookies</h2>
+          <p>This site does not use cookies.</p>
+        </div>
+
+        <div>
+          <h2 class="mb-4 font-display text-2xl text-text-primary">Changes</h2>
+          <p>I will update this page if anything changes. The date at the top reflects the most recent revision.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Base>

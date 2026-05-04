@@ -1,0 +1,34 @@
+---
+import { cms } from '../lib/cms'
+
+const client = cms()
+const metrics = await client.collection('proofMetric').findMany({
+  orderBy: { sortOrder: 'asc' },
+  limit: 50,
+})
+
+const items = metrics?.data ?? []
+const hasMetrics = items.length > 0
+---
+
+{hasMetrics && (
+  <section class="w-full overflow-hidden border-y border-border bg-bg-surface py-4" aria-hidden="true">
+    <div class="marquee-track flex w-max gap-0 whitespace-nowrap">
+      {/* Duplicate content for seamless loop */}
+      {[...items, ...items].map((item) => (
+        <span class="inline-flex items-center px-6 font-body text-sm tracking-wider text-text-secondary">
+          {item.text}
+          <span class="ml-6 text-text-tertiary" aria-hidden="true">&middot;</span>
+        </span>
+      ))}
+    </div>
+    {/* Screen reader fallback */}
+    <div class="sr-only">
+      <ul>
+        {items.map((item) => (
+          <li>{item.text}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

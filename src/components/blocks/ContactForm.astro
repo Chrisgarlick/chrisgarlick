@@ -1,0 +1,409 @@
+---
+interface Props {
+  formSlug?: string
+}
+
+const { formSlug = 'contact' } = Astro.props
+const apiUrl = import.meta.env.CMS_API_URL || process.env.CMS_API_URL || 'http://localhost:3000/api'
+
+let form: any = null
+try {
+  const res = await fetch(`${apiUrl}/forms/definition/${formSlug}`)
+  if (res.ok) {
+    const data = await res.json()
+    form = data.data
+  }
+} catch {}
+
+const fields = form?.fields || []
+const settings = form?.settings || {}
+const submitUrl = form?.submitUrl || '#'
+const submitLabel = settings.submitLabel || 'Send message'
+const successMessage = settings.successMessage || 'Thank you. Your submission has been received.'
+---
+
+{form ? (
+  <section class="pb-20 md:pb-24">
+    <div class="cms-form-container">
+      <form id="cms-form" class="cms-form" novalidate data-submit-url={submitUrl} data-success-message={successMessage}>
+        {fields.map((field: any) => {
+          if (field.type === 'radio' && field.options) {
+            return (
+              <fieldset class="cms-form-group">
+                <legend class="cms-form-label">
+                  {field.label} {field.required && <span class="cms-form-required">*</span>}
+                </legend>
+                <div class="cms-form-radio-group">
+                  {field.options.map((opt: string) => (
+                    <label class="cms-form-radio-label">
+                      <input type="radio" name={field.name} value={opt} required={field.required} class="peer sr-only" />
+                      <span class="cms-form-radio-pill">
+                        {opt}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <p class="cms-form-error" data-error={field.name}>Please select an option.</p>
+              </fieldset>
+            )
+          }
+
+          if (field.type === 'textarea') {
+            return (
+              <div class="cms-form-group">
+                <label for={field.name} class="cms-form-label">
+                  {field.label} {field.required && <span class="cms-form-required">*</span>}
+                </label>
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  required={field.required}
+                  rows="4"
+                  class="cms-form-input"
+                  placeholder={field.placeholder || ''}
+                ></textarea>
+                <p class="cms-form-error" data-error={field.name}>{field.label} is required.</p>
+              </div>
+            )
+          }
+
+          if (field.type === 'select' && field.options) {
+            return (
+              <div class="cms-form-group">
+                <label for={field.name} class="cms-form-label">
+                  {field.label} {field.required && <span class="cms-form-required">*</span>}
+                </label>
+                <select
+                  id={field.name}
+                  name={field.name}
+                  required={field.required}
+                  class="cms-form-input"
+                >
+                  <option value="">Select...</option>
+                  {field.options.map((opt: string) => (
+                    <option value={opt}>{opt}</option>
+                  ))}
+                </select>
+                <p class="cms-form-error" data-error={field.name}>{field.label} is required.</p>
+              </div>
+            )
+          }
+
+          if (field.type === 'checkbox') {
+            return (
+              <label class="cms-form-checkbox">
+                <input type="checkbox" name={field.name} required={field.required} />
+                <span>{field.label}</span>
+              </label>
+            )
+          }
+
+          return (
+            <div class="cms-form-group">
+              <label for={field.name} class="cms-form-label">
+                {field.label} {field.required && <span class="cms-form-required">*</span>}
+              </label>
+              <input
+                type={field.type === 'phone' ? 'tel' : field.type}
+                id={field.name}
+                name={field.name}
+                required={field.required}
+                class="cms-form-input"
+                placeholder={field.placeholder || ''}
+              />
+              <p class="cms-form-error" data-error={field.name}>{field.label} is required.</p>
+            </div>
+          )
+        })}
+
+        <div class="cms-form-group">
+          <button type="submit" class="cms-form-submit">
+            {submitLabel}
+          </button>
+          <p class="cms-form-footer">By submitting, you agree to the <a href="/privacy">privacy policy</a>.</p>
+        </div>
+
+        <div id="form-error" class="cms-form-message cms-form-message--error hidden">
+          <p>Something went wrong. Please try again, or email <a href="mailto:chris@chrisgarlick.com">chris@chrisgarlick.com</a> directly.</p>
+        </div>
+
+        <noscript>
+          <p class="cms-form-footer">This form requires JavaScript. Please email <a href="mailto:chris@chrisgarlick.com">chris@chrisgarlick.com</a> directly.</p>
+        </noscript>
+      </form>
+
+      <div id="form-success" class="cms-form-message cms-form-message--success hidden">
+        <p>{successMessage}</p>
+      </div>
+    </div>
+  </section>
+) : (
+  <section class="py-20 md:py-24">
+    <div class="cms-form-container" style="text-align: center;">
+      <p style="color: var(--color-text-secondary);">Form not found. Create a form with slug "{formSlug}" in the admin.</p>
+    </div>
+  </section>
+)}
+
+<style>
+  .cms-form-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
+  }
+
+  @media (min-width: 768px) {
+    .cms-form-container {
+      padding: 0 2rem;
+    }
+  }
+
+  .cms-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .cms-form-group {
+    width: 100%;
+  }
+
+  .cms-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+  }
+
+  .cms-form-required {
+    color: var(--color-destructive);
+  }
+
+  .cms-form-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cms-form-input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .cms-form-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  textarea.cms-form-input {
+    resize: vertical;
+  }
+
+  .cms-form-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cms-form-radio-label {
+    cursor: pointer;
+  }
+
+  .cms-form-radio-pill {
+    display: inline-block;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    transition: all 0.2s;
+  }
+
+  .cms-form-radio-pill:hover {
+    border-color: var(--color-border-hover);
+  }
+
+  .peer:checked + .cms-form-radio-pill {
+    border-color: var(--color-accent);
+    background-color: var(--color-bg-muted);
+    color: var(--color-text-primary);
+  }
+
+  .cms-form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .cms-form-checkbox input {
+    margin-top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .cms-form-checkbox span {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .cms-form-error {
+    display: none;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-destructive);
+  }
+
+  .cms-form-submit {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    background-color: var(--color-accent);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cms-form-submit:hover {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .cms-form-submit:disabled {
+    opacity: 0.5;
+    transform: none;
+    cursor: default;
+  }
+
+  .cms-form-footer {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .cms-form-footer a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .cms-form-footer a:hover {
+    color: var(--color-accent);
+  }
+
+  .cms-form-message {
+    border-radius: 3px;
+    padding: 1.5rem;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .cms-form-message--error {
+    border: 1px solid var(--color-destructive);
+    background-color: var(--color-accent-light);
+  }
+
+  .cms-form-message--error a {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .cms-form-message--success {
+    border: 1px solid var(--color-accent);
+    background-color: var(--color-bg-surface);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('cms-form') as HTMLFormElement
+  if (form) {
+    const submitUrl = form.dataset.submitUrl || '#'
+    const successMessage = form.dataset.successMessage || 'Thank you.'
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      form.querySelectorAll('[data-error]').forEach((el) => (el as HTMLElement).style.display = 'none')
+      document.getElementById('form-error')?.classList.add('hidden')
+
+      const data = new FormData(form)
+      const body: Record<string, string> = {}
+      let valid = true
+
+      for (const [key, value] of data.entries()) {
+        body[key] = value as string
+      }
+
+      // Validate required fields
+      form.querySelectorAll('[required]').forEach((el) => {
+        const input = el as HTMLInputElement
+        const name = input.name
+        if (!body[name]?.trim()) {
+          const errorEl = form.querySelector(`[data-error="${name}"]`) as HTMLElement
+          if (errorEl) errorEl.style.display = 'block'
+          valid = false
+        }
+      })
+
+      // Validate email
+      if (body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+        const errorEl = form.querySelector('[data-error="email"]') as HTMLElement
+        if (errorEl) errorEl.style.display = 'block'
+        valid = false
+      }
+
+      if (!valid) return
+
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Submitting...'
+
+      try {
+        const res = await fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+
+        if (res.ok || res.status === 302) {
+          form.reset()
+          form.classList.add('hidden')
+          document.getElementById('form-success')?.classList.remove('hidden')
+        } else {
+          document.getElementById('form-error')?.classList.remove('hidden')
+        }
+      } catch {
+        document.getElementById('form-error')?.classList.remove('hidden')
+      } finally {
+        submitBtn.disabled = false
+        submitBtn.textContent = form.dataset.submitLabel || 'Send message'
+      }
+    })
+  }
+</script>

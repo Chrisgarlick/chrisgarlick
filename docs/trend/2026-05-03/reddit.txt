@@ -1,0 +1,55 @@
+COMMENT 1
+Subreddit: r/ExperiencedDevs
+Reply to threads about: AI tools not improving productivity, AI hype vs reality
+Comment:
+The METR randomised controlled trial is worth reading on this. They found AI actually slowed experienced OSS developers down by 19%, despite those developers estimating they were 20% faster. The perception gap is real. The teams that get genuine value always start with workflow mapping before tool selection - figuring out where AI fits into the process, not just bolting it on.
+
+COMMENT 2
+Subreddit: r/programming
+Reply to threads about: AI coding tools, developer productivity, Copilot/Cursor/Claude Code
+Comment:
+The 48% disappointment stat from Writer's 2026 survey tracks with what I'm seeing. Most orgs distributed licences and called it transformation. The teams getting 9 hours/week back are the ones who redesigned their workflows around the tools - shared prompt libraries, structured review processes, clear guidelines on what to delegate vs keep manual.
+
+COMMENT 3
+Subreddit: r/ChatGPTCoding
+Reply to threads about: Best practices for AI coding, getting more out of AI tools
+Comment:
+One underrated pattern: build a shared prompt library for your team's specific codebase and patterns. The difference between a developer who uses AI for autocomplete and one who has tuned prompts for their architecture, testing patterns, and deployment pipeline is enormous. That's the gap between 2 hours saved and 9 hours saved per week.
+
+COMMENT 4
+Subreddit: r/CTO
+Reply to threads about: AI ROI, measuring AI impact, AI strategy
+Comment:
+Worth distinguishing between adoption metrics and outcome metrics. Most orgs measure the first (93% of devs use AI tools) and ignore the second (only 29% report significant ROI). The Faros AI report found that high AI adoption actually increased PR review time by 91% and bugs per developer by 9%. More code isn't better code without the right processes around it.
+
+COMMENT 5
+Subreddit: r/startups
+Reply to threads about: AI tools for small teams, AI implementation
+Comment:
+Small teams actually have an advantage here. The enterprises struggling with AI (48% calling it a disappointment) are the ones trying to layer tools onto existing bureaucracy. If you're a small team, you can redesign your workflow from scratch. Start with: what are the 3 biggest time sinks in your dev process? Then test whether AI actually reduces them. Measure outcomes, not adoption.
+
+
+---
+
+
+REDDIT POST (for when karma is established)
+
+Title: The AI productivity paradox - 93% of devs use AI tools but measurable productivity gain is only 10%
+
+Body:
+
+Been digging into the latest data on AI tool adoption and the numbers tell an interesting story.
+
+Writer's 2026 survey of 2,400 leaders found 48% of enterprises call AI adoption "a massive disappointment" - up from 34% last year. Meanwhile, 93% of developers use AI tools regularly.
+
+The METR randomised controlled trial is the most striking finding. They ran a proper RCT with experienced open-source developers and found AI actually slowed them down by 19%. But here's the thing - those same developers estimated they were 20% faster. The perception gap is massive.
+
+Faros AI's report (10,000+ developers across 1,255 teams) found that while individual developers complete 21% more tasks with high AI adoption, PR review time jumps 91% and bugs per developer rise 9%. The individual gains don't scale at the team level.
+
+The split that matters: AI super-users save 9 hours per week. Everyone else saves about 2. Same tools, same cost.
+
+Laura Tacho (CTO at DX) called it: "This is really a management problem." The five things that separate winners from the disappointed are workflow design, governance, infrastructure, training, and cross-functional alignment.
+
+Has anyone else noticed this pattern? Teams that just distribute licences see marginal returns, but teams that redesign workflows around the tools get dramatically different results?
+
+Suggested subreddits: r/ExperiencedDevs, r/programming, r/CTO, r/startups

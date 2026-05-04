@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import BlogRow from '../../components/BlogRow.astro'
+import { cms, getYear } from '../../lib/cms'
+
+const client = cms()
+
+const articles = await client.collection('article').findMany({
+  where: { status: 'published' },
+  orderBy: { publishedAt: 'desc' },
+  limit: 100,
+})
+
+const posts = articles?.data ?? []
+
+// Group by year
+const grouped = posts.reduce<Record<number, typeof posts>>((acc, post) => {
+  const year = getYear(post.publishedAt)
+  if (!acc[year]) acc[year] = []
+  acc[year].push(post)
+  return acc
+}, {})
+
+const years = Object.keys(grouped).map(Number).sort((a, b) => b - a)
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title="Blog | Chris Garlick"
+    description="Practical guides on software, automation, and operations for service businesses. No hype."
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[720px] px-5 md:px-8">
+      <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">Writing</p>
+      <h1 class="mb-12 font-display text-[36px] text-text-primary md:text-[48px]">Blog</h1>
+
+      {posts.length > 0 ? (
+        <div class="space-y-12">
+          {years.map((year) => (
+            <div>
+              <h2 class="mb-4 font-body text-sm font-medium uppercase tracking-widest text-text-tertiary">{year}</h2>
+              <div>
+                {grouped[year].map((post) => (
+                  <BlogRow
+                    title={post.title}
+                    slug={post.slug}
+                    publishedAt={post.publishedAt}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="py-12 text-text-secondary">Posts coming soon.</p>
+      )}
+    </div>
+  </section>
+</Base>

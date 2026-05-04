@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+import BlockRenderer from '../components/BlockRenderer.astro'
+import { cms } from '../lib/cms'
+
+const client = cms()
+
+// Fetch the "home" page from CMS
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug: 'home' } })
+} catch {}
+
+// SEO defaults (used if no CMS page exists yet)
+const title = page?.seo?.metaTitle || 'Chris Garlick — Software Developer | Audit. Build. Maintain.'
+const description = page?.seo?.metaDescription || 'I build software that replaces manual work for service businesses. Fixed-fee projects from £5k. Proprietary tooling. UK-based.'
+// CMS may return blocks as JSON string or parsed array
+const rawContent = page?.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Chris Garlick',
+  description: 'Software developer building systems for service businesses.',
+  url: 'https://chrisgarlick.com',
+  founder: {
+    '@type': 'Person',
+    name: 'Chris Garlick',
+    jobTitle: 'Software Developer',
+    url: 'https://chrisgarlick.com/about',
+  },
+  areaServed: { '@type': 'Country', name: 'United Kingdom' },
+  serviceType: ['Software Development', 'Business Automation', 'Operations Software'],
+  priceRange: '£5,000 - £8,000',
+  sameAs: [
+    'https://www.linkedin.com/in/chrisgarlick',
+    'https://github.com/Kritano',
+  ],
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    jsonLd={jsonLd}
+  />
+
+  {contentBlocks.length > 0 ? (
+    <BlockRenderer blocks={contentBlocks} />
+  ) : (
+    <!-- Fallback when no CMS page exists — create a "home" page in /admin -->
+    <section class="flex min-h-[60vh] items-center justify-center pt-16">
+      <div class="mx-auto max-w-[720px] px-5 text-center md:px-8">
+        <h1 class="mb-4 font-display text-4xl text-text-primary">Chris Garlick</h1>
+        <p class="mb-8 text-base text-text-secondary">
+          Create a page with slug "home" in the <a href="/admin" class="text-accent hover:text-accent-hover">CMS admin</a> and add blocks to build your homepage.
+        </p>
+      </div>
+    </section>
+  )}
+</Base>

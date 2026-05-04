@@ -1,0 +1,43 @@
+---
+import Hero from './blocks/Hero.astro'
+import TextSection from './blocks/TextSection.astro'
+import Columns from './blocks/Columns.astro'
+import OfferCards from './blocks/OfferCards.astro'
+import ProofStripBlock from './blocks/ProofStripBlock.astro'
+import CaseStudyGrid from './blocks/CaseStudyGrid.astro'
+import BlogPreview from './blocks/BlogPreview.astro'
+import CTABlock from './blocks/CTABlock.astro'
+import ToolsTeaser from './blocks/ToolsTeaser.astro'
+import RichText from './blocks/RichText.astro'
+import ContactForm from './blocks/ContactForm.astro'
+
+interface Props {
+  blocks: Array<{
+    id: string
+    type: string
+    fields: Record<string, unknown>
+  }>
+}
+
+const { blocks: contentBlocks = [] } = Astro.props
+
+const blockComponents: Record<string, any> = {
+  'hero': Hero,
+  'text-section': TextSection,
+  'columns': Columns,
+  'offer-cards': OfferCards,
+  'proof-strip': ProofStripBlock,
+  'case-study-grid': CaseStudyGrid,
+  'blog-preview': BlogPreview,
+  'cta': CTABlock,
+  'tools-teaser': ToolsTeaser,
+  'rich-text': RichText,
+  'contact-form': ContactForm,
+}
+---
+
+{contentBlocks.map((block) => {
+  const Component = blockComponents[block.type]
+  if (!Component) return null
+  return <Component {...block.fields} />
+})}

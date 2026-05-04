@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title="Page Not Found | Chris Garlick"
+    description="That page does not exist."
+  />
+
+  <section class="py-32 md:py-40">
+    <div class="mx-auto max-w-[720px] px-5 text-center md:px-8">
+      <p class="mb-4 font-body text-sm uppercase tracking-widest text-text-tertiary">404</p>
+      <h1 class="mb-4 font-display text-[36px] text-text-primary md:text-[48px]">Page not found</h1>
+      <p class="mb-8 text-base text-text-secondary">
+        That page does not exist. Try <a href="/work" class="text-accent hover:text-accent-hover underline">/work</a> or <a href="/blog" class="text-accent hover:text-accent-hover underline">/blog</a>.
+      </p>
+      <a
+        href="/"
+        class="inline-block border border-accent bg-accent px-8 py-3 font-body text-sm font-medium uppercase tracking-widest text-white no-underline transition-all duration-200 hover:-translate-y-px hover:bg-accent-hover"
+        style="border-radius: 3px;"
+      >
+        Go home
+      </a>
+    </div>
+  </section>
+</Base>

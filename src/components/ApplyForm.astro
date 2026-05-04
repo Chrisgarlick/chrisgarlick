@@ -1,0 +1,233 @@
+---
+const employeeOptions = ['Under 10', '10–25', '25–50', '50+']
+const revenueOptions = ['Under \u00a3500k', '\u00a3500k\u2013\u00a31M', '\u00a31M\u2013\u00a35M', '\u00a35M\u2013\u00a310M', '\u00a310M+']
+---
+
+<form id="apply-form" class="space-y-8" novalidate>
+  <!-- Name -->
+  <div>
+    <label for="name" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Name <span class="text-destructive">*</span>
+    </label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      required
+      autocomplete="name"
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="Your full name"
+    />
+    <p class="mt-1 hidden text-sm text-destructive" data-error="name">Name is required.</p>
+  </div>
+
+  <!-- Email -->
+  <div>
+    <label for="email" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Email <span class="text-destructive">*</span>
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      autocomplete="email"
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="you@company.com"
+    />
+    <p class="mt-1 hidden text-sm text-destructive" data-error="email">A valid email is required.</p>
+  </div>
+
+  <!-- Business Name -->
+  <div>
+    <label for="businessName" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Business name <span class="text-destructive">*</span>
+    </label>
+    <input
+      type="text"
+      id="businessName"
+      name="businessName"
+      required
+      autocomplete="organization"
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="Acme LLP"
+    />
+    <p class="mt-1 hidden text-sm text-destructive" data-error="businessName">Business name is required.</p>
+  </div>
+
+  <!-- Industry -->
+  <div>
+    <label for="industry" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Industry <span class="text-destructive">*</span>
+    </label>
+    <input
+      type="text"
+      id="industry"
+      name="industry"
+      required
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="e.g. Legal, Accountancy, Agency, Property..."
+    />
+    <p class="mt-1 hidden text-sm text-destructive" data-error="industry">Industry is required.</p>
+  </div>
+
+  <!-- Employees -->
+  <fieldset>
+    <legend class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Number of employees <span class="text-destructive">*</span>
+    </legend>
+    <div class="flex flex-wrap gap-2">
+      {employeeOptions.map((opt) => (
+        <label class="cursor-pointer">
+          <input type="radio" name="employees" value={opt} required class="peer sr-only" />
+          <span class="inline-block rounded-[3px] border border-border bg-bg-surface px-4 py-2.5 text-sm text-text-secondary transition-all duration-200 peer-checked:border-accent peer-checked:bg-bg-muted peer-checked:text-text-primary peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-accent peer-focus-visible:outline-offset-2 hover:border-border-hover">
+            {opt}
+          </span>
+        </label>
+      ))}
+    </div>
+    <p class="mt-1 hidden text-sm text-destructive" data-error="employees">Please select an option.</p>
+  </fieldset>
+
+  <!-- Revenue -->
+  <fieldset>
+    <legend class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      Annual revenue <span class="text-destructive">*</span>
+    </legend>
+    <div class="flex flex-wrap gap-2">
+      {revenueOptions.map((opt) => (
+        <label class="cursor-pointer">
+          <input type="radio" name="revenue" value={opt} required class="peer sr-only" />
+          <span class="inline-block rounded-[3px] border border-border bg-bg-surface px-4 py-2.5 text-sm text-text-secondary transition-all duration-200 peer-checked:border-accent peer-checked:bg-bg-muted peer-checked:text-text-primary peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-accent peer-focus-visible:outline-offset-2 hover:border-border-hover">
+            {opt}
+          </span>
+        </label>
+      ))}
+    </div>
+    <p class="mt-1 hidden text-sm text-destructive" data-error="revenue">Please select an option.</p>
+  </fieldset>
+
+  <!-- Bottleneck -->
+  <div>
+    <label for="bottleneck" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      What is your biggest operational bottleneck? <span class="text-destructive">*</span>
+    </label>
+    <textarea
+      id="bottleneck"
+      name="bottleneck"
+      required
+      rows="4"
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="Describe the manual process or bottleneck you want to fix..."
+    ></textarea>
+    <p class="mt-1 hidden text-sm text-destructive" data-error="bottleneck">This field is required.</p>
+  </div>
+
+  <!-- Referral (optional) -->
+  <div>
+    <label for="referral" class="mb-2 block font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+      How did you find me?
+    </label>
+    <input
+      type="text"
+      id="referral"
+      name="referral"
+      class="w-full rounded-[3px] border border-border bg-bg-surface px-4 py-3 font-body text-[15px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+      placeholder="LinkedIn, referral, Google..."
+    />
+  </div>
+
+  <!-- Submit -->
+  <div>
+    <button
+      type="submit"
+      class="inline-block border border-accent bg-accent px-8 py-3 font-body text-[13px] font-medium uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-px hover:bg-accent-hover disabled:opacity-50 disabled:hover:translate-y-0"
+    >
+      Submit application
+    </button>
+    <p class="mt-4 text-sm text-text-tertiary">By submitting, you agree to the <a href="/privacy" class="text-text-secondary hover:text-accent no-underline">privacy policy</a>.</p>
+  </div>
+
+  <!-- Error message -->
+  <div id="form-error" class="hidden rounded-[3px] border border-destructive bg-accent-light p-6">
+    <p class="text-base text-text-primary">Something went wrong. Please try again, or email <a href="mailto:chris@chrisgarlick.com" class="text-accent underline">chris@chrisgarlick.com</a> directly.</p>
+  </div>
+
+  <noscript>
+    <p class="text-sm text-text-secondary">
+      This form requires JavaScript. Please email
+      <a href="mailto:chris@chrisgarlick.com">chris@chrisgarlick.com</a> directly.
+    </p>
+  </noscript>
+</form>
+
+<!-- Success message (outside form so it stays visible when form hides) -->
+<div id="form-success" class="hidden rounded-[3px] border border-accent bg-bg-surface p-6">
+  <p class="text-base text-text-primary">Application received. I review every submission personally. You will hear back within 2 working days.</p>
+</div>
+
+<script>
+  const form = document.getElementById('apply-form') as HTMLFormElement
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      // Reset errors
+      form.querySelectorAll('[data-error]').forEach((el) => el.classList.add('hidden'))
+      document.getElementById('form-error')?.classList.add('hidden')
+      document.getElementById('form-success')?.classList.add('hidden')
+
+      const data = new FormData(form)
+      const body: Record<string, string> = {}
+      const required = ['name', 'email', 'businessName', 'industry', 'employees', 'revenue', 'bottleneck']
+      let valid = true
+
+      for (const [key, value] of data.entries()) {
+        body[key] = value as string
+      }
+
+      // Validate required
+      for (const field of required) {
+        if (!body[field]?.trim()) {
+          const errorEl = form.querySelector(`[data-error="${field}"]`)
+          errorEl?.classList.remove('hidden')
+          valid = false
+        }
+      }
+
+      // Validate email format
+      if (body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+        const errorEl = form.querySelector('[data-error="email"]')
+        errorEl?.classList.remove('hidden')
+        valid = false
+      }
+
+      if (!valid) return
+
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Submitting...'
+
+      try {
+        const res = await fetch('/contact/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+
+        if (res.ok) {
+          form.reset()
+          form.classList.add('hidden')
+          document.getElementById('form-success')?.classList.remove('hidden')
+        } else {
+          document.getElementById('form-error')?.classList.remove('hidden')
+        }
+      } catch {
+        document.getElementById('form-error')?.classList.remove('hidden')
+      } finally {
+        submitBtn.disabled = false
+        submitBtn.textContent = 'Submit application'
+      }
+    })
+  }
+</script>

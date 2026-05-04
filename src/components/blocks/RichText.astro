@@ -1,0 +1,17 @@
+---
+import { tiptapToHtml } from '../../lib/cms'
+
+interface Props {
+  body?: any
+}
+
+const { body } = Astro.props
+const html = tiptapToHtml(body)
+if (!html) return null
+---
+
+<section class="py-16 md:py-24">
+  <div class="mx-auto max-w-[680px] px-6 md:px-8">
+    <div class="prose-custom" set:html={html} />
+  </div>
+</section>

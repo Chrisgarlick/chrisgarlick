@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+import BlockRenderer from '../components/BlockRenderer.astro'
+import { cms } from '../lib/cms'
+
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug: 'contact' } })
+} catch {}
+
+const title = page?.seo?.metaTitle || 'Contact — Chris Garlick'
+const description = page?.seo?.metaDescription || 'Get in touch. Tell me about your business and I will get back to you within 2 working days.'
+const rawContent = page?.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact Chris Garlick',
+  description,
+  url: 'https://chrisgarlick.com/contact',
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    jsonLd={jsonLd}
+  />
+
+  {contentBlocks.length > 0 ? (
+    <BlockRenderer blocks={contentBlocks} />
+  ) : (
+    <!-- Fallback — create a "contact" page in /admin with a contact-form block -->
+    <section class="py-20 md:py-24">
+      <div class="mx-auto max-w-[720px] px-5 text-center md:px-8">
+        <h1 class="mb-4 font-display text-4xl text-text-primary">Contact</h1>
+        <p class="text-base text-text-secondary">Create a page with slug "contact" in the admin to customise this page.</p>
+      </div>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,4 @@
+---
+// Redirect /article/slug → /blog/slug to match frontend routing
+return Astro.redirect(`/blog/${Astro.params.slug}`, 301)
+---

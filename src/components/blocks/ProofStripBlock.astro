@@ -1,0 +1,43 @@
+---
+import { cms } from '../../lib/cms'
+
+interface Props {
+  metrics?: string
+}
+
+const { metrics: staticMetrics } = Astro.props
+
+const client = cms()
+let items: string[] = []
+
+try {
+  const res = await client.collection('proofMetric').findMany({
+    orderBy: { sortOrder: 'asc' },
+    limit: 20,
+  })
+  items = (res?.data ?? []).map((m: any) => m.text)
+} catch {}
+
+if (items.length === 0 && staticMetrics) {
+  items = staticMetrics.split('\n').filter(Boolean)
+}
+
+if (items.length === 0) return null
+const doubled = [...items, ...items]
+---
+
+<section class="border-y border-border bg-bg-muted" aria-hidden="true">
+  <div class="overflow-hidden py-4">
+    <div class="marquee-track flex whitespace-nowrap">
+      {doubled.map((item) => (
+        <span class="mx-5 inline-block font-body text-[13px] tracking-wide text-text-secondary">
+          {item}
+          <span class="ml-5 text-text-tertiary">·</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
+<div class="sr-only">
+  {items.map((item) => <p>{item}</p>)}
+</div>

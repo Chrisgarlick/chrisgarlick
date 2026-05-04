@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+import BlockRenderer from '../components/BlockRenderer.astro'
+import { cms } from '../lib/cms'
+
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug: 'about' } })
+} catch {}
+
+const title = page?.seo?.metaTitle || 'About Chris Garlick — Software Developer, UK'
+const description = page?.seo?.metaDescription || 'Software developer building systems for service businesses. Proprietary tools, transparent process, UK-based.'
+const rawContent = page?.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Chris Garlick',
+  jobTitle: 'Software Developer',
+  url: 'https://chrisgarlick.com/about',
+  knowsAbout: ['Artificial Intelligence', 'Workflow Automation', 'Legal Technology', 'Accounting Technology'],
+  sameAs: [
+    'https://www.linkedin.com/in/chrisgarlick',
+    'https://github.com/Kritano',
+  ],
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    jsonLd={jsonLd}
+  />
+
+  {contentBlocks.length > 0 ? (
+    <BlockRenderer blocks={contentBlocks} />
+  ) : (
+    <section class="flex min-h-[60vh] items-center justify-center pt-16">
+      <div class="mx-auto max-w-[720px] px-5 text-center md:px-8">
+        <h1 class="mb-4 font-display text-4xl text-text-primary">About</h1>
+        <p class="text-base text-text-secondary">
+          Create a page with slug "about" in the <a href="/admin" class="text-accent hover:text-accent-hover">CMS admin</a> and add blocks to build this page.
+        </p>
+      </div>
+    </section>
+  )}
+</Base>

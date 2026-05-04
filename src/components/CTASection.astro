@@ -1,0 +1,27 @@
+---
+interface Props {
+  heading?: string
+  body?: string
+}
+
+const {
+  heading = 'If your operations have manual bottlenecks, apply.',
+  body = 'I review every application personally. If it looks like a fit, you will hear back within 2 working days.',
+} = Astro.props
+---
+
+<section class="bg-bg-dark py-20 md:py-28">
+  <div class="mx-auto max-w-[680px] px-6 text-center md:px-8">
+    <h2 class="mb-5 font-display text-[1.75rem] text-white md:text-[2.25rem]" style="letter-spacing: -0.02em;">
+      {heading}
+    </h2>
+    <p class="mb-10 text-[15px] leading-[1.75] text-white/60">{body}</p>
+    <a
+      href="/contact"
+      class="inline-block border border-white bg-white px-8 py-3 font-body text-[13px] font-medium uppercase tracking-wider text-bg-dark no-underline transition-all duration-150 hover:bg-white/90"
+      style="border-radius: 3px;"
+    >
+      Get in touch
+    </a>
+  </div>
+</section>

@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import BlockRenderer from '../../components/BlockRenderer.astro'
+import { cms } from '../../lib/cms'
+
+const { slug } = Astro.params
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug } })
+} catch {}
+
+// Pages with reserved slugs are handled by their own routes
+const reservedSlugs = ['home', 'about', 'contact']
+if (!page || reservedSlugs.includes(slug!)) {
+  return Astro.redirect('/404')
+}
+
+const title = page.seo?.metaTitle || `${page.title} — Chris Garlick`
+const description = page.seo?.metaDescription || ''
+const rawContent = page.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+  />
+
+  <BlockRenderer blocks={contentBlocks} />
+</Base>
