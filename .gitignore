@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+.astro/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~

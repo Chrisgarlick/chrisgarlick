@@ -58,7 +58,7 @@ echo "  Bun $(bun --version)"
 echo "→ Installing PostgreSQL 16..."
 if ! command -v psql &>/dev/null; then
   apt-get install -y gnupg2
-  echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+  echo "deb http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list
   curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
   apt-get update -y
   apt-get install -y postgresql-16
