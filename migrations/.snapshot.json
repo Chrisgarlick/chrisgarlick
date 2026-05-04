@@ -44,6 +44,28 @@
           "references": null
         },
         {
+          "name": "created_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
+        },
+        {
+          "name": "updated_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
+        },
+        {
           "name": "title",
           "sqlType": "varchar(255)",
           "nullable": false,
@@ -60,7 +82,7 @@
           "references": null
         },
         {
-          "name": "body",
+          "name": "content",
           "sqlType": "jsonb",
           "nullable": true,
           "defaultValue": null,
@@ -119,6 +141,28 @@
           "defaultValue": null,
           "unique": false,
           "references": null
+        },
+        {
+          "name": "created_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
+        },
+        {
+          "name": "updated_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
         },
         {
           "name": "title",
@@ -215,6 +259,28 @@
           "defaultValue": null,
           "unique": false,
           "references": null
+        },
+        {
+          "name": "created_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
+        },
+        {
+          "name": "updated_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
         },
         {
           "name": "title",
@@ -332,6 +398,28 @@
           "defaultValue": null,
           "unique": false,
           "references": null
+        },
+        {
+          "name": "created_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
+        },
+        {
+          "name": "updated_by",
+          "sqlType": "uuid",
+          "nullable": true,
+          "defaultValue": null,
+          "unique": false,
+          "references": {
+            "table": "users",
+            "column": "id"
+          }
         },
         {
           "name": "text",
