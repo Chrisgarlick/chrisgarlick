@@ -40,7 +40,20 @@ nginx -t && systemctl reload nginx
 echo "→ Obtaining SSL certificate..."
 certbot certonly --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email $EMAIL
 
-# ── 4. Full Nginx config ──
+# ── 4. Security headers snippet ──
+echo "→ Creating security headers snippet..."
+mkdir -p /etc/nginx/snippets
+cat > /etc/nginx/snippets/security-headers.conf << 'HEADERSEOF'
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self';" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+HEADERSEOF
+
+# ── 5. Full Nginx config ──
 echo "→ Writing production Nginx config..."
 cat > /etc/nginx/sites-available/$DOMAIN << 'NGINXEOF'
 server {
@@ -116,6 +129,7 @@ server {
         alias /var/www/chrisgarlick/media/;
         expires 30d;
         add_header Cache-Control "public, immutable";
+        include /etc/nginx/snippets/security-headers.conf;
     }
 
     # API → proxy to CMS
@@ -156,12 +170,14 @@ server {
     location /_astro/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
+        include /etc/nginx/snippets/security-headers.conf;
     }
 
     # Everything else → static files
     location / {
         try_files $uri $uri/index.html $uri.html =404;
         add_header Cache-Control "public, max-age=3600";
+        include /etc/nginx/snippets/security-headers.conf;
     }
 
     error_page 404 /404.html;

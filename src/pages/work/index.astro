@@ -21,9 +21,16 @@ const categories = ['All', 'Legal', 'Accountancy', 'Agency', 'Internal']
 <Base>
   <SEO
     slot="head"
-    title="Case Studies | Chris Garlick"
-    description="Real projects for service businesses. Architecture shown. Outcomes measured. Architecture, outcomes, and transparent process."
+    title="Case Studies — AI Integration Projects | Chris Garlick"
+    description="Real AI integration projects for service businesses. Architecture shown. Outcomes measured. Transparent process from audit to delivery."
     canonical="https://chrisgarlick.com/work"
+    jsonLd={{
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Case Studies',
+      description: 'Real AI integration projects for service businesses.',
+      url: 'https://chrisgarlick.com/work',
+    }}
   />
 
   <section class="py-20 md:py-24">

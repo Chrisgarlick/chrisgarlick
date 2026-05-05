@@ -25,6 +25,12 @@ const jsonLd = [
     '@type': 'WebSite',
     name: 'Chris Garlick',
     url: 'https://chrisgarlick.com',
+    description: 'Software developer building systems for service businesses. Fixed-fee projects. UK-based.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://chrisgarlick.com/article?q={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
   },
   {
     '@context': 'https://schema.org',

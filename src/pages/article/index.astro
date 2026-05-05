@@ -28,14 +28,21 @@ const years = Object.keys(grouped).map(Number).sort((a, b) => b - a)
 <Base>
   <SEO
     slot="head"
-    title="Blog | Chris Garlick"
-    description="Practical guides on software, automation, and operations for service businesses. No hype."
+    title="Articles — AI Integration Insights | Chris Garlick"
+    description="Practical guides on AI integration, software automation, and operations for service businesses. No hype, just what works."
+    jsonLd={{
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Articles',
+      description: 'Practical guides on AI integration and software automation for service businesses.',
+      url: 'https://chrisgarlick.com/article',
+    }}
   />
 
   <section class="py-20 md:py-24">
     <div class="mx-auto max-w-[720px] px-5 md:px-8">
       <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">Writing</p>
-      <h1 class="mb-12 font-display text-[36px] text-text-primary md:text-[48px]">Blog</h1>
+      <h1 class="mb-12 font-display text-[36px] text-text-primary md:text-[48px]">Articles</h1>
 
       {posts.length > 0 ? (
         <div class="space-y-12">

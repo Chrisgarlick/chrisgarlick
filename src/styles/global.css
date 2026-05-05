@@ -98,6 +98,17 @@
     color: var(--color-accent-hover);
   }
 
+  /* Ensure links in body text are distinguishable */
+  p a, li a, span a, td a {
+    text-decoration: underline;
+    text-decoration-color: rgba(181, 82, 47, 0.3);
+    text-underline-offset: 3px;
+  }
+
+  p a:hover, li a:hover, span a:hover, td a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
