@@ -19,26 +19,34 @@ const description = page?.seo?.metaDescription || 'I build software that replace
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
-  name: 'Chris Garlick',
-  description: 'Software developer building systems for service businesses.',
-  url: 'https://chrisgarlick.com',
-  founder: {
-    '@type': 'Person',
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
     name: 'Chris Garlick',
-    jobTitle: 'Software Developer',
-    url: 'https://chrisgarlick.com/about',
+    url: 'https://chrisgarlick.com',
   },
-  areaServed: { '@type': 'Country', name: 'United Kingdom' },
-  serviceType: ['Software Development', 'Business Automation', 'Operations Software'],
-  priceRange: '£5,000 - £8,000',
-  sameAs: [
-    'https://www.linkedin.com/in/chrisgarlick',
-    'https://github.com/Kritano',
-  ],
-}
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: 'Chris Garlick',
+    description: 'Software developer building systems for service businesses.',
+    url: 'https://chrisgarlick.com',
+    founder: {
+      '@type': 'Person',
+      name: 'Chris Garlick',
+      jobTitle: 'Software Developer',
+      url: 'https://chrisgarlick.com/about',
+    },
+    areaServed: { '@type': 'Country', name: 'United Kingdom' },
+    serviceType: ['Software Development', 'Business Automation', 'Operations Software'],
+    priceRange: '£5,000 - £8,000',
+    sameAs: [
+      'https://www.linkedin.com/in/chrisgarlick',
+      'https://github.com/Kritano',
+    ],
+  },
+]
 ---
 
 <Base>

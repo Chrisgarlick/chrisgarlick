@@ -80,12 +80,17 @@ server {
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
 
+    # Hide server version
+    server_tokens off;
+
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self';" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
 
     # Gzip
     gzip on;
@@ -147,9 +152,16 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # Cache Astro hashed assets
+    location /_astro/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
     # Everything else → static files
     location / {
         try_files $uri $uri/index.html $uri.html =404;
+        add_header Cache-Control "public, max-age=3600";
     }
 
     error_page 404 /404.html;

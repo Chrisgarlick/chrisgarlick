@@ -41,8 +41,8 @@ const jsonLd = {
     url: 'https://chrisgarlick.com/about',
   },
   publisher: { '@type': 'Person', name: authorName },
-  datePublished: doc.publishedAt || '',
-  dateModified: doc.updatedAt || doc.publishedAt || '',
+  ...(doc.publishedAt ? { datePublished: new Date(doc.publishedAt).toISOString() } : {}),
+  ...(doc.updatedAt || doc.publishedAt ? { dateModified: new Date(doc.updatedAt || doc.publishedAt).toISOString() } : {}),
   ...(seoKeywords ? { keywords: seoKeywords } : {}),
   mainEntityOfPage: {
     '@type': 'WebPage',
