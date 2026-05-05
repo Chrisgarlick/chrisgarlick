@@ -4,6 +4,14 @@ import SEO from '../../components/SEO.astro'
 import BlockRenderer from '../../components/BlockRenderer.astro'
 import { cms } from '../../lib/cms'
 
+export async function getStaticPaths() {
+  const client = cms()
+  const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
+  const pages = result?.data ?? []
+  const reservedSlugs = ['home', 'about', 'contact']
+  return pages.filter((p: any) => !reservedSlugs.includes(p.slug)).map((p: any) => ({ params: { slug: p.slug } }))
+}
+
 const { slug } = Astro.params
 const client = cms()
 

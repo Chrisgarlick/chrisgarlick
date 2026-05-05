@@ -1,4 +1,13 @@
 ---
+import { cms } from '../../lib/cms'
+
+export async function getStaticPaths() {
+  const client = cms()
+  const result = await client.collection('article').findMany({ where: { status: 'published' }, limit: 500 })
+  const articles = result?.data ?? []
+  return articles.map((a: any) => ({ params: { slug: a.slug } }))
+}
+
 // Redirect /article/slug → /blog/slug to match frontend routing
 return Astro.redirect(`/blog/${Astro.params.slug}`, 301)
 ---

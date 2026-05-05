@@ -4,6 +4,13 @@ import SEO from '../../components/SEO.astro'
 import CTASection from '../../components/CTASection.astro'
 import { cms, formatDate, estimateReadTime, tiptapToHtml } from '../../lib/cms'
 
+export async function getStaticPaths() {
+  const client = cms()
+  const result = await client.collection('article').findMany({ where: { status: 'published' }, limit: 500 })
+  const articles = result?.data ?? []
+  return articles.map((a: any) => ({ params: { slug: a.slug } }))
+}
+
 const { slug } = Astro.params
 const client = cms()
 
