@@ -95,6 +95,9 @@ server {
     # Media uploads
     client_max_body_size 50M;
 
+    # Static files root
+    root /var/www/chrisgarlick/dist/client;
+
     # Static media files
     location /media/ {
         alias /var/www/chrisgarlick/media/;
@@ -102,8 +105,8 @@ server {
         add_header Cache-Control "public, immutable";
     }
 
-    # Proxy to Bun
-    location / {
+    # API → proxy to CMS
+    location /api/ {
         proxy_pass http://127.0.0.1:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -112,10 +115,36 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        proxy_read_timeout 60s;
-        proxy_send_timeout 60s;
     }
+
+    # Admin → proxy to CMS
+    location /admin {
+        proxy_pass http://127.0.0.1:3005;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Contact form → proxy to Astro SSR
+    location /contact/submit {
+        proxy_pass http://127.0.0.1:3005;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Everything else → static files
+    location / {
+        try_files $uri $uri/index.html $uri.html =404;
+    }
+
+    error_page 404 /404.html;
 }
 NGINXEOF
 
