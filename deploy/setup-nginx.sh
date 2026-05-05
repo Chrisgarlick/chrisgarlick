@@ -98,6 +98,14 @@ server {
     # Static files root
     root /var/www/chrisgarlick/dist/client;
 
+    # Redirect /blog/* → /article/*
+    location /blog/ {
+        rewrite ^/blog/(.*)$ /article/$1 permanent;
+    }
+    location = /blog {
+        return 301 /article;
+    }
+
     # Static media files
     location /media/ {
         alias /var/www/chrisgarlick/media/;
