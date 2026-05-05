@@ -15,7 +15,8 @@ try {
   }
 } catch {}
 
-const fields = form?.fields || []
+const rawFields = form?.fields || []
+const fields = typeof rawFields === 'string' ? JSON.parse(rawFields) : rawFields
 const settings = form?.settings || {}
 const submitUrl = form?.submitUrl || '#'
 const submitLabel = settings.submitLabel || 'Send message'
