@@ -2,7 +2,7 @@
 
 import { resolve, join } from 'node:path'
 import { existsSync } from 'node:fs'
-import { createServer, loadPlugins, syncDeclaredForms } from '@kritano/cms/core'
+import { createServer, loadPlugins, syncDeclaredForms, getClient } from '@kritano/cms/core'
 import { Resend } from 'resend'
 
 // Load config from the project root
@@ -23,6 +23,21 @@ if (config.plugins && config.plugins.length > 0) {
 
 // Sync forms declared in cms.config.ts to the database
 syncDeclaredForms().catch((err: any) => console.warn(`[CMS] Form sync: ${err}`))
+
+// Create audit_logs table if it doesn't exist
+const sql = getClient()
+sql`
+  CREATE TABLE IF NOT EXISTS audit_logs (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    url text NOT NULL,
+    domain text,
+    ip text,
+    scores jsonb,
+    issues jsonb,
+    kritano_audit_id text,
+    created_at timestamptz NOT NULL DEFAULT now()
+  )
+`.catch((err: any) => console.warn(`[Audit] Table setup: ${err}`))
 
 // ---------------------------------------------------------------------------
 // Form submission → Resend email
@@ -190,14 +205,22 @@ app.post('/api/tools/audit', async (c) => {
           ? Math.round(scoreValues.reduce((a: number, b: number) => a + b, 0) / scoreValues.length)
           : null
 
+        const responseScores = {
+          overall,
+          seo: scores.seo ?? null,
+          accessibility: scores.accessibility ?? null,
+          performance: scores.performance ?? null,
+        }
+
+        // Log to database
+        sql`
+          INSERT INTO audit_logs (url, domain, ip, scores, issues, kritano_audit_id)
+          VALUES (${parsedUrl.href}, ${parsedUrl.hostname}, ${ip}, ${JSON.stringify(responseScores)}, ${JSON.stringify(result.issues || null)}, ${auditId})
+        `.catch((err: any) => console.error(`[Audit] Log failed:`, err))
+
         return c.json({
           url: parsedUrl.href,
-          scores: {
-            overall,
-            seo: scores.seo ?? null,
-            accessibility: scores.accessibility ?? null,
-            performance: scores.performance ?? null,
-          },
+          scores: responseScores,
           issues: result.issues || null,
         })
       }
@@ -214,6 +237,31 @@ app.post('/api/tools/audit', async (c) => {
     console.error(`[Audit] Request failed:`, err.message)
     return c.json({ error: 'Could not reach audit service. Please try again.' }, 502)
   }
+})
+
+// Audit logs — protected, requires auth
+app.get('/api/tools/audit/logs', async (c) => {
+  const auth = c.req.header('authorization')
+  if (!auth) return c.json({ error: 'Unauthorized' }, 401)
+
+  const limit = parseInt(c.req.query('limit') || '50', 10)
+  const offset = parseInt(c.req.query('offset') || '0', 10)
+
+  const logs = await sql`
+    SELECT id, url, domain, ip, scores, issues, kritano_audit_id, created_at
+    FROM audit_logs
+    ORDER BY created_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  `
+
+  const total = await sql`SELECT count(*)::int as count FROM audit_logs`
+
+  return c.json({
+    data: logs,
+    total: total[0].count,
+    limit,
+    offset,
+  })
 })
 
 // ---------------------------------------------------------------------------
