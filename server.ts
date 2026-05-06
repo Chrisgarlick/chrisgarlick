@@ -40,43 +40,47 @@ sql`
 `.catch((err: any) => console.warn(`[Audit] Table setup: ${err}`))
 
 // ---------------------------------------------------------------------------
-// Form submission → Resend email
+// Form submission → Resend email notification
+// Intercepts all form submissions, sends email via Resend, then lets CMS store it
 // ---------------------------------------------------------------------------
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-app.post('/api/forms/submit', async (c) => {
-  let body: Record<string, string>
-  try {
-    body = await c.req.json()
-  } catch {
-    return c.json({ error: 'Invalid request body.' }, 400)
-  }
+app.post('/api/forms/:slug/submit', async (c, next) => {
+  // Clone the request body before the CMS handler consumes it
+  const body = await c.req.json() as Record<string, string>
 
-  const { name, email, ...rest } = body
-  if (!name || !email) {
-    return c.json({ error: 'Name and email are required.' }, 400)
-  }
+  // Rebuild the request so the CMS handler can still read it
+  c.req.raw = new Request(c.req.raw, {
+    body: JSON.stringify(body),
+  })
 
-  // Build a readable HTML email from all submitted fields
+  const toEmail = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
+  const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
+
   const fields = Object.entries(body)
+    .filter(([key]) => key !== '_hp')
     .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
     .join('')
 
+  const name = body.name || 'Unknown'
+  const slug = c.req.param('slug')
+
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>',
-      to: process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com',
-      replyTo: email,
-      subject: `New form submission from ${name}`,
-      html: `<h2>New form submission</h2>${fields}`,
+      from: fromEmail,
+      to: toEmail,
+      replyTo: body.email || undefined,
+      subject: `New ${slug} submission from ${name}`,
+      html: `<h2>New ${slug} form submission</h2>${fields}`,
     })
-
-    return c.json({ success: true })
+    console.log(`[Forms] Email sent to ${toEmail} for ${slug} submission`)
   } catch (err: any) {
     console.error('[Forms] Resend error:', err)
-    return c.json({ error: 'Failed to send email.' }, 500)
   }
+
+  // Continue to CMS handler to store submission
+  await next()
 })
 
 // ---------------------------------------------------------------------------
