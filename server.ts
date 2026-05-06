@@ -3,6 +3,7 @@
 import { resolve, join } from 'node:path'
 import { existsSync } from 'node:fs'
 import { createServer, loadPlugins, syncDeclaredForms, getClient } from '@kritano/cms/core'
+import { Resend } from 'resend'
 
 // Load config from the project root
 const configPath = resolve(process.cwd(), 'cms.config')
@@ -37,6 +38,84 @@ sql`
     created_at timestamptz NOT NULL DEFAULT now()
   )
 `.catch((err: any) => console.warn(`[Audit] Table setup: ${err}`))
+
+// ---------------------------------------------------------------------------
+// Form submission → stores in DB + sends email via Resend
+// Standalone route so it works regardless of CMS version
+// ---------------------------------------------------------------------------
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+app.post('/api/forms/send', async (c) => {
+  let body: Record<string, string>
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ error: 'Invalid request body.' }, 400)
+  }
+
+  // Honeypot check
+  if (body._hp) return c.json({ success: true })
+  delete body._hp
+
+  const { name, email } = body
+  if (!name || !email) {
+    return c.json({ error: 'Name and email are required.' }, 400)
+  }
+
+  // Store submission in form_submissions table
+  try {
+    const formRows = await sql`SELECT id, name, slug FROM forms WHERE slug = 'contact' LIMIT 1`
+    if (formRows.length > 0) {
+      const form = formRows[0] as Record<string, unknown>
+      const ip = c.req.header('X-Forwarded-For')?.split(',')[0]?.trim() || c.req.header('X-Real-IP') || null
+      const userAgent = c.req.header('User-Agent') || null
+      await sql`
+        INSERT INTO form_submissions (form_id, data, ip_address, user_agent)
+        VALUES (${form.id as string}, ${JSON.stringify(body)}::jsonb, ${ip}, ${userAgent})
+      `
+    }
+  } catch (err: any) {
+    console.error('[Forms] DB error:', err)
+  }
+
+  // Send email via Resend
+  const toEmail = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
+  const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
+
+  const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const tableRows = Object.entries(body)
+    .filter(([key]) => !key.startsWith('_'))
+    .map(([key, value]) => {
+      const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
+      return `<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:600;color:#374151">${escapeHtml(label)}</td><td style="padding:8px 12px;border:1px solid #e5e7eb;color:#111827">${escapeHtml(value || '')}</td></tr>`
+    })
+    .join('')
+
+  const html = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto">
+      <h2 style="color:#111827;font-size:18px;margin-bottom:16px">New contact form submission</h2>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">${tableRows}</table>
+      <p style="color:#9ca3af;font-size:12px">Submitted at ${new Date().toISOString()}</p>
+    </div>
+  `
+
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      replyTo: email,
+      subject: `New contact form submission from ${name}`,
+      html,
+    })
+    console.log(`[Forms] Email sent to ${toEmail}`)
+  } catch (err: any) {
+    console.error('[Forms] Resend error:', err)
+    return c.json({ error: 'Failed to send email.' }, 500)
+  }
+
+  return c.json({ success: true })
+})
 
 // ---------------------------------------------------------------------------
 // Custom tool routes

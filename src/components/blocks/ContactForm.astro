@@ -18,7 +18,7 @@ try {
 const rawFields = form?.fields || []
 const fields = typeof rawFields === 'string' ? JSON.parse(rawFields) : rawFields
 const settings = form?.settings || {}
-const submitUrl = `/api/forms/${form?.slug || formSlug}/submit`
+const submitUrl = '/api/forms/send'
 const submitLabel = settings.submitLabel || 'Send message'
 const successMessage = settings.successMessage || 'Thank you. Your submission has been received.'
 ---

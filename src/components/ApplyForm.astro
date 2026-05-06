@@ -209,7 +209,7 @@ const revenueOptions = ['Under \u00a3500k', '\u00a3500k\u2013\u00a31M', '\u00a31
       submitBtn.textContent = 'Submitting...'
 
       try {
-        const res = await fetch('/api/forms/submit', {
+        const res = await fetch('/api/forms/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
