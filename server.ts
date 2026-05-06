@@ -127,10 +127,10 @@ app.post('/api/tools/audit', async (c) => {
   }
 
   // Proxy to Kritano platform API
-  const apiKey = process.env.KRITANO_PLATFORM_API_KEY
-  const apiBase = process.env.KRITANO_PLATFORM_API_URL
+  const apiKey = process.env.KRITANO_API
+  const apiBase = process.env.KRITANO_PLATFORM_API_URL || 'https://kritano.com/api/v1'
 
-  if (!apiKey || !apiBase) {
+  if (!apiKey) {
     // Mock response for development / before API is configured
     console.log(`[Audit] Mock audit for: ${parsedUrl.href}`)
     return c.json({
@@ -145,33 +145,71 @@ app.post('/api/tools/audit', async (c) => {
     })
   }
 
+  const headers = {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  }
+
   try {
-    const res = await fetch(`${apiBase}/audit/single`, {
+    // 1. Create the audit (single page only for the free tool)
+    const createRes = await fetch(`${apiBase}/audits`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url: parsedUrl.href }),
+      headers,
+      body: JSON.stringify({
+        url: parsedUrl.href,
+        options: { maxPages: 1, maxDepth: 1 },
+      }),
     })
 
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      console.error(`[Audit] Kritano API error:`, res.status, errData)
+    if (!createRes.ok) {
+      const errData = await createRes.json().catch(() => ({}))
+      console.error(`[Audit] Create failed:`, createRes.status, errData)
       return c.json({ error: 'Audit service temporarily unavailable. Please try again.' }, 502)
     }
 
-    const data: any = await res.json()
+    const audit: any = await createRes.json()
+    const auditId = audit.id
 
-    return c.json({
-      url: parsedUrl.href,
-      scores: {
-        overall: data.scores?.overall ?? data.overall ?? null,
-        seo: data.scores?.seo ?? data.seo ?? null,
-        accessibility: data.scores?.accessibility ?? data.accessibility ?? null,
-        performance: data.scores?.performance ?? data.performance ?? null,
-      },
-    })
+    // 2. Poll until completed (max 60 seconds, every 2 seconds)
+    const maxAttempts = 30
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 2000))
+
+      const pollRes = await fetch(`${apiBase}/audits/${auditId}`, { headers })
+      if (!pollRes.ok) {
+        console.error(`[Audit] Poll failed:`, pollRes.status)
+        continue
+      }
+
+      const result: any = await pollRes.json()
+
+      if (result.status === 'completed') {
+        const scores = result.scores || {}
+        const scoreValues = [scores.seo, scores.accessibility, scores.performance, scores.security].filter((s: any) => s != null)
+        const overall = scoreValues.length > 0
+          ? Math.round(scoreValues.reduce((a: number, b: number) => a + b, 0) / scoreValues.length)
+          : null
+
+        return c.json({
+          url: parsedUrl.href,
+          scores: {
+            overall,
+            seo: scores.seo ?? null,
+            accessibility: scores.accessibility ?? null,
+            performance: scores.performance ?? null,
+          },
+          issues: result.issues || null,
+        })
+      }
+
+      if (result.status === 'failed') {
+        console.error(`[Audit] Audit failed for ${parsedUrl.href}`)
+        return c.json({ error: 'Audit failed. The site may be unreachable.' }, 502)
+      }
+    }
+
+    // Timed out
+    return c.json({ error: 'Audit is taking longer than expected. Please try again in a few minutes.' }, 504)
   } catch (err: any) {
     console.error(`[Audit] Request failed:`, err.message)
     return c.json({ error: 'Could not reach audit service. Please try again.' }, 502)
