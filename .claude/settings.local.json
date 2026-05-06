@@ -9,7 +9,8 @@
       "Bash(bun build:*)",
       "Bash(bun check:*)",
       "Bash(bun run:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(ls /Users/chris/dev/chrisgarlick/*.yaml /Users/chris/dev/chrisgarlick/*.yml)"
     ]
   }
 }

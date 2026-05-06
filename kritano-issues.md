@@ -112,6 +112,29 @@ if (req.headers.get('upgrade') === 'websocket') {
 ### 7. Dev proxy should handle 404 gracefully
 **Description:** When the Astro frontend returns a 404, the dev proxy should pass through the custom 404 page rather than showing its own error.
 
+### 8. No way for non-technical users to create collections from the admin UI
+**Severity:** Medium (roadmap)
+**Description:** Adding a new collection requires editing `cms.config.ts`, running `bun run migrate`, and running `bun run generate`. This is fine for developers but means non-technical CMS users can never create or modify content types without developer involvement.
+**Options:**
+1. **Admin UI collection builder** — visual interface in `/admin` to define fields, auto-generates migration and restarts. How Payload, Directus, and Strapi handle it. Big feature.
+2. **Database-driven schemas** — store collection definitions in the DB, API reads them dynamically at runtime. More flexible but loses type safety.
+3. **Keep code-first, document as managed service** — position collection creation as a developer task. Fine for agency/consultant model where the developer manages the CMS for clients. Simplest path short-term.
+
+Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Option 3 is fine for now.
+
+### 9. CLI should auto-run migrate + generate + build after schema changes
+**Severity:** Medium (DX)
+**Description:** After editing `cms.config.ts`, developers must manually run three commands in the correct order: `bun run migrate` → `bun run generate` → `bun run build`. This is error-prone and tedious — especially for non-technical users or when managing multiple sites.
+**Suggested fix:** The CLI should offer a single command (e.g., `cms sync` or `cms apply`) that detects schema changes and runs the full pipeline: migrate → generate → build. Ideally `cms dev` should also watch `cms.config.ts` and auto-run migrate + generate on change, then trigger an Astro rebuild. This is how Payload CMS and Drizzle Kit handle it — schema changes are picked up automatically in dev mode.
+
+### 10. `cms` CLI not available on production servers
+**Severity:** High (DX)
+**Description:** On production servers, the `cms` binary isn't on the PATH. Running `cms migrate` or `cms migrate:create` fails with "command not found". Have to use `npx cms` or `./node_modules/.bin/cms` instead. The CLI should either be registered as a `bin` in package.json so it's available after `bun install`, or docs should make the `npx` prefix clear for server usage.
+
+### 11. `cms migrate` should auto-create migrations, not just apply them
+**Severity:** High (DX)
+**Description:** `cms migrate` only applies existing migration files — it does NOT generate new ones when the schema has changed. You have to know to run `cms migrate:create` first, then `cms migrate`. This is a confusing two-step process that looks like it worked (reports "no pending migrations") when the migration file simply doesn't exist yet. `cms migrate` should diff the schema against the database and auto-generate + apply any needed migrations in one step. The separate `migrate:create` command can remain for advanced use, but the default `migrate` should handle the common case.
+
 ---
 
 ## Questions for CMS Development

@@ -22,19 +22,27 @@ bun run start                  # restart the CMS server
 
 The CMS server runs on port 3005. Nginx proxies `/api/` and `/admin` to it and serves the Astro static files from `dist/client`.
 
-### Restarting the CMS process
+### After changing `cms.config.ts` (adding/modifying collections)
 
-If the CMS is already running, kill it first:
+Must run in this order:
 
 ```bash
-pkill -f "bun run ./node_modules/@kritano/cms/server.ts"
-bun run start &                # start in background
+bun run migrate       # 1. Create/alter DB tables
+bun run generate      # 2. Regenerate TypeScript types
+sudo systemctl restart chrisgarlick  # 3. Restart CMS so it registers new API routes
+bun run build         # 4. Rebuild Astro frontend
 ```
 
-Or as a one-liner:
+The CMS reads `cms.config.ts` at startup — it won't serve API routes for new collections until restarted.
+
+### Restarting the CMS process
+
+The CMS runs as a systemd service:
 
 ```bash
-pkill -f "bun run" && bun run start &
+sudo systemctl restart chrisgarlick   # restart
+sudo systemctl status chrisgarlick    # check status
+journalctl -u chrisgarlick -f         # tail logs
 ```
 
 ### Full redeploy (copy-paste)
@@ -43,8 +51,10 @@ pkill -f "bun run" && bun run start &
 cd /var/www/chrisgarlick
 git pull origin main
 bun install
+bun run migrate
+bun run generate
 bun run build
-pkill -f "bun run" && bun run start &
+sudo systemctl restart chrisgarlick
 ```
 
 ## Scripts
