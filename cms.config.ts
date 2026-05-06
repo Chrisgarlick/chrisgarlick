@@ -125,6 +125,19 @@ export default defineConfig({
         sortOrder: number(),
       },
     }),
+    defineCollection('tool', {
+      fields: {
+        title:       text().required(),
+        slug:        slug().from('title'),
+        description: textarea().maxLength(300),
+        body:        richText(),
+        icon:        text(),
+        category:    select(['Audit', 'Performance', 'SEO', 'Content', 'AI']),
+        status:      select(['draft', 'published']).default('draft'),
+        sortOrder:   number(),
+        seo:         seoBlock(),
+      },
+    }),
   ],
                       plugins: [
     '@kritano/cms-plugin-io',

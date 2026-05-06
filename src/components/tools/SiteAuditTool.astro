@@ -1,0 +1,454 @@
+---
+const apiUrl = import.meta.env.CMS_API_URL || process.env.CMS_API_URL || 'http://localhost:3000/api'
+---
+
+<div class="audit-tool">
+  <!-- Input form -->
+  <form id="audit-form" class="audit-form" novalidate>
+    <div class="audit-input-row">
+      <div class="audit-input-wrap">
+        <input
+          type="url"
+          id="audit-url"
+          name="url"
+          placeholder="https://example.com"
+          required
+          class="audit-input"
+          autocomplete="url"
+        />
+      </div>
+      <button type="submit" class="audit-submit" id="audit-submit">
+        Run audit
+      </button>
+    </div>
+    <p class="audit-hint">Enter any URL to get a free site health report.</p>
+    <p class="audit-error hidden" id="audit-error-validation">Please enter a valid URL (e.g. https://example.com)</p>
+  </form>
+
+  <!-- Loading -->
+  <div id="audit-loading" class="audit-loading hidden">
+    <div class="audit-spinner"></div>
+    <p>Analysing site&hellip; this may take a moment.</p>
+  </div>
+
+  <!-- Error -->
+  <div id="audit-error" class="audit-message audit-message--error hidden">
+    <p id="audit-error-text">Something went wrong. Please try again.</p>
+  </div>
+
+  <!-- Results -->
+  <div id="audit-results" class="hidden">
+    <div class="audit-results-header">
+      <h3 class="audit-results-title">Results</h3>
+      <p class="audit-results-url" id="audit-results-url"></p>
+    </div>
+
+    <div class="audit-scores">
+      <div class="audit-score-card" id="score-overall">
+        <div class="audit-score-number" data-score>—</div>
+        <div class="audit-score-bar"><div class="audit-score-bar-fill" data-bar></div></div>
+        <div class="audit-score-label">Overall</div>
+      </div>
+      <div class="audit-score-card" id="score-seo">
+        <div class="audit-score-number" data-score>—</div>
+        <div class="audit-score-bar"><div class="audit-score-bar-fill" data-bar></div></div>
+        <div class="audit-score-label">SEO</div>
+      </div>
+      <div class="audit-score-card" id="score-accessibility">
+        <div class="audit-score-number" data-score>—</div>
+        <div class="audit-score-bar"><div class="audit-score-bar-fill" data-bar></div></div>
+        <div class="audit-score-label">Accessibility</div>
+      </div>
+      <div class="audit-score-card" id="score-performance">
+        <div class="audit-score-number" data-score>—</div>
+        <div class="audit-score-bar"><div class="audit-score-bar-fill" data-bar></div></div>
+        <div class="audit-score-label">Performance</div>
+      </div>
+    </div>
+
+    <!-- Email gate / CTA -->
+    <div class="audit-cta">
+      <div class="audit-cta-inner">
+        <h4 class="audit-cta-heading">Want the full breakdown?</h4>
+        <p class="audit-cta-body">
+          I'll run a deep multi-page audit on your site and record a personalised walkthrough of the findings. No pitch, just value.
+        </p>
+        <a href="/contact" class="audit-cta-button" id="audit-cta-link">
+          Get your free walkthrough
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .audit-tool {
+    width: 100%;
+  }
+
+  .audit-form {
+    width: 100%;
+  }
+
+  .audit-input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 640px) {
+    .audit-input-row {
+      flex-direction: column;
+    }
+  }
+
+  .audit-input-wrap {
+    flex: 1;
+  }
+
+  .audit-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 100%;
+  }
+
+  .audit-input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .audit-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .audit-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    background-color: var(--color-accent);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .audit-submit:hover {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .audit-submit:disabled {
+    opacity: 0.5;
+    transform: none;
+    cursor: default;
+  }
+
+  .audit-hint {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .audit-error {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-destructive);
+  }
+
+  /* Loading */
+  .audit-loading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+  }
+
+  .audit-loading p {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+  }
+
+  .audit-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Error message */
+  .audit-message {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 3px;
+  }
+
+  .audit-message--error {
+    border: 1px solid var(--color-destructive);
+    background-color: var(--color-accent-light);
+  }
+
+  .audit-message--error p {
+    font-size: 0.9375rem;
+    color: var(--color-text-primary);
+  }
+
+  /* Results */
+  .audit-results-header {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .audit-results-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .audit-results-url {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+    word-break: break-all;
+  }
+
+  .audit-scores {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .audit-scores {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .audit-score-card {
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .audit-score-number {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .audit-score-bar {
+    height: 4px;
+    background-color: var(--color-bg-muted);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .audit-score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0%;
+  }
+
+  .audit-score-label {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* CTA */
+  .audit-cta {
+    margin-top: 2rem;
+  }
+
+  .audit-cta-inner {
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-dark);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .audit-cta-heading {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .audit-cta-body {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1.5rem;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .audit-cta-button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    background-color: #fff;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-bg-dark);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .audit-cta-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script define:vars={{ apiUrl }}>
+  const form = document.getElementById('audit-form')
+  const urlInput = document.getElementById('audit-url')
+  const submitBtn = document.getElementById('audit-submit')
+  const validationError = document.getElementById('audit-error-validation')
+  const loading = document.getElementById('audit-loading')
+  const errorEl = document.getElementById('audit-error')
+  const errorText = document.getElementById('audit-error-text')
+  const results = document.getElementById('audit-results')
+  const resultsUrl = document.getElementById('audit-results-url')
+
+  function isValidUrl(str) {
+    try {
+      const u = new URL(str)
+      return u.protocol === 'http:' || u.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }
+
+  function scoreColour(score) {
+    if (score >= 80) return '#2d7d46'
+    if (score >= 50) return '#c47f17'
+    return '#c0392b'
+  }
+
+  function setScore(cardId, score) {
+    const card = document.getElementById(cardId)
+    if (!card) return
+    const num = card.querySelector('[data-score]')
+    const bar = card.querySelector('[data-bar]')
+    if (num) num.textContent = score !== null && score !== undefined ? score : '—'
+    if (bar) {
+      const pct = score !== null && score !== undefined ? score : 0
+      bar.style.width = pct + '%'
+      bar.style.backgroundColor = scoreColour(pct)
+    }
+  }
+
+  function resetUI() {
+    validationError?.classList.add('hidden')
+    loading?.classList.add('hidden')
+    errorEl?.classList.add('hidden')
+    results?.classList.add('hidden')
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    resetUI()
+
+    let url = urlInput?.value?.trim() || ''
+
+    // Auto-prepend https:// if missing protocol
+    if (url && !/^https?:\/\//i.test(url)) {
+      url = 'https://' + url
+      urlInput.value = url
+    }
+
+    if (!isValidUrl(url)) {
+      validationError?.classList.remove('hidden')
+      return
+    }
+
+    submitBtn.disabled = true
+    submitBtn.textContent = 'Analysing...'
+    loading?.classList.remove('hidden')
+
+    try {
+      const res = await fetch(apiUrl + '/tools/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+
+      loading?.classList.add('hidden')
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        errorText.textContent = data.error || 'Something went wrong. Please try again.'
+        errorEl?.classList.remove('hidden')
+        return
+      }
+
+      const data = await res.json()
+
+      resultsUrl.textContent = data.url || url
+      setScore('score-overall', data.scores?.overall)
+      setScore('score-seo', data.scores?.seo)
+      setScore('score-accessibility', data.scores?.accessibility)
+      setScore('score-performance', data.scores?.performance)
+
+      results?.classList.remove('hidden')
+    } catch (err) {
+      loading?.classList.add('hidden')
+      errorText.textContent = 'Network error. Please check your connection and try again.'
+      errorEl?.classList.remove('hidden')
+    } finally {
+      submitBtn.disabled = false
+      submitBtn.textContent = 'Run audit'
+    }
+  })
+</script>

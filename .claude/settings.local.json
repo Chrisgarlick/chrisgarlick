@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(grep -E \"\\\\.\\(ts|js\\)$\")",
+      "Bash(find /Users/chris/dev/chrisgarlick/node_modules/@kritano/cms-plugin-io -type f -name *.ts -o -name *.js)",
+      "Bash(find /Users/chris/dev/chrisgarlick/node_modules/@kritano/cms -type f -name *.ts)",
+      "Bash(find /Users/chris/dev/chrisgarlick -path ./node_modules -prune -o -type f \\\\\\(-name *.ts -o -name *.tsx -o -name *.js \\\\\\) -print)",
+      "Bash(bun build:*)",
+      "Bash(bun check:*)",
+      "Bash(bun run:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cms dev",
     "build": "cms build",
-    "start": "bun run ./node_modules/@kritano/cms/server.ts",
+    "start": "bun run ./server.ts",
     "migrate": "cms migrate",
     "generate": "cms generate"
   },
