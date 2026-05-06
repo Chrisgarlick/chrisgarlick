@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=512, height=512">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 512px;
+    height: 512px;
+    overflow: hidden;
+    background: #0A0A0A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    opacity: 0.06;
+    filter: blur(100px);
+    background: #E8D5A3;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .monogram {
+    font-family: 'Instrument Serif', serif;
+    font-size: 240px;
+    font-weight: 400;
+    color: #F0EDE8;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .monogram span {
+    color: #E8D5A3;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="monogram">C<span>G</span></div>
+</body>
+</html>

@@ -132,6 +132,13 @@ server {
         include /etc/nginx/snippets/security-headers.conf;
     }
 
+    # Rebuild webhook → proxy to rebuild service
+    location = /api/rebuild {
+        proxy_pass http://127.0.0.1:3006/rebuild;
+        proxy_set_header Authorization $http_authorization;
+        proxy_read_timeout 120s;
+    }
+
     # API → proxy to CMS
     location /api/ {
         proxy_pass http://127.0.0.1:3005;
