@@ -1,49 +1,43 @@
 export const prerender = false
 import type { APIRoute } from 'astro'
 
-interface ApplicationData {
-  name: string
-  email: string
-  businessName: string
-  industry: string
-  employees: string
-  revenue: string
-  bottleneck: string
-  referral?: string
-}
-
-const REQUIRED_FIELDS: (keyof ApplicationData)[] = [
-  'name',
-  'email',
-  'businessName',
-  'industry',
-  'employees',
-  'revenue',
-  'bottleneck',
-]
+const RECIPIENT = 'cgarlick94@gmail.com'
 
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+function formatFieldName(key: string): string {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[_-]/g, ' ')
+    .replace(/^\w/, (c) => c.toUpperCase())
+    .trim()
+}
+
+function buildHtmlTable(fields: Record<string, string>): string {
+  const rows = Object.entries(fields)
+    .map(
+      ([key, value]) =>
+        `<tr><td style="padding:4px 12px 4px 0;color:#888;vertical-align:top;">${formatFieldName(key)}</td><td>${value || '—'}</td></tr>`
+    )
+    .join('')
+  return `<table style="border-collapse:collapse;font-family:monospace;font-size:14px;">${rows}</table>`
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = (await request.json()) as ApplicationData
+    const body = (await request.json()) as Record<string, string>
 
-    // Validate required fields
-    const missing = REQUIRED_FIELDS.filter((f) => !body[f]?.trim())
-    if (missing.length > 0) {
+    if (!body || Object.keys(body).length === 0) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          error: `Missing required fields: ${missing.join(', ')}`,
-        }),
+        JSON.stringify({ success: false, error: 'Empty submission.' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
-    // Validate email format
-    if (!validateEmail(body.email)) {
+    // Validate email if provided
+    if (body.email && !validateEmail(body.email)) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid email address.' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -51,49 +45,53 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const resendKey = import.meta.env.RESEND_API_KEY
+    const emailFrom = import.meta.env.EMAIL_FROM || 'Chris Garlick <support@kritano.com>'
+
+    // Determine a subject line
+    const name = body.name || body.Name || 'Someone'
+    const businessName = body.businessName || body.business || ''
+    const formType = body._formType || (body.bottleneck ? 'application' : 'contact')
+    const subject =
+      formType === 'application' && businessName
+        ? `New application: ${businessName}`
+        : `New ${formType} from ${name}`
+
+    // Remove internal fields from display
+    const displayFields = { ...body }
+    delete displayFields._formType
 
     if (resendKey) {
-      // Send emails via Resend
       const { Resend } = await import('resend')
       const resend = new Resend(resendKey)
 
-      // Notification to Chris
+      // Send notification to you
       await resend.emails.send({
-        from: 'Chris Garlick <notifications@chrisgarlick.com>',
-        to: 'chris@chrisgarlick.com',
-        subject: `New application: ${body.businessName}`,
+        from: emailFrom,
+        to: RECIPIENT,
+        subject,
         html: `
-          <h2>New application from ${body.name}</h2>
-          <table style="border-collapse:collapse;font-family:monospace;font-size:14px;">
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Name</td><td>${body.name}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Email</td><td>${body.email}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Business</td><td>${body.businessName}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Industry</td><td>${body.industry}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Employees</td><td>${body.employees}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Revenue</td><td>${body.revenue}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;color:#888;">Referral</td><td>${body.referral || '—'}</td></tr>
-          </table>
-          <h3>Bottleneck</h3>
-          <p>${body.bottleneck}</p>
+          <h2>${subject}</h2>
+          ${buildHtmlTable(displayFields)}
         `,
       })
 
-      // Confirmation to applicant
-      await resend.emails.send({
-        from: 'Chris Garlick <chris@chrisgarlick.com>',
-        to: body.email,
-        subject: 'Application received',
-        html: `
-          <p>Hi ${body.name},</p>
-          <p>I have received your application. I review every submission personally and you will hear back within 2 working days.</p>
-          <p>Chris Garlick<br/>AI Workflow Partner<br/>chrisgarlick.com</p>
-        `,
-      })
+      // Send confirmation to submitter if they provided an email
+      if (body.email && validateEmail(body.email)) {
+        await resend.emails.send({
+          from: emailFrom,
+          to: body.email,
+          subject: formType === 'application' ? 'Application received' : 'Message received',
+          html: `
+            <p>Hi ${name},</p>
+            <p>Thank you for getting in touch. I review every submission personally and will get back to you within 2 working days.</p>
+            <p>Chris Garlick</p>
+          `,
+        })
+      }
     } else {
-      // Fallback: log to console
-      console.log('--- NEW APPLICATION ---')
+      console.log('--- FORM SUBMISSION ---')
       console.log(JSON.stringify(body, null, 2))
-      console.log('--- END APPLICATION ---')
+      console.log('--- END SUBMISSION ---')
     }
 
     return new Response(
@@ -101,7 +99,7 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     )
   } catch (err) {
-    console.error('Application submission error:', err)
+    console.error('Form submission error:', err)
     return new Response(
       JSON.stringify({ success: false, error: 'Internal server error.' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
