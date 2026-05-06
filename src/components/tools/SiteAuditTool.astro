@@ -79,6 +79,12 @@ const apiUrl = '/api'
       </div>
     </div>
   </div>
+
+  <!-- Recent audits -->
+  <div id="audit-recent" class="audit-recent">
+    <h3 class="audit-recent-title">Recent audits</h3>
+    <div id="audit-recent-list" class="audit-recent-list"></div>
+  </div>
 </div>
 
 <style>
@@ -345,6 +351,78 @@ const apiUrl = '/api'
     background-color: rgba(255, 255, 255, 0.9);
   }
 
+  /* Recent audits */
+  .audit-recent {
+    margin-top: 3rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 2rem;
+  }
+
+  .audit-recent-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .audit-recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .audit-recent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+  }
+
+  .audit-recent-domain {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .audit-recent-scores {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .audit-recent-score {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .audit-recent-score strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .audit-recent-time {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 640px) {
+    .audit-recent-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .audit-recent-scores {
+      gap: 0.75rem;
+    }
+  }
+
   .hidden {
     display: none !important;
   }
@@ -449,6 +527,56 @@ const apiUrl = '/api'
     } finally {
       submitBtn.disabled = false
       submitBtn.textContent = 'Run audit'
+      loadRecentAudits() // refresh after new audit
     }
   })
+
+  // Load recent audits
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return 'just now'
+    if (mins < 60) return mins + 'm ago'
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return hrs + 'h ago'
+    const days = Math.floor(hrs / 24)
+    return days + 'd ago'
+  }
+
+  function recentScoreColour(score) {
+    if (score >= 80) return '#2d7d46'
+    if (score >= 50) return '#c47f17'
+    return '#c0392b'
+  }
+
+  async function loadRecentAudits() {
+    const list = document.getElementById('audit-recent-list')
+    const container = document.getElementById('audit-recent')
+    if (!list || !container) return
+
+    try {
+      const res = await fetch(apiUrl + '/tools/audit/recent?limit=10')
+      if (!res.ok) { container.style.display = 'none'; return }
+
+      const { data } = await res.json()
+      if (!data || data.length === 0) { container.style.display = 'none'; return }
+
+      list.innerHTML = data.map(row => {
+        const s = typeof row.scores === 'string' ? JSON.parse(row.scores) : row.scores
+        return `<div class="audit-recent-row">
+          <span class="audit-recent-domain">${row.domain}</span>
+          <div class="audit-recent-scores">
+            ${s?.overall != null ? `<span class="audit-recent-score"><strong style="color:${recentScoreColour(s.overall)}">${s.overall}</strong> overall</span>` : ''}
+            ${s?.seo != null ? `<span class="audit-recent-score"><strong style="color:${recentScoreColour(s.seo)}">${s.seo}</strong> seo</span>` : ''}
+            ${s?.performance != null ? `<span class="audit-recent-score"><strong style="color:${recentScoreColour(s.performance)}">${s.performance}</strong> perf</span>` : ''}
+            <span class="audit-recent-time">${timeAgo(row.created_at)}</span>
+          </div>
+        </div>`
+      }).join('')
+    } catch {
+      container.style.display = 'none'
+    }
+  }
+
+  loadRecentAudits()
 </script>

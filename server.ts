@@ -239,7 +239,21 @@ app.post('/api/tools/audit', async (c) => {
   }
 })
 
-// Audit logs — protected, requires auth
+// Recent audits — public (no IPs or sensitive data)
+app.get('/api/tools/audit/recent', async (c) => {
+  const limit = Math.min(parseInt(c.req.query('limit') || '20', 10), 50)
+
+  const logs = await sql`
+    SELECT domain, scores, created_at
+    FROM audit_logs
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  `
+
+  return c.json({ data: logs })
+})
+
+// Audit logs — full data, requires auth
 app.get('/api/tools/audit/logs', async (c) => {
   const auth = c.req.header('authorization')
   if (!auth) return c.json({ error: 'Unauthorized' }, 401)
