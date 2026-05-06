@@ -3,7 +3,6 @@
 import { resolve, join } from 'node:path'
 import { existsSync } from 'node:fs'
 import { createServer, loadPlugins, syncDeclaredForms, getClient } from '@kritano/cms/core'
-import { Resend } from 'resend'
 
 // Load config from the project root
 const configPath = resolve(process.cwd(), 'cms.config')
@@ -38,48 +37,6 @@ sql`
     created_at timestamptz NOT NULL DEFAULT now()
   )
 `.catch((err: any) => console.warn(`[Audit] Table setup: ${err}`))
-
-// ---------------------------------------------------------------------------
-// Form submission → Resend email notification
-// Uses middleware so it runs before the CMS route handler
-// ---------------------------------------------------------------------------
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-app.use('/api/forms/:slug/submit', async (c, next) => {
-  if (c.req.method !== 'POST') return next()
-
-  // Clone the request body before the CMS handler consumes it
-  const cloned = c.req.raw.clone()
-  const body = await cloned.json() as Record<string, string>
-
-  const toEmail = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
-  const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
-
-  const fields = Object.entries(body)
-    .filter(([key]) => key !== '_hp')
-    .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
-    .join('')
-
-  const name = body.name || 'Unknown'
-  const slug = c.req.param('slug')
-
-  try {
-    await resend.emails.send({
-      from: fromEmail,
-      to: toEmail,
-      replyTo: body.email || undefined,
-      subject: `New ${slug} submission from ${name}`,
-      html: `<h2>New ${slug} form submission</h2>${fields}`,
-    })
-    console.log(`[Forms] Email sent to ${toEmail} for ${slug} submission`)
-  } catch (err: any) {
-    console.error('[Forms] Resend error:', err)
-  }
-
-  // Continue to CMS handler to store submission
-  await next()
-})
 
 // ---------------------------------------------------------------------------
 // Custom tool routes

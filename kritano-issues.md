@@ -135,6 +135,35 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 **Severity:** High (DX)
 **Description:** `cms migrate` only applies existing migration files — it does NOT generate new ones when the schema has changed. You have to know to run `cms migrate:create` first, then `cms migrate`. This is a confusing two-step process that looks like it worked (reports "no pending migrations") when the migration file simply doesn't exist yet. `cms migrate` should diff the schema against the database and auto-generate + apply any needed migrations in one step. The separate `migrate:create` command can remain for advanced use, but the default `migrate` should handle the common case.
 
+### 12. Email provider abstraction for form notifications
+**Severity:** High (architecture)
+**Description:** Form notification emails (`packages/core/src/lib/resend.ts`) are hardcoded to Resend. Not all CMS users will use Resend — some will need SMTP (nodemailer), SendGrid, Postmark, AWS SES, Mailgun, etc. The current implementation only works if the user has a Resend account and API key.
+**Suggested fix:** Introduce a pluggable email transport layer:
+- Define an `EmailTransport` interface with a `send()` method
+- Ship built-in transports: Resend, SMTP (via nodemailer), console/log (dev default)
+- Allow users to configure transport in `cms.config.ts`:
+  ```ts
+  email: {
+    transport: 'resend',  // or 'smtp', 'sendgrid', etc.
+    from: 'Name <noreply@example.com>',
+  }
+  ```
+- SMTP transport reads standard env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`)
+- Resend transport reads `RESEND_API_KEY` (as now)
+- Console transport (default when no provider configured) logs to stdout for local dev
+- Third-party transports via plugins for SendGrid, Postmark, SES, etc.
+- The `sendEmail()` function routes through whichever transport is configured — form submissions, password resets, and any future email features all use the same abstraction
+
+### 13. Submissions tab missing from form builder admin UI
+**Severity:** Medium
+**Description:** The form builder (`packages/admin/src/pages/forms/FormBuilder.tsx`) has no way to view submissions. All backend API routes already exist (`GET /admin/forms/:id/submissions`, `DELETE /admin/forms/:id/submissions/:subId`, `GET /admin/forms/:id/export`) — this is purely a frontend addition.
+**Suggested fix:** Add a "Submissions" tab to the form builder that:
+- Lists submissions in a table (first 4 fields + submitted date)
+- Supports pagination via the existing API
+- Allows deleting individual submissions
+- Includes CSV export button
+- Shows empty state when no submissions exist
+
 ---
 
 ## Questions for CMS Development
