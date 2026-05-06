@@ -41,19 +41,17 @@ sql`
 
 // ---------------------------------------------------------------------------
 // Form submission → Resend email notification
-// Intercepts all form submissions, sends email via Resend, then lets CMS store it
+// Uses middleware so it runs before the CMS route handler
 // ---------------------------------------------------------------------------
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-app.post('/api/forms/:slug/submit', async (c, next) => {
-  // Clone the request body before the CMS handler consumes it
-  const body = await c.req.json() as Record<string, string>
+app.use('/api/forms/:slug/submit', async (c, next) => {
+  if (c.req.method !== 'POST') return next()
 
-  // Rebuild the request so the CMS handler can still read it
-  c.req.raw = new Request(c.req.raw, {
-    body: JSON.stringify(body),
-  })
+  // Clone the request body before the CMS handler consumes it
+  const cloned = c.req.raw.clone()
+  const body = await cloned.json() as Record<string, string>
 
   const toEmail = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
   const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
