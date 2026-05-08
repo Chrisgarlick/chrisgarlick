@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import BlockRenderer from '../../components/BlockRenderer.astro'
+import { cms } from '../../lib/cms'
+
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug: 'services' } })
+} catch {}
+
+const title = page?.seo?.metaTitle || 'AI Services for Professional Service Firms | Chris Garlick'
+const description = page?.seo?.metaDescription || 'Custom AI systems for law firms, agencies, and accountancy practices. Audit, build, maintain. Fixed pricing, solo developer, UK-based.'
+const rawContent = page?.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'AI Implementation Services',
+  description,
+  url: 'https://chrisgarlick.com/services',
+  provider: {
+    '@type': 'Person',
+    name: 'Chris Garlick',
+    url: 'https://chrisgarlick.com/about',
+  },
+  areaServed: { '@type': 'Country', name: 'United Kingdom' },
+  serviceType: ['AI Implementation', 'Workflow Automation', 'Business Process Automation'],
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    ogImage="https://chrisgarlick.com/media/ed2cb887-b648-45a4-aab7-827f5ac94acf.webp"
+    jsonLd={jsonLd}
+  />
+
+  {contentBlocks.length > 0 ? (
+    <BlockRenderer blocks={contentBlocks} />
+  ) : (
+    <section class="flex min-h-[60vh] items-center justify-center pt-16">
+      <p class="text-text-secondary">Services page coming soon.</p>
+    </section>
+  )}
+</Base>

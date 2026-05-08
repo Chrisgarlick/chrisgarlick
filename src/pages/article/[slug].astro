@@ -34,24 +34,53 @@ const ogImage = doc.featured_image
   ? `https://chrisgarlick.com/media/${doc.featured_image}.webp`
   : undefined
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: doc.title,
-  description: doc.excerpt || '',
-  author: {
-    '@type': 'Person',
-    name: authorName,
-    url: 'https://chrisgarlick.com/about',
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: doc.title,
+    description: doc.excerpt || '',
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      url: 'https://chrisgarlick.com/about',
+    },
+    publisher: { '@type': 'Person', name: authorName },
+    ...(doc.publishedAt ? { datePublished: new Date(doc.publishedAt).toISOString() } : {}),
+    ...(doc.updatedAt || doc.publishedAt ? { dateModified: new Date(doc.updatedAt || doc.publishedAt).toISOString() } : {}),
+    ...(seoKeywords ? { keywords: seoKeywords } : {}),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://chrisgarlick.com/article/${slug}`,
+    },
   },
-  publisher: { '@type': 'Person', name: authorName },
-  ...(doc.publishedAt ? { datePublished: new Date(doc.publishedAt).toISOString() } : {}),
-  ...(doc.updatedAt || doc.publishedAt ? { dateModified: new Date(doc.updatedAt || doc.publishedAt).toISOString() } : {}),
-  ...(seoKeywords ? { keywords: seoKeywords } : {}),
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': `https://chrisgarlick.com/article/${slug}`,
-  },
+]
+
+// Extract FAQ pairs from TipTap body (H3 question followed by paragraph answer)
+const faqPairs: Array<{ question: string; answer: string }> = []
+const bodyContent = rawBody?.content || []
+for (let i = 0; i < bodyContent.length; i++) {
+  const node = bodyContent[i]
+  if (node.type === 'heading' && node.attrs?.level === 3 && node.content?.[0]?.text?.endsWith('?')) {
+    const question = node.content.map((c: any) => c.text || '').join('')
+    const nextNode = bodyContent[i + 1]
+    if (nextNode?.type === 'paragraph') {
+      const answer = nextNode.content?.map((c: any) => c.text || '').join('') || ''
+      if (answer) faqPairs.push({ question, answer })
+    }
+  }
+}
+
+if (faqPairs.length > 0) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqPairs.map(({ question, answer }) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer },
+    })),
+  })
 }
 ---
 
