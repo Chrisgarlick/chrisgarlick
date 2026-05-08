@@ -10,6 +10,7 @@
     "generate": "cms generate"
   },
   "dependencies": {
+    "@astrojs/node": "9.1.3",
     "@astrojs/sitemap": "^3.3.0",
     "@kritano/cms": "github:Kritano/Kritano-cms#main",
     "@kritano/cms-plugin-io": "github:Kritano/kritano-cms-io",
