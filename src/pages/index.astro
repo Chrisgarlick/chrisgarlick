@@ -13,8 +13,8 @@ try {
 } catch {}
 
 // SEO defaults (used if no CMS page exists yet)
-const title = page?.seo?.metaTitle || 'Chris Garlick — Software Developer | Audit. Build. Maintain.'
-const description = page?.seo?.metaDescription || 'I build software that replaces manual work for service businesses. Fixed-fee projects from £5k. Proprietary tooling. UK-based.'
+const title = page?.seo?.metaTitle || 'AI Implementation Partner UK | Audit. Build. Maintain. | Chris Garlick'
+const description = page?.seo?.metaDescription || 'I audit your operations, build AI systems that replace manual work, and maintain them monthly. Fixed pricing from £5k. Law firms, agencies, accountancies.'
 // CMS may return blocks as JSON string or parsed array
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
@@ -25,7 +25,7 @@ const jsonLd = [
     '@type': 'WebSite',
     name: 'Chris Garlick',
     url: 'https://chrisgarlick.com',
-    description: 'Software developer building systems for service businesses. Fixed-fee projects. UK-based.',
+    description: 'AI implementation partner for law firms, agencies, and accountancy practices. Audit, build, maintain. Fixed pricing from £5k. UK-based.',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://chrisgarlick.com/article?q={search_term_string}',
@@ -36,7 +36,7 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
     name: 'Chris Garlick',
-    description: 'Software developer building systems for service businesses.',
+    description: 'AI implementation partner for law firms, agencies, and accountancy practices. Audit, build, maintain.',
     url: 'https://chrisgarlick.com',
     founder: {
       '@type': 'Person',
@@ -60,6 +60,7 @@ const jsonLd = [
     slot="head"
     title={title}
     description={description}
+    ogImage="https://chrisgarlick.com/media/ed2cb887-b648-45a4-aab7-827f5ac94acf.webp"
     jsonLd={jsonLd}
   />
 

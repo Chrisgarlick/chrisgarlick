@@ -11,8 +11,8 @@ try {
   page = await client.collection('page').findOne({ where: { slug: 'about' } })
 } catch {}
 
-const title = page?.seo?.metaTitle || 'About Chris Garlick — Software Developer, UK'
-const description = page?.seo?.metaDescription || 'Software developer building systems for service businesses. Proprietary tools, transparent process, UK-based.'
+const title = page?.seo?.metaTitle || 'About Chris Garlick | Solo AI Developer for Professional Services'
+const description = page?.seo?.metaDescription || 'Solo AI developer building workflow automation for law firms, agencies, and accountancy practices. Proprietary tools, fixed pricing, no juniors on your project.'
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
@@ -35,6 +35,7 @@ const jsonLd = {
     slot="head"
     title={title}
     description={description}
+    ogImage="https://chrisgarlick.com/media/8c33143e-3e47-4a77-bf47-128f5c674a1f.webp"
     jsonLd={jsonLd}
   />
 

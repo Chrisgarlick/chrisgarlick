@@ -11,8 +11,8 @@ try {
   page = await client.collection('page').findOne({ where: { slug: 'contact' } })
 } catch {}
 
-const title = page?.seo?.metaTitle || 'Contact — Chris Garlick'
-const description = page?.seo?.metaDescription || 'Get in touch. Tell me about your business and I will get back to you within 2 working days.'
+const title = page?.seo?.metaTitle || 'Get in Touch | AI Implementation for Service Businesses | Chris Garlick'
+const description = page?.seo?.metaDescription || 'Tell me about your business and the manual work you want to eliminate. I work with law firms, agencies, and accountancies. Response within 2 working days.'
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 

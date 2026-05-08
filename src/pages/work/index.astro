@@ -21,14 +21,15 @@ const categories = ['All', 'Legal', 'Accountancy', 'Agency', 'Internal']
 <Base>
   <SEO
     slot="head"
-    title="Case Studies — AI Integration Projects | Chris Garlick"
-    description="Real AI integration projects for service businesses. Architecture shown. Outcomes measured. Transparent process from audit to delivery."
+    title="AI Case Studies | Law Firms, Agencies & Accountancies | Chris Garlick"
+    description="Real AI integration projects: document automation for law firms, reporting pipelines for agencies, onboarding systems for accountancies. Outcomes measured."
+    noindex={cases.length === 0}
     canonical="https://chrisgarlick.com/work"
     jsonLd={{
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'Case Studies',
-      description: 'Real AI integration projects for service businesses.',
+      description: 'Real AI integration projects: document automation for law firms, reporting pipelines for agencies, onboarding systems for accountancies.',
       url: 'https://chrisgarlick.com/work',
     }}
   />
