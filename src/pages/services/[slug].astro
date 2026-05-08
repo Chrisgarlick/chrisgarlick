@@ -4,18 +4,11 @@ import SEO from '../../components/SEO.astro'
 import BlockRenderer from '../../components/BlockRenderer.astro'
 import { cms } from '../../lib/cms'
 
-const SERVICE_SLUGS = [
-  'ai-implementation',
-  'ai-for-law-firms',
-  'ai-for-agencies',
-  'ai-for-accountancy-firms',
-]
-
 export async function getStaticPaths() {
+  const serviceSlugs = new Set(['ai-implementation', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms'])
   const client = cms()
   const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
   const pages = result?.data ?? []
-  const serviceSlugs = new Set(SERVICE_SLUGS)
   return pages.filter((p: any) => serviceSlugs.has(p.slug)).map((p: any) => ({ params: { slug: p.slug } }))
 }
 
