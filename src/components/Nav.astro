@@ -2,6 +2,16 @@
 const currentPath = Astro.url.pathname
 
 const links = [
+  {
+    href: '/services',
+    label: 'Services',
+    children: [
+      { href: '/services/ai-implementation', label: 'AI Implementation' },
+      { href: '/services/ai-for-law-firms', label: 'AI for Law Firms' },
+      { href: '/services/ai-for-agencies', label: 'AI for Agencies' },
+      { href: '/services/ai-for-accountancy-firms', label: 'AI for Accountancy Firms' },
+    ],
+  },
   { href: '/work', label: 'Work' },
   { href: '/tools', label: 'Tools' },
   { href: '/article', label: 'Articles' },
@@ -28,15 +38,43 @@ const links = [
 
     <!-- Desktop nav -->
     <div class="hidden items-center gap-7 md:flex">
-      {links.map(({ href, label }) => (
-        <a
-          href={href}
-          class={`nav-link font-body text-[13px] tracking-wide uppercase no-underline transition-colors duration-150 ${
-            currentPath.startsWith(href) ? 'text-text-primary active' : 'text-text-secondary hover:text-text-primary'
-          }`}
-        >
-          {label}
-        </a>
+      {links.map(({ href, label, children }) => (
+        children ? (
+          <div class="nav-dropdown relative">
+            <a
+              href={href}
+              class={`nav-link font-body text-[13px] tracking-wide uppercase no-underline transition-colors duration-150 ${
+                currentPath.startsWith(href) ? 'text-text-primary active' : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              {label}
+              <svg class="ml-1 inline-block w-3 h-3 opacity-50" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+            </a>
+            <div class="nav-dropdown-menu absolute left-0 top-full pt-2 hidden">
+              <div class="min-w-[220px] border border-border bg-bg-surface py-2 shadow-lg" style="border-radius: 3px;">
+                {children.map((child) => (
+                  <a
+                    href={child.href}
+                    class={`block px-4 py-2 font-body text-[12px] tracking-wide no-underline transition-colors duration-150 ${
+                      currentPath === child.href ? 'text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-bg-muted'
+                    }`}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <a
+            href={href}
+            class={`nav-link font-body text-[13px] tracking-wide uppercase no-underline transition-colors duration-150 ${
+              currentPath.startsWith(href) ? 'text-text-primary active' : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            {label}
+          </a>
+        )
       ))}
       <a
         href="/contact"
@@ -85,15 +123,31 @@ const links = [
     </button>
 
     <div class="flex flex-col gap-5">
-      {links.map(({ href, label }) => (
-        <a
-          href={href}
-          class={`font-body text-base uppercase tracking-wider no-underline ${
-            currentPath.startsWith(href) ? 'text-accent' : 'text-text-secondary hover:text-text-primary'
-          }`}
-        >
-          {label}
-        </a>
+      {links.map(({ href, label, children }) => (
+        <div>
+          <a
+            href={href}
+            class={`font-body text-base uppercase tracking-wider no-underline ${
+              currentPath.startsWith(href) ? 'text-accent' : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            {label}
+          </a>
+          {children && (
+            <div class="mt-2 ml-4 flex flex-col gap-2">
+              {children.map((child) => (
+                <a
+                  href={child.href}
+                  class={`font-body text-[13px] tracking-wide no-underline ${
+                    currentPath === child.href ? 'text-accent' : 'text-text-tertiary hover:text-text-primary'
+                  }`}
+                >
+                  {child.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
       ))}
     </div>
 
@@ -131,4 +185,13 @@ const links = [
   close?.addEventListener('click', closeDrawer)
   overlay?.addEventListener('click', closeDrawer)
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer() })
+
+  // Desktop dropdown hover
+  document.querySelectorAll('.nav-dropdown').forEach((el) => {
+    const menu = el.querySelector('.nav-dropdown-menu')
+    if (!menu) return
+    let timeout: ReturnType<typeof setTimeout>
+    el.addEventListener('mouseenter', () => { clearTimeout(timeout); menu.classList.remove('hidden') })
+    el.addEventListener('mouseleave', () => { timeout = setTimeout(() => menu.classList.add('hidden'), 150) })
+  })
 </script>
