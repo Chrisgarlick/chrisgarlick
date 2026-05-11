@@ -13,6 +13,10 @@ try {
 
 const title = page?.seo?.metaTitle || 'AI Services for Professional Service Firms | Chris Garlick'
 const description = page?.seo?.metaDescription || 'Custom AI systems for law firms, agencies, and accountancy practices. Audit, build, maintain. Fixed pricing, solo developer, UK-based.'
+const seoKeywords = [
+  page?.seo?.focusKeyword,
+  ...(page?.seo?.secondaryKeywords ? page.seo.secondaryKeywords.split(',').map((k: string) => k.trim()) : []),
+].filter(Boolean).join(', ') || undefined
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
@@ -37,6 +41,7 @@ const jsonLd = {
     slot="head"
     title={title}
     description={description}
+    keywords={seoKeywords}
     ogImage="https://chrisgarlick.com/media/ed2cb887-b648-45a4-aab7-827f5ac94acf.webp"
     jsonLd={jsonLd}
   />
