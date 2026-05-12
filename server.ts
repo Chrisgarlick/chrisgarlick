@@ -444,7 +444,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const TYPESET_API_URL = process.env.TYPESET_API_URL || 'https://typeset.chrisgarlick.com'
 const TYPESET_API_KEY = process.env.TYPESET_API_KEY
-const TYPESET_CLIENT_SLUG = process.env.TYPESET_CLIENT_SLUG || null
 const TYPESET_CACHE_DIR = resolve(import.meta.dir, '.cache/typeset')
 try { mkdirSync(TYPESET_CACHE_DIR, { recursive: true }) } catch { /* ignore */ }
 
@@ -469,14 +468,13 @@ async function renderViaTypeset(opts: {
     return { ok: true, bytes: await cached.arrayBuffer() }
   }
 
-  // markdown carries its own YAML frontmatter — typeset reads title/author/date/etc. from there.
-  // No `overrides` block: frontmatter is the source of truth.
+  // markdown carries its own YAML frontmatter — typeset reads title/author/date/client/etc. from there.
+  // No `overrides`, no top-level `client`: frontmatter inside the content is the source of truth.
   const body: Record<string, unknown> = {
     document_type: 'general',
     format: opts.format,
     content: opts.markdown,
   }
-  if (TYPESET_CLIENT_SLUG) body.client = TYPESET_CLIENT_SLUG
 
   let res: Response
   try {
