@@ -45,8 +45,10 @@ async function createResource(data) {
     // PATCH any fields that have changed in the seed since last run. API returns snake_case,
     // we send camelCase — keep both in sync below.
     const patch = {}
-    if (data.markdownBody  !== undefined && existing.markdown_body  !== data.markdownBody)  patch.markdownBody  = data.markdownBody
-    if (data.typesetClient !== undefined && existing.typeset_client !== data.typesetClient) patch.typesetClient = data.typesetClient
+    if (data.markdownBody       !== undefined && existing.markdown_body      !== data.markdownBody)       patch.markdownBody      = data.markdownBody
+    if (data.typesetClient      !== undefined && existing.typeset_client     !== data.typesetClient)      patch.typesetClient     = data.typesetClient
+    if (data.keywords           !== undefined && existing.keywords           !== data.keywords)           patch.keywords           = data.keywords
+    if (data.secondaryKeywords  !== undefined && existing.secondary_keywords !== data.secondaryKeywords)  patch.secondaryKeywords  = data.secondaryKeywords
     if (Object.keys(patch).length > 0) {
       const patchRes = await fetch(`${BASE}/resource/${existing.id}`, {
         method: 'PATCH',
@@ -98,6 +100,8 @@ await createResource({
   ),
   markdownBody: promptLibraryMd || '',
   typesetClient: 'chris_garlick_dark',
+  keywords: 'ai prompt library, chatgpt prompts for law firms, ai prompts for accountants, ai prompts for agencies, professional services ai prompts',
+  secondaryKeywords: 'prompt engineering, business prompt templates, client communication prompts, document drafting ai, meeting notes ai, contract review prompts, inbox triage ai, status update email prompts, file note ai, proposal writing ai, uk legal ai prompts',
   sector: 'All',
   tier: '2',
   funnelStage: 'TOFU',

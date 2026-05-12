@@ -22,20 +22,54 @@ if (!resource) return Astro.redirect('/404')
 const rawBody = typeof resource.description === 'string' ? JSON.parse(resource.description) : resource.description
 const bodyHtml = rawBody?.html || tiptapToHtml(rawBody)
 
-const seoTitle = resource.seo?.metaTitle || `${resource.title} — Free Download | Chris Garlick`
-const seoDesc  = resource.seo?.metaDescription || resource.summary?.slice(0, 155) || ''
-
 const sectorLabel = resource.sector && resource.sector !== 'All' ? resource.sector : null
 const hasDocx = resource.hasDocx === 'yes'
 
-const jsonLd = {
+// ── SEO: prefer the CMS `seo` block when populated, fall back to derived. ─────
+const seo = resource.seo || {}
+
+const seoTitle       = seo.metaTitle       || `${resource.title} — Free Download | Chris Garlick`
+const seoDescription = seo.metaDescription || resource.summary?.slice(0, 155) || ''
+const ogTitle        = seo.ogTitle         || undefined
+const ogDescription  = seo.ogDescription   || undefined
+const ogImage        = seo.ogImage         || resource.coverImage?.url || undefined
+const canonical      = seo.canonicalUrl    || `https://chrisgarlick.com/resources/${slug}`
+
+// Combine primary + secondary keywords into one comma-separated list.
+const keywordsCombined = [resource.keywords, resource.secondaryKeywords]
+  .filter(Boolean).join(', ').replace(/,\s*,/g, ',').trim() || undefined
+
+const publishedTime = resource.published_at || resource.publishedAt || resource.created_at || resource.createdAt
+const modifiedTime  = resource.updated_at   || resource.updatedAt
+const articleSection = sectorLabel || 'Resources'
+
+const breadcrumbs = [
+  { name: 'Home',      url: '/' },
+  { name: 'Resources', url: '/resources' },
+  { name: resource.title, url: `/resources/${slug}` },
+]
+
+// Primary structured-data object — describes the downloadable resource.
+const digitalDocumentLd = {
   '@context': 'https://schema.org',
   '@type': 'DigitalDocument',
   name: resource.title,
-  description: resource.summary || '',
-  author: { '@type': 'Person', name: 'Chris Garlick' },
+  headline: resource.title,
+  description: resource.summary || seoDescription,
+  url: canonical,
   inLanguage: 'en-GB',
   isAccessibleForFree: true,
+  author: { '@type': 'Person', name: 'Chris Garlick', url: 'https://chrisgarlick.com/about' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Chris Garlick',
+    url: 'https://chrisgarlick.com',
+  },
+  ...(ogImage   ? { image: ogImage } : {}),
+  ...(keywordsCombined ? { keywords: keywordsCombined } : {}),
+  ...(publishedTime ? { datePublished: publishedTime } : {}),
+  ...(modifiedTime  ? { dateModified:  modifiedTime  } : {}),
+  ...(sectorLabel   ? { audience: { '@type': 'Audience', audienceType: sectorLabel } } : {}),
 }
 ---
 
@@ -43,9 +77,19 @@ const jsonLd = {
   <SEO
     slot="head"
     title={seoTitle}
-    description={seoDesc}
-    canonical={`https://chrisgarlick.com/resources/${slug}`}
-    jsonLd={jsonLd}
+    description={seoDescription}
+    canonical={canonical}
+    ogTitle={ogTitle}
+    ogDescription={ogDescription}
+    ogImage={ogImage}
+    ogType="article"
+    keywords={keywordsCombined}
+    author="Chris Garlick"
+    publishedTime={publishedTime}
+    modifiedTime={modifiedTime}
+    section={articleSection}
+    breadcrumbs={breadcrumbs}
+    jsonLd={digitalDocumentLd}
   />
 
   <article class="py-20 md:py-24">
@@ -86,17 +130,14 @@ const jsonLd = {
 
 <script>
   // If the cg_lead_flag cookie is present, the visitor has already gated on this device.
-  // Hide the email form and reveal the format picker directly.
   function hasLeadFlag(): boolean {
     return document.cookie.split(';').some((c) => c.trim().startsWith('cg_lead_flag='))
   }
-
   if (hasLeadFlag()) {
     document.getElementById('gate-container')?.classList.add('hidden')
     document.getElementById('picker-container')?.classList.remove('hidden')
   }
 
-  // GTM event
   ;(window as any).dataLayer = (window as any).dataLayer || []
   ;(window as any).dataLayer.push({
     event: 'resource_view',

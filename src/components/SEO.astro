@@ -1,13 +1,26 @@
 ---
+interface Breadcrumb { name: string; url: string }
+
 interface Props {
   title: string
   description: string
   canonical?: string
   ogType?: string
   ogImage?: string
+  ogTitle?: string
+  ogDescription?: string
+  twitterImage?: string
+  twitterTitle?: string
+  twitterDescription?: string
+  twitterCard?: 'summary' | 'summary_large_image'
+  twitterSite?: string
   publishedTime?: string
+  modifiedTime?: string
+  author?: string
+  section?: string
   keywords?: string
   noindex?: boolean
+  breadcrumbs?: Breadcrumb[]
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
 }
 
@@ -17,9 +30,20 @@ const {
   canonical,
   ogType = 'website',
   ogImage: ogImageProp,
+  ogTitle,
+  ogDescription,
+  twitterImage,
+  twitterTitle,
+  twitterDescription,
+  twitterCard = 'summary_large_image',
+  twitterSite,
   publishedTime,
+  modifiedTime,
+  author,
+  section,
   keywords,
   noindex = false,
+  breadcrumbs,
   jsonLd,
 } = Astro.props
 
@@ -27,18 +51,43 @@ const siteUrl = 'https://chrisgarlick.com'
 const currentPath = Astro.url.pathname
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`
 const ogImage = ogImageProp || `${siteUrl}/og${currentPath === '/' ? '/home' : currentPath}.png`
+
+// Twitter falls back to OG so authors don't have to duplicate.
+const twImage = twitterImage || ogImage
+const twTitle = twitterTitle || ogTitle || title
+const twDesc  = twitterDescription || ogDescription || description
+
+// BreadcrumbList JSON-LD is emitted alongside whatever else the caller passes in jsonLd.
+const breadcrumbsLd = breadcrumbs && breadcrumbs.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((b, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: b.name,
+        item: b.url.startsWith('http') ? b.url : `${siteUrl}${b.url}`,
+      })),
+    }
+  : null
+
+const allJsonLd: Record<string, unknown>[] = [
+  ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
+  ...(breadcrumbsLd ? [breadcrumbsLd] : []),
+]
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
-<meta name="author" content="Chris Garlick" />
+<meta name="author" content={author || 'Chris Garlick'} />
 {noindex && <meta name="robots" content="noindex, follow" />}
+{!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
 {keywords && <meta name="keywords" content={keywords} />}
 <link rel="canonical" href={canonicalUrl} />
 
 <!-- Open Graph -->
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
+<meta property="og:title" content={ogTitle || title} />
+<meta property="og:description" content={ogDescription || description} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:type" content={ogType} />
 <meta property="og:image" content={ogImage} />
@@ -46,19 +95,22 @@ const ogImage = ogImageProp || `${siteUrl}/og${currentPath === '/' ? '/home' : c
 <meta property="og:site_name" content="Chris Garlick" />
 
 <!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:title" content={twTitle} />
+<meta name="twitter:description" content={twDesc} />
+<meta name="twitter:image" content={twImage} />
+{twitterSite && <meta name="twitter:site" content={twitterSite} />}
+{author && <meta name="twitter:creator" content={author} />}
 
 {publishedTime && (
   <>
     <meta property="article:published_time" content={publishedTime} />
-    <meta property="article:author" content="Chris Garlick" />
+    <meta property="article:author" content={author || 'Chris Garlick'} />
   </>
 )}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{section && <meta property="article:section" content={section} />}
 
-{jsonLd && Array.isArray(jsonLd) ? (
-  jsonLd.map((item) => (
-    <script type="application/ld+json" set:html={JSON.stringify(item)} />
-  ))
-) : jsonLd ? (
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-) : null}
+{allJsonLd.map((item) => (
+  <script type="application/ld+json" set:html={JSON.stringify(item)} />
+))}

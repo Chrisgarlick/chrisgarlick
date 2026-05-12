@@ -22,16 +22,37 @@ const sectors = ['All', 'Legal', 'Accountancy', 'Agency']
   <SEO
     slot="head"
     title="Free AI Resources for Law Firms, Accountancies & Agencies | Chris Garlick"
-    description="Free downloadable guides, scorecards, calculators and templates to help UK professional services firms implement AI without the hype."
-    keywords="ai resources, ai for law firms, ai for accountancy, ai for agencies, ai readiness, ai compliance checklist, prompt library, ai roi calculator"
+    description="Free downloadable guides, scorecards, calculators and templates to help UK professional services firms implement AI without the hype. PDF, DOCX and Markdown."
+    keywords="ai resources, ai for law firms, ai for accountancy, ai for agencies, ai readiness scorecard, ai compliance checklist, ai prompt library, ai roi calculator, ai implementation guides, free ai downloads uk, professional services automation"
     canonical="https://chrisgarlick.com/resources"
-    jsonLd={{
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Free Resources',
-      description: 'Free downloadable resources for UK professional services firms implementing AI.',
-      url: 'https://chrisgarlick.com/resources',
-    }}
+    author="Chris Garlick"
+    breadcrumbs={[
+      { name: 'Home',      url: '/' },
+      { name: 'Resources', url: '/resources' },
+    ]}
+    jsonLd={[
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Free AI Resources for Professional Services',
+        description: 'Free downloadable resources for UK professional services firms implementing AI.',
+        url: 'https://chrisgarlick.com/resources',
+        inLanguage: 'en-GB',
+        isPartOf: { '@type': 'WebSite', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+        publisher: { '@type': 'Organization', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Free AI Resources',
+        itemListElement: resources.map((r, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: r.title,
+          url: `https://chrisgarlick.com/resources/${r.slug}`,
+        })),
+      },
+    ]}
   />
 
   <section class="py-20 md:py-24">
