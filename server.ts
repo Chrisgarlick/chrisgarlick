@@ -455,7 +455,6 @@ const TYPESET_MIME: Record<string, string> = {
 
 async function renderViaTypeset(opts: {
   slug: string
-  title: string
   markdown: string
   format: 'pdf' | 'docx'
 }): Promise<{ ok: true; bytes: ArrayBuffer } | { ok: false; status: number; error: string }> {
@@ -463,22 +462,19 @@ async function renderViaTypeset(opts: {
     return { ok: false, status: 503, error: 'PDF/DOCX rendering is not configured.' }
   }
 
-  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${opts.title}|${opts.markdown}`).digest('hex').slice(0, 16)
+  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${opts.markdown}`).digest('hex').slice(0, 16)
   const cachePath = join(TYPESET_CACHE_DIR, `${opts.slug}-${opts.format}-${hash}.${opts.format}`)
   const cached = Bun.file(cachePath)
   if (await cached.exists()) {
     return { ok: true, bytes: await cached.arrayBuffer() }
   }
 
+  // markdown carries its own YAML frontmatter — typeset reads title/author/date/etc. from there.
+  // No `overrides` block: frontmatter is the source of truth.
   const body: Record<string, unknown> = {
     document_type: 'general',
     format: opts.format,
     content: opts.markdown,
-    overrides: {
-      title: opts.title,
-      author: 'Chris Garlick',
-      date: new Date().toISOString().slice(0, 10),
-    },
   }
   if (TYPESET_CLIENT_SLUG) body.client = TYPESET_CLIENT_SLUG
 
@@ -679,16 +675,11 @@ app.get('/api/resources/:slug/download', async (c) => {
     // Otherwise fall through to typeset render
   }
 
-  // Look up resource for title + markdown body
-  let title = slug
+  // Look up the markdown body — frontmatter inside it carries title/author/date for typeset
   let markdown: string | null = null
   try {
-    const rows = await sql`SELECT title, markdown_body FROM resources WHERE slug = ${slug} LIMIT 1`
-    if (rows.length > 0) {
-      const row = rows[0] as any
-      title = row.title || slug
-      markdown = row.markdown_body || null
-    }
+    const rows = await sql`SELECT markdown_body FROM resources WHERE slug = ${slug} LIMIT 1`
+    if (rows.length > 0) markdown = (rows[0] as any).markdown_body || null
   } catch (err: any) {
     console.error('[Resources] Resource lookup failed:', err)
   }
@@ -710,7 +701,7 @@ app.get('/api/resources/:slug/download', async (c) => {
   }
 
   // pdf | docx via typeset
-  const rendered = await renderViaTypeset({ slug, title, markdown, format: format as 'pdf' | 'docx' })
+  const rendered = await renderViaTypeset({ slug, markdown, format: format as 'pdf' | 'docx' })
   if (!rendered.ok) {
     return c.json({ error: rendered.error }, rendered.status as any)
   }

@@ -43,7 +43,18 @@ async function findBySlug(slug) {
 async function createResource(data) {
   const existing = await findBySlug(data.slug)
   if (existing) {
-    console.log(`Skip: ${data.title} (already exists, ${existing.id})`)
+    // Update markdownBody (the most likely change between seed runs); leave other fields intact.
+    if (data.markdownBody && existing.markdownBody !== data.markdownBody) {
+      const patchRes = await fetch(`${BASE}/resource/${existing.id}`, {
+        method: 'PATCH',
+        headers: auth,
+        body: JSON.stringify({ markdownBody: data.markdownBody }),
+      })
+      if (patchRes.ok) console.log(`Updated markdownBody: ${data.title} (${existing.id})`)
+      else console.error(`  Update failed:`, patchRes.status, await patchRes.text())
+    } else {
+      console.log(`Skip: ${data.title} (already exists, ${existing.id})`)
+    }
     return existing.id
   }
 

@@ -1,4 +1,10 @@
-# The Prompt Library for Professional Services
+---
+title: The Prompt Library for Professional Services
+subtitle: Copy-paste prompts for law firms, accountancies and agencies
+author: Chris Garlick
+date: 2026-05-12
+document_type: brief
+---
 
 A working set of copy-paste prompts for law firms, accountancies and agencies.
 Every prompt has been used in real client work. Adapt the bracketed
