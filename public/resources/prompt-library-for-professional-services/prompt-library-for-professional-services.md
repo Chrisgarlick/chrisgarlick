@@ -12,6 +12,29 @@ A working set of copy-paste prompts for law firms, accountancies and agencies.
 Every prompt has been used in real client work. Adapt the bracketed
 variables to your situation.
 
+**Inside this document**
+
+*Client communication*
+
+- First-touch reply to an inbound enquiry
+- Status update to a client mid-matter
+- Difficult-message draft
+
+*Document and drafting*
+
+- First-pass document review
+- Extract key terms from a contract
+- Convert handwritten notes to a structured file note
+
+*Internal operations*
+
+- Weekly team standup digest
+- Triage an inbox
+- Turn a Loom or transcript into action items
+- Draft a proposal section from a discovery call
+
+A four-part framework for adapting any prompt to your firm comes first.
+
 ---
 
 ## How to adapt a prompt

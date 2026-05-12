@@ -1,0 +1,38 @@
+slug: "chris_garlick_dark"
+name: "Chris Garlick Dark"
+
+# Body pages — warm cream paper with dark readable text and rust accents.
+# Mirrors the site's light mode (FAF8F5 background, 1A1715 text, B5522F accent).
+colour_primary: "#B5522F"      # H1 headings + body-page accents → brand rust
+colour_secondary: "#9E4828"    # H2 headings → darker rust (brand accent-hover)
+colour_accent: "#B5522F"       # Accent rules, list bullets, links → brand rust
+colour_text: "#1A1715"         # Body text → brand warm dark (readable on cream)
+colour_background: "#FAF8F5"   # Body page bg → brand warm cream
+colour_table_header: "#F3F0EB" # Brand bg-muted
+colour_table_border: "#E8E4DE" # Brand border
+colour_callout_bg: "#FDF0EC"   # Brand accent-light (very pale rust)
+
+# Cover page — full-bleed warm black with rust title/subtitle/metadata.
+cover_enabled: true
+cover_template: bold           # "bold" fills cover_bg_colour as full-bleed; "minimal" does not
+cover_bg_colour: "#1A1715"     # Brand warm dark (not pure black — keeps the warmth)
+cover_text_colour: "#B5522F"   # Brand rust — orange/gold-leaning, high contrast on dark
+
+# Typography
+font_heading: "Instrument Serif"
+font_body: "IBM Plex Mono"
+font_mono: "IBM Plex Mono"
+font_size_base: 11
+font_size_h1: 28
+font_size_h2: 18
+font_size_h3: 13
+line_height: 1.65
+
+# Page
+page_size: A4
+margin_top: 26
+margin_bottom: 26
+margin_left: 26
+margin_right: 26
+header_enabled: true
+footer_enabled: true

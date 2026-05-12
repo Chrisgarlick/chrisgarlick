@@ -25,7 +25,6 @@ async function loadMarkdown(slug) {
 }
 
 function t(text) { return { type: 'text', text } }
-function bold(text) { return { type: 'text', text, marks: [{ type: 'bold' }] } }
 function p(content) { return { type: 'paragraph', content: Array.isArray(content) ? content : [t(content)] } }
 function h2(text) { return { type: 'heading', attrs: { level: 2 }, content: [t(text)] } }
 function li(text) { return { type: 'listItem', content: [p(text)] } }
@@ -98,7 +97,7 @@ await createResource({
     p('Solicitors, accountants and agency leads who already use ChatGPT or Claude but want sharper, repeatable prompts that produce usable output the first time.'),
   ),
   markdownBody: promptLibraryMd || '',
-  typesetClient: 'chris-garlick-dark',
+  typesetClient: 'chris_garlick_dark',
   sector: 'All',
   tier: '2',
   funnelStage: 'TOFU',
