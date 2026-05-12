@@ -1,0 +1,70 @@
+---
+import Base from '../../../layouts/Base.astro'
+import SEO from '../../../components/SEO.astro'
+import FormatPicker from '../../../components/FormatPicker.astro'
+import CTASection from '../../../components/CTASection.astro'
+import { cms } from '../../../lib/cms'
+
+export async function getStaticPaths() {
+  const client = cms()
+  const result = await client.collection('resource').findMany({ where: { status: 'published' }, limit: 500 })
+  const resources = result?.data ?? []
+  return resources.map((r: any) => ({ params: { slug: r.slug } }))
+}
+
+const { slug } = Astro.params
+const client = cms()
+
+const resource = await client.collection('resource').findOne({ where: { slug } })
+if (!resource) return Astro.redirect('/404')
+
+const hasDocx = resource.hasDocx === 'yes'
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={`Download: ${resource.title} | Chris Garlick`}
+    description="Your resource is ready. Pick a format to download."
+    canonical={`https://chrisgarlick.com/resources/${slug}/thanks`}
+    noindex={true}
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[720px] px-5 md:px-8">
+      <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-accent">You&rsquo;re in</p>
+      <h1 class="mb-4 font-display text-[36px] text-text-primary md:text-[48px]">{resource.title}</h1>
+      <p class="mb-12 max-w-[560px] text-[15px] leading-[1.75] text-text-secondary">
+        Your download is ready. Pick a format below &mdash; we&rsquo;ve also emailed a copy of this link so you can come back to it.
+      </p>
+
+      <div class="border border-border bg-bg-surface p-7 md:p-8" style="border-radius: 3px;">
+        <!-- Token is read from ?t= at runtime and used as the auth for the download endpoint.
+             FormatPicker renders without it server-side; client script rewrites the hrefs to include t=. -->
+        <FormatPicker slug={slug} hasDocx={hasDocx} />
+      </div>
+
+      <p class="mt-8 font-body text-[12px] uppercase tracking-widest text-text-tertiary">
+        <a href={`/resources/${slug}`} class="text-text-tertiary no-underline hover:text-text-secondary">&larr; Back to the resource</a>
+      </p>
+    </div>
+  </section>
+
+  <CTASection />
+</Base>
+
+<script>
+  // Read ?t=<token> from the URL and inject it into each format-picker link so the
+  // download endpoint can authorise without relying on the cookie (works for users
+  // who clicked the magic link on a new device).
+  const params = new URLSearchParams(window.location.search)
+  const token = params.get('t')
+  if (token) {
+    document.querySelectorAll('[data-format-picker] a[data-format]').forEach((el) => {
+      const a = el as HTMLAnchorElement
+      const url = new URL(a.href, window.location.origin)
+      url.searchParams.set('t', token)
+      a.href = url.toString()
+    })
+  }
+</script>

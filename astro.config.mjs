@@ -13,7 +13,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) =>
-        !page.includes('/admin') && !page.includes('/api/'),
+        !page.includes('/admin') && !page.includes('/api/') && !page.endsWith('/thanks'),
     }),
   ],
   trailingSlash: 'never',

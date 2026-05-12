@@ -1,0 +1,68 @@
+---
+interface Props {
+  slug: string
+  /** Reserved for hand-authored DOCX overrides; typeset renders DOCX from any markdown so the button always shows. */
+  hasDocx?: boolean
+  token?: string | null
+}
+const { slug, token = null } = Astro.props
+
+const qs = token ? `?t=${encodeURIComponent(token)}` : ''
+const fmtUrl = (fmt: string) => `/api/resources/${slug}/download${qs ? qs + '&' : '?'}format=${fmt}`
+---
+
+<div data-format-picker data-slug={slug}>
+  <p class="mb-2 font-body text-xs font-medium uppercase tracking-widest text-accent">You&rsquo;re in</p>
+  <h2 class="mb-4 font-display text-[1.5rem] text-text-primary">Pick a format</h2>
+  <p class="mb-6 text-[14px] leading-relaxed text-text-secondary">
+    Markdown is the source. PDF and DOCX are branded renders. HTML is coming soon.
+  </p>
+
+  <div class="flex flex-wrap gap-3">
+    <a
+      href={fmtUrl('pdf')}
+      data-format="pdf"
+      class="inline-block border border-accent bg-accent px-5 py-2.5 font-body text-[13px] font-medium uppercase tracking-wider text-white no-underline transition-all duration-150 hover:bg-accent-hover hover:border-accent-hover"
+      style="border-radius: 3px;"
+    >
+      PDF &darr;
+    </a>
+    <a
+      href={fmtUrl('docx')}
+      data-format="docx"
+      class="inline-block border border-border bg-bg-surface px-5 py-2.5 font-body text-[13px] font-medium uppercase tracking-wider text-text-primary no-underline transition-all duration-150 hover:border-border-hover"
+      style="border-radius: 3px;"
+    >
+      DOCX &darr;
+    </a>
+    <a
+      href={fmtUrl('md')}
+      data-format="md"
+      class="inline-block border border-border bg-bg-surface px-5 py-2.5 font-body text-[13px] font-medium uppercase tracking-wider text-text-primary no-underline transition-all duration-150 hover:border-border-hover"
+      style="border-radius: 3px;"
+    >
+      Markdown &darr;
+    </a>
+    <button
+      type="button"
+      data-format="html"
+      disabled
+      class="inline-block border border-border bg-bg-muted px-5 py-2.5 font-body text-[13px] font-medium uppercase tracking-wider text-text-tertiary cursor-not-allowed"
+      style="border-radius: 3px;"
+      title="HTML rendering coming soon"
+    >
+      HTML (soon)
+    </button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('[data-format-picker] a[data-format]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const slug = el.closest('[data-format-picker]')?.getAttribute('data-slug')
+      const fmt = el.getAttribute('data-format')
+      ;(window as any).dataLayer = (window as any).dataLayer || []
+      ;(window as any).dataLayer.push({ event: 'resource_download', resource_slug: slug, format: fmt })
+    })
+  })
+</script>

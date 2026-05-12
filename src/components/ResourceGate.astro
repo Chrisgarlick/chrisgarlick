@@ -1,0 +1,158 @@
+---
+interface Props {
+  slug: string
+  title: string
+}
+const { slug, title } = Astro.props
+---
+
+<div id="resource-gate" data-slug={slug} class="border border-border bg-bg-surface p-7 md:p-8" style="border-radius: 3px;">
+  <p class="mb-2 font-body text-xs font-medium uppercase tracking-widest text-accent">Get the download</p>
+  <h2 class="mb-4 font-display text-[1.5rem] text-text-primary">Enter your email to download</h2>
+  <p class="mb-6 text-[14px] leading-relaxed text-text-secondary">
+    We&rsquo;ll send you a copy of <strong class="text-text-primary">{title}</strong> &mdash; choose PDF, DOCX or markdown after you submit.
+  </p>
+
+  <form id="resource-form" class="space-y-4" novalidate>
+    <input type="hidden" name="slug" value={slug} />
+    <input type="text" name="_hp" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true" />
+
+    <div>
+      <label for="rg-email" class="mb-1.5 block font-body text-[12px] font-medium uppercase tracking-widest text-text-secondary">Email *</label>
+      <input
+        type="email"
+        id="rg-email"
+        name="email"
+        required
+        autocomplete="email"
+        class="w-full border border-border bg-bg-surface px-3.5 py-2.5 font-body text-[14px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+        style="border-radius: 3px;"
+        placeholder="you@firm.co.uk"
+      />
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div>
+        <label for="rg-firstName" class="mb-1.5 block font-body text-[12px] font-medium uppercase tracking-widest text-text-secondary">First name</label>
+        <input
+          type="text"
+          id="rg-firstName"
+          name="firstName"
+          autocomplete="given-name"
+          class="w-full border border-border bg-bg-surface px-3.5 py-2.5 font-body text-[14px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+          style="border-radius: 3px;"
+        />
+      </div>
+      <div>
+        <label for="rg-company" class="mb-1.5 block font-body text-[12px] font-medium uppercase tracking-widest text-text-secondary">Company</label>
+        <input
+          type="text"
+          id="rg-company"
+          name="company"
+          autocomplete="organization"
+          class="w-full border border-border bg-bg-surface px-3.5 py-2.5 font-body text-[14px] text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none"
+          style="border-radius: 3px;"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label for="rg-sector" class="mb-1.5 block font-body text-[12px] font-medium uppercase tracking-widest text-text-secondary">Sector</label>
+      <select
+        id="rg-sector"
+        name="sector"
+        class="w-full border border-border bg-bg-surface px-3.5 py-2.5 font-body text-[14px] text-text-primary focus:border-accent focus:outline-none"
+        style="border-radius: 3px;"
+      >
+        <option value="">Select &mdash; optional</option>
+        <option value="Legal">Legal / Law firm</option>
+        <option value="Accountancy">Accountancy</option>
+        <option value="Agency">Agency</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <label class="flex items-start gap-2.5 cursor-pointer">
+      <input type="checkbox" name="marketingConsent" class="mt-0.5 h-4 w-4 cursor-pointer accent-accent" />
+      <span class="font-body text-[13px] leading-relaxed text-text-secondary">
+        Send me occasional emails with new resources and AI implementation notes. No spam, unsubscribe anytime.
+      </span>
+    </label>
+
+    <div class="pt-2">
+      <button
+        type="submit"
+        class="inline-block w-full border border-accent bg-accent px-5 py-3 font-body text-[13px] font-medium uppercase tracking-wider text-white transition-all duration-150 hover:bg-accent-hover hover:border-accent-hover disabled:opacity-60 disabled:cursor-not-allowed md:w-auto"
+        style="border-radius: 3px;"
+      >
+        <span data-state="idle">Send me the download &rarr;</span>
+        <span data-state="loading" class="hidden">Sending&hellip;</span>
+      </button>
+    </div>
+
+    <p id="rg-error" class="hidden font-body text-[13px] text-red-600"></p>
+
+    <p class="pt-2 font-body text-[11px] leading-relaxed text-text-tertiary">
+      By submitting, you agree to receive the download by email. See our <a href="/privacy" class="text-text-tertiary underline hover:text-text-secondary">privacy policy</a>.
+    </p>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('resource-form') as HTMLFormElement | null
+  const gate = document.getElementById('resource-gate') as HTMLElement | null
+  const errEl = document.getElementById('rg-error') as HTMLElement | null
+
+  if (form && gate) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const fd = new FormData(form)
+      const payload = {
+        slug: fd.get('slug'),
+        email: fd.get('email'),
+        firstName: fd.get('firstName') || null,
+        company: fd.get('company') || null,
+        sector: fd.get('sector') || null,
+        marketingConsent: fd.get('marketingConsent') === 'on',
+        _hp: fd.get('_hp') || '',
+      }
+
+      const submit = form.querySelector('button[type=submit]') as HTMLButtonElement
+      const idle = submit?.querySelector('[data-state=idle]') as HTMLElement
+      const loading = submit?.querySelector('[data-state=loading]') as HTMLElement
+      submit.disabled = true
+      idle?.classList.add('hidden')
+      loading?.classList.remove('hidden')
+      if (errEl) { errEl.classList.add('hidden'); errEl.textContent = '' }
+
+      try {
+        const res = await fetch('/api/resources/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(payload),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.')
+
+        // GTM event
+        ;(window as any).dataLayer = (window as any).dataLayer || []
+        ;(window as any).dataLayer.push({
+          event: 'resource_lead_submit',
+          resource_slug: payload.slug,
+          marketing_consent: payload.marketingConsent,
+        })
+
+        if (data.redirect) window.location.assign(data.redirect)
+      } catch (err: any) {
+        if (errEl) {
+          errEl.textContent = err.message || 'Something went wrong. Please try again.'
+          errEl.classList.remove('hidden')
+        }
+        submit.disabled = false
+        idle?.classList.remove('hidden')
+        loading?.classList.add('hidden')
+      }
+    })
+  }
+</script>

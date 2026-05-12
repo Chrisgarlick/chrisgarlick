@@ -13,7 +13,14 @@ const links = [
     ],
   },
   { href: '/work', label: 'Work' },
-  { href: '/tools', label: 'Tools' },
+  {
+    href: '/tools',
+    label: 'Free',
+    children: [
+      { href: '/tools', label: 'Tools' },
+      { href: '/resources', label: 'Resources' },
+    ],
+  },
   { href: '/article', label: 'Articles' },
   { href: '/about', label: 'About' },
 ]

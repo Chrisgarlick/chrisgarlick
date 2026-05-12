@@ -1,0 +1,105 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import CTASection from '../../components/CTASection.astro'
+import ResourceGate from '../../components/ResourceGate.astro'
+import FormatPicker from '../../components/FormatPicker.astro'
+import { cms, tiptapToHtml } from '../../lib/cms'
+
+export async function getStaticPaths() {
+  const client = cms()
+  const result = await client.collection('resource').findMany({ where: { status: 'published' }, limit: 500 })
+  const resources = result?.data ?? []
+  return resources.map((r: any) => ({ params: { slug: r.slug } }))
+}
+
+const { slug } = Astro.params
+const client = cms()
+
+const resource = await client.collection('resource').findOne({ where: { slug } })
+if (!resource) return Astro.redirect('/404')
+
+const rawBody = typeof resource.description === 'string' ? JSON.parse(resource.description) : resource.description
+const bodyHtml = rawBody?.html || tiptapToHtml(rawBody)
+
+const seoTitle = resource.seo?.metaTitle || `${resource.title} — Free Download | Chris Garlick`
+const seoDesc  = resource.seo?.metaDescription || resource.summary?.slice(0, 155) || ''
+
+const sectorLabel = resource.sector && resource.sector !== 'All' ? resource.sector : null
+const hasDocx = resource.hasDocx === 'yes'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DigitalDocument',
+  name: resource.title,
+  description: resource.summary || '',
+  author: { '@type': 'Person', name: 'Chris Garlick' },
+  inLanguage: 'en-GB',
+  isAccessibleForFree: true,
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={seoTitle}
+    description={seoDesc}
+    canonical={`https://chrisgarlick.com/resources/${slug}`}
+    jsonLd={jsonLd}
+  />
+
+  <article class="py-20 md:py-24">
+    <div class="mx-auto max-w-[720px] px-5 md:px-8">
+      <div class="mb-12">
+        <div class="mb-4 flex items-center gap-3">
+          {sectorLabel && (
+            <span class="rounded-[3px] bg-bg-muted px-2.5 py-1 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">
+              {sectorLabel}
+            </span>
+          )}
+          <span class="rounded-[3px] bg-accent/10 px-2.5 py-1 font-body text-xs font-medium uppercase tracking-widest text-accent">
+            Free download
+          </span>
+        </div>
+        <h1 class="mb-4 font-display text-[36px] leading-[1.15] text-text-primary md:text-[48px]">{resource.title}</h1>
+        {resource.summary && (
+          <p class="text-[15px] leading-[1.75] text-text-secondary">{resource.summary}</p>
+        )}
+      </div>
+
+      {bodyHtml && (
+        <div class="prose-custom mb-12 text-base leading-[1.75] text-text-secondary" set:html={bodyHtml} />
+      )}
+
+      <div id="gate-container">
+        <ResourceGate slug={slug} title={resource.title} />
+      </div>
+
+      <div id="picker-container" class="hidden border border-border bg-bg-surface p-7 md:p-8" style="border-radius: 3px;">
+        <FormatPicker slug={slug} hasDocx={hasDocx} />
+      </div>
+    </div>
+  </article>
+
+  <CTASection />
+</Base>
+
+<script>
+  // If the cg_lead_flag cookie is present, the visitor has already gated on this device.
+  // Hide the email form and reveal the format picker directly.
+  function hasLeadFlag(): boolean {
+    return document.cookie.split(';').some((c) => c.trim().startsWith('cg_lead_flag='))
+  }
+
+  if (hasLeadFlag()) {
+    document.getElementById('gate-container')?.classList.add('hidden')
+    document.getElementById('picker-container')?.classList.remove('hidden')
+  }
+
+  // GTM event
+  ;(window as any).dataLayer = (window as any).dataLayer || []
+  ;(window as any).dataLayer.push({
+    event: 'resource_view',
+    resource_slug: document.querySelector('[data-format-picker]')?.getAttribute('data-slug') || null,
+  })
+</script>

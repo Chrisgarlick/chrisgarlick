@@ -1,0 +1,121 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import ResourceCard from '../../components/ResourceCard.astro'
+import CTASection from '../../components/CTASection.astro'
+import { cms } from '../../lib/cms'
+
+const client = cms()
+
+const result = await client.collection('resource').findMany({
+  where: { status: 'published' },
+  orderBy: { sortOrder: 'asc' },
+  limit: 100,
+})
+
+const resources = result?.data ?? []
+
+const sectors = ['All', 'Legal', 'Accountancy', 'Agency']
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title="Free AI Resources for Law Firms, Accountancies & Agencies | Chris Garlick"
+    description="Free downloadable guides, scorecards, calculators and templates to help UK professional services firms implement AI without the hype."
+    keywords="ai resources, ai for law firms, ai for accountancy, ai for agencies, ai readiness, ai compliance checklist, prompt library, ai roi calculator"
+    canonical="https://chrisgarlick.com/resources"
+    jsonLd={{
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Free Resources',
+      description: 'Free downloadable resources for UK professional services firms implementing AI.',
+      url: 'https://chrisgarlick.com/resources',
+    }}
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="mx-auto max-w-[1100px] px-5 md:px-8">
+      <p class="mb-3 font-body text-xs font-medium uppercase tracking-widest text-text-secondary">Free downloads</p>
+      <h1 class="mb-4 font-display text-[36px] text-text-primary md:text-[48px]">Resources for AI Implementation</h1>
+      <p class="mb-12 max-w-[640px] text-[15px] leading-[1.75] text-text-secondary">
+        Scorecards, checklists, prompt libraries and policy templates &mdash; built for UK law firms, accountancies and agencies. Each one is the same material I use in client work.
+      </p>
+
+      <div class="mb-12 flex flex-wrap gap-2" role="tablist" aria-label="Filter by sector">
+        {sectors.map((s) => (
+          <button
+            role="tab"
+            aria-selected={s === 'All' ? 'true' : 'false'}
+            data-filter={s}
+            class={`px-3 py-1.5 font-body text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
+              s === 'All'
+                ? 'border border-accent bg-accent text-white'
+                : 'border border-border bg-bg-muted text-text-secondary hover:text-text-primary hover:border-border-hover'
+            }`}
+            style="border-radius: 3px;"
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {resources.length > 0 ? (
+        <div id="resources-grid" class="grid gap-6 md:grid-cols-2">
+          {resources.map((r) => (
+            <ResourceCard
+              slug={r.slug}
+              title={r.title}
+              summary={r.summary}
+              sector={r.sector}
+              funnelStage={r.funnelStage}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="py-12 text-center text-text-secondary">Resources coming soon.</p>
+      )}
+
+      <p id="resources-empty" class="hidden py-12 text-center text-text-secondary">
+        No resources in this category yet.
+      </p>
+    </div>
+  </section>
+
+  <CTASection />
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll('[data-filter]')
+  const grid = document.getElementById('resources-grid')
+  const empty = document.getElementById('resources-empty')
+  const cards = grid?.querySelectorAll('[data-sector]') ?? []
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = (btn as HTMLElement).dataset.filter
+
+      buttons.forEach((b) => {
+        const isActive = b === btn
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false')
+        b.className = `px-3 py-1.5 font-body text-xs font-medium uppercase tracking-widest transition-all duration-200 ${
+          isActive
+            ? 'border border-accent bg-accent text-white'
+            : 'border border-border bg-bg-muted text-text-secondary hover:text-text-primary hover:border-border-hover'
+        }`
+        ;(b as HTMLElement).style.borderRadius = '3px'
+      })
+
+      let visibleCount = 0
+      cards.forEach((card) => {
+        const sector = (card as HTMLElement).dataset.sector
+        const show = filter === 'All' || sector === 'All' || sector === filter
+        ;(card as HTMLElement).style.display = show ? '' : 'none'
+        if (show) visibleCount++
+      })
+
+      if (empty) empty.classList.toggle('hidden', visibleCount > 0)
+      if (grid) (grid as HTMLElement).classList.toggle('hidden', visibleCount === 0)
+    })
+  })
+</script>

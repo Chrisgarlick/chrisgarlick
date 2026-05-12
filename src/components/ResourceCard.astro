@@ -1,0 +1,41 @@
+---
+interface Props {
+  slug: string
+  title: string
+  summary?: string
+  sector?: string
+  funnelStage?: string
+}
+
+const { slug, title, summary, sector, funnelStage } = Astro.props
+
+const sectorLabel = sector && sector !== 'All' ? sector : null
+---
+
+<a
+  href={`/resources/${slug}`}
+  class="card-hover group block border border-border bg-bg-surface p-7 no-underline md:p-8"
+  style="border-radius: 3px;"
+  data-sector={sector}
+  data-funnel={funnelStage}
+>
+  <div class="mb-4 flex items-center gap-3">
+    {sectorLabel && (
+      <span class="font-body text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
+        {sectorLabel}
+      </span>
+    )}
+    <span class="rounded-[3px] bg-bg-muted px-2 py-0.5 font-body text-[10px] font-medium uppercase tracking-widest text-text-tertiary">
+      Free download
+    </span>
+  </div>
+  <h3 class="mb-2 font-display text-[1.25rem] text-text-primary transition-colors group-hover:text-accent">
+    {title}
+  </h3>
+  {summary && (
+    <p class="text-[14px] leading-relaxed text-text-secondary">{summary}</p>
+  )}
+  <span class="mt-4 inline-block font-body text-[13px] font-medium text-accent transition-transform group-hover:translate-x-1">
+    Get the download &rarr;
+  </span>
+</a>
