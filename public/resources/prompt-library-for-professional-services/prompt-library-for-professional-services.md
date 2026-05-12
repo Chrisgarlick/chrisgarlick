@@ -4,7 +4,6 @@ subtitle: Copy-paste prompts for law firms, accountancies and agencies
 author: Chris Garlick
 date: 2026-05-12
 document_type: brief
-client: chris-garlick-dark
 ---
 
 # The Prompt Library for Professional Services

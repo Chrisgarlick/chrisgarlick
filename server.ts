@@ -456,25 +456,29 @@ async function renderViaTypeset(opts: {
   slug: string
   markdown: string
   format: 'pdf' | 'docx'
+  client?: string | null
 }): Promise<{ ok: true; bytes: ArrayBuffer } | { ok: false; status: number; error: string }> {
   if (!TYPESET_API_KEY) {
     return { ok: false, status: 503, error: 'PDF/DOCX rendering is not configured.' }
   }
 
-  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${opts.markdown}`).digest('hex').slice(0, 16)
+  const clientKey = opts.client || ''
+  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${clientKey}|${opts.markdown}`).digest('hex').slice(0, 16)
   const cachePath = join(TYPESET_CACHE_DIR, `${opts.slug}-${opts.format}-${hash}.${opts.format}`)
   const cached = Bun.file(cachePath)
   if (await cached.exists()) {
     return { ok: true, bytes: await cached.arrayBuffer() }
   }
 
-  // markdown carries its own YAML frontmatter — typeset reads title/author/date/client/etc. from there.
-  // No `overrides`, no top-level `client`: frontmatter inside the content is the source of truth.
+  // Document metadata (title/subtitle/author/date) lives in the markdown's YAML frontmatter.
+  // Styling theme is selected per-resource via the `typesetClient` CMS field, passed as the
+  // top-level `client` field on the API request (per typeset docs).
   const body: Record<string, unknown> = {
     document_type: 'general',
     format: opts.format,
     content: opts.markdown,
   }
+  if (opts.client) body.client = opts.client
 
   let res: Response
   try {
@@ -673,11 +677,16 @@ app.get('/api/resources/:slug/download', async (c) => {
     // Otherwise fall through to typeset render
   }
 
-  // Look up the markdown body — frontmatter inside it carries title/author/date for typeset
+  // Look up the markdown body + typeset client profile for this resource
   let markdown: string | null = null
+  let typesetClient: string | null = null
   try {
-    const rows = await sql`SELECT markdown_body FROM resources WHERE slug = ${slug} LIMIT 1`
-    if (rows.length > 0) markdown = (rows[0] as any).markdown_body || null
+    const rows = await sql`SELECT markdown_body, typeset_client FROM resources WHERE slug = ${slug} LIMIT 1`
+    if (rows.length > 0) {
+      const row = rows[0] as any
+      markdown = row.markdown_body || null
+      typesetClient = row.typeset_client || null
+    }
   } catch (err: any) {
     console.error('[Resources] Resource lookup failed:', err)
   }
@@ -699,7 +708,7 @@ app.get('/api/resources/:slug/download', async (c) => {
   }
 
   // pdf | docx via typeset
-  const rendered = await renderViaTypeset({ slug, markdown, format: format as 'pdf' | 'docx' })
+  const rendered = await renderViaTypeset({ slug, markdown, format: format as 'pdf' | 'docx', client: typesetClient })
   if (!rendered.ok) {
     return c.json({ error: rendered.error }, rendered.status as any)
   }

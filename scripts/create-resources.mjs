@@ -43,17 +43,21 @@ async function findBySlug(slug) {
 async function createResource(data) {
   const existing = await findBySlug(data.slug)
   if (existing) {
-    // Update markdownBody (the most likely change between seed runs); leave other fields intact.
-    if (data.markdownBody && existing.markdownBody !== data.markdownBody) {
+    // PATCH any fields that have changed in the seed since last run. API returns snake_case,
+    // we send camelCase — keep both in sync below.
+    const patch = {}
+    if (data.markdownBody  !== undefined && existing.markdown_body  !== data.markdownBody)  patch.markdownBody  = data.markdownBody
+    if (data.typesetClient !== undefined && existing.typeset_client !== data.typesetClient) patch.typesetClient = data.typesetClient
+    if (Object.keys(patch).length > 0) {
       const patchRes = await fetch(`${BASE}/resource/${existing.id}`, {
         method: 'PATCH',
         headers: auth,
-        body: JSON.stringify({ markdownBody: data.markdownBody }),
+        body: JSON.stringify(patch),
       })
-      if (patchRes.ok) console.log(`Updated markdownBody: ${data.title} (${existing.id})`)
+      if (patchRes.ok) console.log(`Updated [${Object.keys(patch).join(', ')}]: ${data.title} (${existing.id})`)
       else console.error(`  Update failed:`, patchRes.status, await patchRes.text())
     } else {
-      console.log(`Skip: ${data.title} (already exists, ${existing.id})`)
+      console.log(`Skip: ${data.title} (already exists, no changes, ${existing.id})`)
     }
     return existing.id
   }
@@ -94,6 +98,7 @@ await createResource({
     p('Solicitors, accountants and agency leads who already use ChatGPT or Claude but want sharper, repeatable prompts that produce usable output the first time.'),
   ),
   markdownBody: promptLibraryMd || '',
+  typesetClient: 'chris-garlick-dark',
   sector: 'All',
   tier: '2',
   funnelStage: 'TOFU',
