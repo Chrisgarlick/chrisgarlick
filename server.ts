@@ -555,6 +555,22 @@ app.post('/api/resources/request', async (c) => {
     return c.json({ error: 'Could not save your details. Please try again.' }, 500)
   }
 
+  // Mirror into form_submissions so the entry appears in /admin/forms/resource-gate
+  try {
+    const formRows = await sql`SELECT id FROM forms WHERE slug = 'resource-gate' LIMIT 1`
+    if (formRows.length > 0) {
+      const formId = (formRows[0] as any).id
+      const submissionData = { email, firstName, company, sector, marketingConsent, resourceSlug: slug }
+      await sql`
+        INSERT INTO form_submissions (form_id, data, ip_address, user_agent)
+        VALUES (${formId}, ${JSON.stringify(submissionData)}::jsonb, ${ip}, ${userAgent})
+      `
+    }
+  } catch (err: any) {
+    console.error('[Resources] form_submissions mirror failed:', err)
+    // Non-fatal — we still have the lead in resource_leads
+  }
+
   const emailToken = signToken(leadId, EMAIL_TOKEN_TTL)
   const cookieToken = signToken(leadId, COOKIE_TOKEN_TTL)
   const thanksUrl = `${SITE_ORIGIN}/resources/${encodeURIComponent(slug)}/thanks?t=${emailToken}`

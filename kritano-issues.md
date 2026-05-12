@@ -135,6 +135,10 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 **Severity:** High (DX)
 **Description:** `cms migrate` only applies existing migration files — it does NOT generate new ones when the schema has changed. You have to know to run `cms migrate:create` first, then `cms migrate`. This is a confusing two-step process that looks like it worked (reports "no pending migrations") when the migration file simply doesn't exist yet. `cms migrate` should diff the schema against the database and auto-generate + apply any needed migrations in one step. The separate `migrate:create` command can remain for advanced use, but the default `migrate` should handle the common case.
 
+**Reproduced 2026-05-12 on chrisgarlick.com:** added a new `resource` collection (and a `relatedResources` field on `article`) to `cms.config.ts`, pushed, ran `bun run generate` and `bun run migrate` on the production server. `generate` updated the types correctly (`6 collection(s): page, article, caseStudy, proofMetric, tool, resource`), but `migrate` reported `✓ No pending migrations` and the `resources` table never got created. The fix required `bun run migrate:create` (which had to be added to `package.json` because it wasn't wired into the scripts) and then `bun run migrate` again. This is the second time this trap has been hit — the user reasonably expected the schema change to flow through with the existing two commands. The "no pending migrations" message is actively misleading in this case: it should be "schema has uncommitted changes — run `migrate:create` first" at a minimum, or just do the right thing automatically.
+
+**Also:** `migrate:create` should be auto-listed in the `package.json` `scripts` block by the CMS scaffolder, alongside `migrate` and `generate`. New projects don't get it without manual editing.
+
 ### 12. Email provider abstraction for form notifications
 **Severity:** High (architecture)
 **Description:** Form notification emails (`packages/core/src/lib/resend.ts`) are hardcoded to Resend. Not all CMS users will use Resend — some will need SMTP (nodemailer), SendGrid, Postmark, AWS SES, Mailgun, etc. The current implementation only works if the user has a Resend account and API key.
@@ -153,6 +157,16 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 - Console transport (default when no provider configured) logs to stdout for local dev
 - Third-party transports via plugins for SendGrid, Postmark, SES, etc.
 - The `sendEmail()` function routes through whichever transport is configured — form submissions, password resets, and any future email features all use the same abstraction
+
+### 14. Admin UI should ship pre-built — not rebuilt from source on every install (FIXED)
+**Severity:** High (deployment / DX) — was blocking
+**Description:** The `@kritano/cms` package rebuilt the admin UI from source on every consumer install via the `postinstall` `build:assets` script (`cd packages/admin && bun run build`). That build ran `tsc -b && vite build` on ~1,800 modules — heavy enough that on small VPS instances (1–2 GB RAM) it got killed by the OOM killer (exit 137 / SIGKILL). When that happened mid-build the `packages/admin/dist/` directory was left in a corrupted, half-written state. The consumer's `server.ts` saw files in `dist/` and decided "admin is built", so it routed `/admin` to a broken bundle that returned 500s or blank pages.
+
+**Reproduced 2026-05-12 on chrisgarlick.com:** ran `bun run build && systemctl restart chrisgarlick` on a 2 GB VPS. The `cms build` step's admin Vite build hit OOM at ~1,842 modules transformed with `error: script "build" was terminated by signal SIGKILL (Forced quit) / Failed with exit code 137`. The frontend was fine, but `/admin` was unreachable afterwards because the admin dist was partial.
+
+**Fix:** the admin UI is now compiled in the source repo before publish — the `@kritano/cms` package ships with a pre-built `packages/admin/dist/`. Consumer installs no longer trigger a Vite build on the target machine, so there's no OOM risk and no half-written-dist failure mode.
+
+**Still open — knock-on:** `cms build` still rebuilds admin unconditionally even when the consumer only changes theme/frontend code. For a frontend-only deploy, the admin rebuild is wasted work and re-introduces the OOM risk on small servers (the consumer workaround is `bunx astro build`, which skips it). `cms build` should either skip admin when its source is unchanged (timestamp/hash check on `packages/admin/src/` vs the package's shipped `dist/`), or expose a `--frontend-only` flag, or simply not bundle the admin build into the default consumer build at all (consumers don't have the admin source to build from anyway, post-fix). Right now the rebuild path only makes sense inside the CMS repo itself.
 
 ### 13. Submissions tab missing from form builder admin UI
 **Severity:** Medium

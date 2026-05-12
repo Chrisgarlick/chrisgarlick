@@ -6,6 +6,21 @@ import {
   blocks, block, url, addForm,
 } from '@kritano/cms/core'
 
+// Resource-gate form: submissions appear under /admin/forms/resource-gate alongside the contact form.
+// Lead state and per-format download tracking still live in resource_leads / resource_downloads —
+// form_submissions is the audit trail for "who submitted, when, with what data".
+addForm('resource-gate', {
+  name: 'Resource gate',
+  fields: [
+    { name: 'email',            type: 'email',    label: 'Email',          required: true },
+    { name: 'firstName',        type: 'text',     label: 'First name' },
+    { name: 'company',          type: 'text',     label: 'Company' },
+    { name: 'sector',           type: 'select',   label: 'Sector', options: ['Legal', 'Accountancy', 'Agency', 'Other'] },
+    { name: 'marketingConsent', type: 'checkbox', label: 'Marketing consent' },
+    { name: 'resourceSlug',     type: 'text',     label: 'Resource', required: true },
+  ],
+})
+
 export default defineConfig({
   site: {
     name: 'Chris Garlick',
