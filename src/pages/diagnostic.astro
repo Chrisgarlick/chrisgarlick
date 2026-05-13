@@ -6,7 +6,7 @@ import SEO from '../components/SEO.astro'
 <Base bare={true}>
   <SEO
     slot="head"
-    title="Quick fit check — Chris Garlick"
+    title="Quick fit check | Chris Garlick"
     description="Five-minute self-assessment to figure out whether AI implementation makes sense for your business, and which lane to start in."
     canonical="https://chrisgarlick.com/diagnostic"
     noindex={true}
@@ -24,7 +24,7 @@ import SEO from '../components/SEO.astro'
           Is AI implementation worth doing for you right now?
         </h1>
         <p class="mb-12 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
-          Five questions. Three minutes. At the end I&rsquo;ll tell you honestly whether a build makes sense for where you are &mdash; and if it does, which lane to start in.
+          Five questions. Three minutes. At the end I&rsquo;ll tell you honestly whether a build makes sense for where you are, and if it does, which lane to start in.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ import SEO from '../components/SEO.astro'
           <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
             04. What tools or systems are involved?
           </legend>
-          <p class="mb-2 font-body text-[12px] text-text-tertiary">Optional. Just the names &mdash; CRM, accounting tool, inbox, anything else.</p>
+          <p class="mb-2 font-body text-[12px] text-text-tertiary">Optional. Just the names. CRM, accounting tool, inbox, anything else.</p>
           <input
             type="text"
             name="stack"
@@ -108,7 +108,7 @@ import SEO from '../components/SEO.astro'
         <!-- Optional email -->
         <fieldset>
           <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
-            Where should I follow up? <span class="font-body text-[12px] font-normal text-text-tertiary">— optional</span>
+            Where should I follow up? <span class="font-body text-[12px] font-normal text-text-tertiary">(optional)</span>
           </legend>
           <input
             type="email"
@@ -239,21 +239,21 @@ import SEO from '../components/SEO.astro'
     high: {
       tier: 'Strong fit',
       heading: 'Worth booking a scoping call.',
-      body: 'Your task volume, clarity and priority all line up with the kind of build I take on. The fastest next step is a 30-minute scoping call — bring the task and the rough cost in hours, and I\'ll tell you what a build would look like.',
+      body: 'Your task volume, clarity and priority all line up with the kind of build I take on. The fastest next step is a 30-minute scoping call. Bring the task and the rough cost in hours, and I\'ll tell you what a build would look like.',
       ctaLabel: 'Book a scoping call',
       ctaHref: '/contact',
     },
     medium: {
-      tier: 'Could fit — worth a closer look',
+      tier: 'Could fit. Worth a closer look',
       heading: 'Start with the free site audit.',
-      body: 'There\'s a decent chance a build would pay back, but the picture isn\'t quite clear yet. The free site audit is the cheapest way to surface what\'s actually worth automating — and we can talk through it on a call afterwards if it does.',
+      body: 'There\'s a decent chance a build would pay back, but the picture isn\'t quite clear yet. The free site audit is the cheapest way to surface what\'s actually worth automating, and we can talk through it on a call afterwards if it does.',
       ctaLabel: 'Run a free site audit',
       ctaHref: '/tools/site-audit',
     },
     low: {
       tier: 'Probably not yet',
       heading: 'A custom build is likely overkill right now.',
-      body: 'Honest answer: at this volume, a custom AI build is probably more friction than benefit. Have a look at the prompt library — it covers the kind of one-off prompts that handle the same problem without commissioning anything.',
+      body: 'Honest answer: at this volume, a custom AI build is probably more friction than benefit. Have a look at the prompt library. It covers the kind of one-off prompts that handle the same problem without commissioning anything.',
       ctaLabel: 'See the prompt library',
       ctaHref: '/resources/prompt-library-for-professional-services',
     },

@@ -45,7 +45,7 @@ pieces is missing.
 
 1. **Role.** Tell the model who it is. "You are a senior commercial
    solicitor reviewing a software licence agreement." Specificity matters.
-2. **Context.** Give it the material to work with — the document, the
+2. **Context.** Give it the material to work with, the document, the
    transcript, the data. Paste it in full. Do not summarise for the
    model; that's its job.
 3. **Constraints.** State the rules. Length, format, tone, what to
@@ -117,7 +117,7 @@ Rules:
 - State the facts clearly in the second paragraph, not buried
 - Offer a concrete remedy or next step
 - No apologies that contradict our position
-- Maintain the relationship — this client matters
+- Maintain the relationship, this client matters
 
 Situation:
 [DESCRIBE]
@@ -135,10 +135,10 @@ position is [BUYER / SELLER / LANDLORD / TENANT / EMPLOYER / EMPLOYEE].
 
 Produce a review note with three sections:
 
-1. RED FLAGS — clauses that are unusual, one-sided against my client, or
+1. RED FLAGS, clauses that are unusual, one-sided against my client, or
    commercially unacceptable. Quote the clause and explain.
-2. AMBER — clauses that need negotiation but are not deal-breakers.
-3. GREEN — confirm the standard protections that are present.
+2. AMBER, clauses that need negotiation but are not deal-breakers.
+3. GREEN, confirm the standard protections that are present.
 
 For each red flag, propose redrafted wording. Do not invent facts not in
 the document. If something is unclear, say so explicitly rather than
@@ -210,7 +210,7 @@ a single team digest with:
 - One client risk or opportunity to surface
 
 Keep the total under 200 words. Tone: dry, factual, no jargon. Do not
-embellish. If an update is thin, that's fine — leave it thin.
+embellish. If an update is thin, that's fine, leave it thin.
 
 Updates:
 [PASTE]
@@ -222,17 +222,17 @@ Updates:
 Below is a list of the last [N] emails I received. For each email,
 categorise as:
 
-- URGENT — needs a reply today
-- CLIENT — client work, reply within 24h
-- INTERNAL — internal team, reply when convenient
-- FYI — read only, no action
-- DELETE — newsletters, sales, noise
+- URGENT, needs a reply today
+- CLIENT, client work, reply within 24h
+- INTERNAL, internal team, reply when convenient
+- FYI, read only, no action
+- DELETE, newsletters, sales, noise
 
 For everything tagged URGENT or CLIENT, draft a one-sentence suggested
 response. Do not actually send anything.
 
 Emails:
-[PASTE — sender, subject, first 200 chars of body for each]
+[PASTE, sender, subject, first 200 chars of body for each]
 ```
 
 ### 9. Turn a Loom or transcript into action items
@@ -257,7 +257,7 @@ Transcript:
 ```
 Below is the transcript of a discovery call with [PROSPECT NAME] of
 [COMPANY]. Draft the "Understanding of your situation" section of the
-proposal — the part that proves we listened.
+proposal, the part that proves we listened.
 
 Rules:
 - Use the prospect's own language where they were specific. Quote them
@@ -275,13 +275,13 @@ Transcript:
 ## Where to go from here
 
 This starter library covers ten of the most common professional services
-use cases. The full library — sixty-plus prompts including client
+use cases. The full library, sixty-plus prompts including client
 reporting, billing narratives, knowledge management and proposal
-writing — is shipping shortly.
+writing, is shipping shortly.
 
 If there's a workflow you want covered next, reply to the email this came
 with. The most-requested ones get written first.
 
 ---
 
-*Chris Garlick — chrisgarlick.com*
+*Chris Garlick, chrisgarlick.com*

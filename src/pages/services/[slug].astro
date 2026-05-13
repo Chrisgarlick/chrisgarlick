@@ -6,7 +6,7 @@ import { cms } from '../../lib/cms'
 
 export async function getStaticPaths() {
   const serviceSlugs = new Set([
-    // Outcome verticals — what's actually being built (post-pivot, May 2026)
+    // Outcome verticals (post-pivot, May 2026)
     'workflow-automation',
     'ai-agents',
     'data-extraction',
@@ -42,7 +42,18 @@ const seoKeywords = [
 const rawContent = page.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
-const jsonLd = {
+// Build a friendly breadcrumb label for the service category.
+const serviceCategory = ['ai-for-law-firms','ai-for-agencies','ai-for-accountancy-firms'].includes(slug as string)
+  ? { label: 'Industries', href: '/services' }
+  : { label: 'Services',   href: '/services' }
+
+const breadcrumbs = [
+  { name: 'Home',            url: '/' },
+  { name: serviceCategory.label, url: serviceCategory.href },
+  { name: page.title,        url: `/services/${slug}` },
+]
+
+const serviceLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
   name: page.title,
@@ -55,6 +66,58 @@ const jsonLd = {
   },
   areaServed: { '@type': 'Country', name: 'United Kingdom' },
 }
+
+// The pillar page has an inline "Common questions" section — mirror those Q&As as FAQPage schema
+// so search engines see them as a structured FAQ. Kept here (rather than parsed from body) to
+// keep the schema authoritative and reviewable.
+const PILLAR_FAQ = slug === 'ai-implementation' ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How long does an AI implementation project take?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most builds run two to six weeks of focused work, with another two weeks of measure-and-iterate after go-live. The audit and scoping happen in week one. The actual build typically takes one to four weeks depending on integrations and scope.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does AI implementation cost?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Engagements start at £500 for a focused fix to a single bottleneck. Workflow automation builds with one or two integrations typically land between £2,000 and £8,000. Larger agent systems, custom integrations and ongoing retainers are quoted per project after scoping. Pricing is fixed before the build starts.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do I need existing technical infrastructure?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. Most builds work with the systems you already use — Google Workspace or Microsoft 365, your CRM (Clio, HubSpot, Notion, Airtable, whatever), your accounting tool, your inbox. The point is to slot into how you already work, not to force a migration.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What if I don\'t know which workflow to automate first?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Run the free site audit and tell me which manual task is eating your week — we\'ll talk it through on a 30-minute call. The first build is always the one with the clearest ROI, and the audit\'s job is to surface that.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you work with non-UK businesses?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, but the bias is UK. Time-zone overlap matters when you\'re working with one person. Most clients are in the UK; some are in EU and US East Coast.',
+      },
+    },
+  ],
+} : null
+
+const jsonLd = [serviceLd, ...(PILLAR_FAQ ? [PILLAR_FAQ] : [])]
 ---
 
 <Base>
@@ -63,6 +126,12 @@ const jsonLd = {
     title={title}
     description={description}
     keywords={seoKeywords}
+    ogType={page.seo?.ogType || 'website'}
+    ogTitle={page.seo?.ogTitle}
+    ogDescription={page.seo?.ogDescription}
+    ogImage={page.seo?.ogImage}
+    breadcrumbs={breadcrumbs}
+    author="Chris Garlick"
     jsonLd={jsonLd}
   />
 

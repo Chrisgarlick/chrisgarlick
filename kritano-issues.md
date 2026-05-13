@@ -168,6 +168,35 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 
 **Still open — knock-on:** `cms build` still rebuilds admin unconditionally even when the consumer only changes theme/frontend code. For a frontend-only deploy, the admin rebuild is wasted work and re-introduces the OOM risk on small servers (the consumer workaround is `bunx astro build`, which skips it). `cms build` should either skip admin when its source is unchanged (timestamp/hash check on `packages/admin/src/` vs the package's shipped `dist/`), or expose a `--frontend-only` flag, or simply not bundle the admin build into the default consumer build at all (consumers don't have the admin source to build from anyway, post-fix). Right now the rebuild path only makes sense inside the CMS repo itself.
 
+### 16. HTML entities in TipTap content render as literal text
+**Severity:** Medium (silent content corruption)
+**Description:** TipTap stores text nodes as plain strings. Kritano's TipTap-to-HTML renderer (`tiptapToHtml` / its `escapeHtml`) correctly escapes ampersands for HTML safety. The combination means any HTML entity written into rich-text content (`&mdash;`, `&rsquo;`, `&hellip;`, etc.) is treated as 7 literal characters, escaped on render (`&amp;mdash;`), and displayed as the literal entity string in the browser.
+
+**Reproduced 2026-05-13:** authored several pages programmatically via the API using `&mdash;` for em-dashes. All rendered as the literal text `&mdash;` on the live site. The `/contact` pricing block was the most visible example.
+
+**Why this is silent:** the admin block editor accepts the entity strings without warning. The visual rendering only goes wrong on the live site after build. No error is logged.
+
+**Suggested fixes (any one):**
+1. **Renderer pre-pass** — before escapeHtml, decode known-safe HTML entities to their Unicode equivalents (`&mdash;` → `—`, `&rsquo;` → `'`, etc.). Minor risk: someone wanting the literal entity string can't have it, but that's near-zero in practice.
+2. **Admin editor warning** — surface a soft warning in the editor when text-node content contains `&...;` patterns, suggesting Unicode characters instead.
+3. **Docs note** — at minimum, the Kritano content-authoring docs should call out "use Unicode characters in rich text, not HTML entities".
+
+Recommended: option 1. It's the least intrusive fix and matches what authors naively expect.
+
+### 15. Draft preview broken with Astro static-output consumers
+**Severity:** High (authoring DX)
+**Description:** When a consumer uses Astro with `output: 'static'` (the default for content-heavy themes), `getStaticPaths` filters by `status: 'published'`. Drafts never get static HTML generated, so the admin's "preview" link 404s. The result: authors can't review their content visually before publishing — they either have to publish first (then unpublish if it's wrong, which exposes the URL momentarily) or rely on the in-admin block editor view, which doesn't render the actual theme styling.
+
+**Reproduced 2026-05-13 on chrisgarlick.com:** created five drafts (three service pages, two articles) via the API. None were previewable because the static build only generates paths for published records. Authors are forced to publish-and-fix.
+
+**Suggested fixes (combine as appropriate):**
+
+1. **Preview routes via SSR** — Astro supports per-route SSR (`export const prerender = false`) alongside static output. The CMS theme could include a `/preview/<collection>/<id>` route that fetches drafts at request time and renders them with the same components as the public route. Auth-gated, noindex, only reachable from the admin.
+2. **Tokenised draft URLs** — admin generates a signed preview URL like `/preview/<id>?t=<jwt>` that's valid for ~15 minutes and bypasses the published filter for that specific record.
+3. **Documentation only** — at minimum, the Kritano docs should call out that admin preview is broken with static-output themes and explain the workarounds.
+
+Without one of these, the practical workflow is: write in admin → publish (with `publishedAt` set in the future to avoid surfacing) → rebuild → review on live URL → edit if needed. Cumbersome and error-prone.
+
 ### 13. Submissions tab missing from form builder admin UI
 **Severity:** Medium
 **Description:** The form builder (`packages/admin/src/pages/forms/FormBuilder.tsx`) has no way to view submissions. All backend API routes already exist (`GET /admin/forms/:id/submissions`, `DELETE /admin/forms/:id/submissions/:subId`, `GET /admin/forms/:id/export`) — this is purely a frontend addition.
