@@ -50,7 +50,24 @@ const {
 const siteUrl = 'https://chrisgarlick.com'
 const currentPath = Astro.url.pathname
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`
-const ogImage = ogImageProp || `${siteUrl}/og${currentPath === '/' ? '/home' : currentPath}.png`
+
+// OG image resolution:
+//   1. If explicitly passed, use it.
+//   2. Else if the page has a path-specific OG image at /og/<path>.png, use that.
+//   3. Else fall back to the site-wide hero card (which always exists).
+//
+// Pages that have a known path-specific image are listed here. Generated via
+// scripts/generate-og-images.mjs (Playwright). When you add a new page-specific
+// OG image, add the path here.
+const KNOWN_OG_PATHS = new Set([
+  '/', '/about', '/contact', '/work', '/article', '/privacy', '/terms',
+  '/article/ai-adoption-disappointment-why-companies-fail',
+  '/article/what-ai-implementation-means-law-firm',
+  '/article/agency-workflows-automate-first',
+  '/article/ai-generated-code-security-risk',
+])
+const ogImage = ogImageProp
+  || (KNOWN_OG_PATHS.has(currentPath) ? `${siteUrl}/og${currentPath === '/' ? '/home' : currentPath}.png` : `${siteUrl}/og/home.png`)
 
 // Twitter falls back to OG so authors don't have to duplicate.
 const twImage = twitterImage || ogImage

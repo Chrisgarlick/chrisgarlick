@@ -82,6 +82,28 @@ const pages = [
     title: '51% of Code on GitHub is AI-Generated. That Should Worry You.',
     subtitle: '45% of AI-generated code ships with known security flaws. The productivity story is hiding a crisis.',
   },
+
+  // ─── Post-pivot outcome service pages ───────────────────────────
+  { file: 'services/workflow-automation.png',          label: 'Workflow Automation', title: 'Stop doing the same task thirty times a week.',     subtitle: 'Custom AI pipelines that replace repetitive multi-step workflows.', large: true },
+  { file: 'services/ai-agents.png',                    label: 'Custom AI Agents',    title: 'For the tasks that need judgement, not just execution.', subtitle: 'Lead research, email triage, document review, meeting summaries.',  large: true },
+  { file: 'services/data-extraction.png',              label: 'Data Extraction',     title: 'Get the data out of the PDFs.',                      subtitle: 'Structured pipelines for contracts, statements, receipts, web pages.', large: true },
+  { file: 'services/ai-implementation.png',            label: 'AI Implementation',   title: 'AI that actually replaces manual work.',             subtitle: 'Custom systems, fixed pricing, one-person delivery. UK-based.',     large: true },
+
+  // ─── Rewritten industry pages ───────────────────────────────────
+  { file: 'services/ai-for-law-firms.png',             label: 'AI for Law Firms',    title: 'Automating document-heavy workflows for law firms.', subtitle: 'Contract extraction, intake, first-pass review, matter summarisation.', large: true },
+  { file: 'services/ai-for-accountancy-firms.png',     label: 'AI for Accountancy',  title: 'Reducing manual processing for accountancy practices.', subtitle: 'Statement parsing, monthly reporting, client onboarding, narrative drafting.', large: true },
+  { file: 'services/ai-for-agencies.png',              label: 'AI for Agencies',     title: 'Replacing repetitive delivery tasks for agencies.', subtitle: 'Reporting, brief processing, content production, competitor research.', large: true },
+
+  // ─── Services hub ───────────────────────────────────────────────
+  { file: 'services.png',                              label: 'Services',            title: 'AI that replaces real work, not just decks.',        subtitle: 'Three outcome lanes. Direct execution. Fixed pricing from £500.', large: true },
+
+  // ─── Resources hub + the prompt library ─────────────────────────
+  { file: 'resources.png',                             label: 'Free Resources',      title: 'Resources for AI implementation.',                   subtitle: 'Scorecards, checklists, prompt libraries, policy templates.',       large: true },
+  { file: 'resources/prompt-library-for-professional-services.png', label: 'Prompt Library', title: 'The Prompt Library for Professional Services.', subtitle: 'Copy-paste prompts for law firms, accountancies and agencies.', large: true },
+
+  // ─── New articles ───────────────────────────────────────────────
+  { file: 'article/automate-client-intake-without-custom-software.png', label: 'Workflow Automation', title: 'How to Automate Client Intake Without Custom Software', subtitle: 'The three-tool stack that replaces 80% of custom intake builds.' },
+  { file: 'article/replacing-manual-data-entry-with-ai-agents.png',     label: 'Data Extraction',     title: 'Replacing Manual Data Entry with AI Agents',           subtitle: 'The four-stage pattern that actually works in 2026.' },
 ];
 
 async function generate() {
