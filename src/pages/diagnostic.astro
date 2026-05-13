@@ -1,0 +1,321 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+---
+
+<Base bare={true}>
+  <SEO
+    slot="head"
+    title="Quick fit check — Chris Garlick"
+    description="Five-minute self-assessment to figure out whether AI implementation makes sense for your business, and which lane to start in."
+    canonical="https://chrisgarlick.com/diagnostic"
+    noindex={true}
+  />
+
+  <section class="py-16 md:py-24">
+    <div class="mx-auto w-full max-w-[640px] px-5 md:px-8">
+
+      <!-- Intro -->
+      <div id="diagnostic-intro">
+        <p class="mb-3 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
+          Quick fit check
+        </p>
+        <h1 class="mb-5 font-display text-[36px] leading-[1.1] text-text-primary md:text-[48px]">
+          Is AI implementation worth doing for you right now?
+        </h1>
+        <p class="mb-12 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
+          Five questions. Three minutes. At the end I&rsquo;ll tell you honestly whether a build makes sense for where you are &mdash; and if it does, which lane to start in.
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form id="diagnostic-form" class="space-y-10" novalidate>
+        <input type="text" name="_hp" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true" />
+
+        <!-- Q1: Business type -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            01. What type of business are you?
+          </legend>
+          <div class="grid gap-2 md:grid-cols-2">
+            {['Agency', 'Professional services', 'E-commerce', 'Other'].map((opt) => (
+              <label class="diag-option">
+                <input type="radio" name="businessType" value={opt} required />
+                <span>{opt}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- Q2: Task -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            02. What&rsquo;s the task you most want to automate?
+          </legend>
+          <p class="mb-2 font-body text-[12px] text-text-tertiary">One or two lines is fine. Specific is better than abstract.</p>
+          <textarea
+            name="task"
+            required
+            rows="3"
+            maxlength="500"
+            placeholder="e.g. assembling our monthly client reports from three different tools"
+            class="diag-textarea"
+          ></textarea>
+        </fieldset>
+
+        <!-- Q3: Hours -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            03. How many hours per week does it currently take?
+          </legend>
+          <div class="grid gap-2 md:grid-cols-3">
+            <label class="diag-option"><input type="radio" name="hours" value="<2h" required /><span>Less than 2h</span></label>
+            <label class="diag-option"><input type="radio" name="hours" value="2-10h" required /><span>2&ndash;10h</span></label>
+            <label class="diag-option"><input type="radio" name="hours" value="10h+" required /><span>10h or more</span></label>
+          </div>
+        </fieldset>
+
+        <!-- Q4: Stack -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            04. What tools or systems are involved?
+          </legend>
+          <p class="mb-2 font-body text-[12px] text-text-tertiary">Optional. Just the names &mdash; CRM, accounting tool, inbox, anything else.</p>
+          <input
+            type="text"
+            name="stack"
+            maxlength="300"
+            placeholder="e.g. Notion, Xero, Gmail"
+            class="diag-input"
+          />
+        </fieldset>
+
+        <!-- Q5: Priority -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            05. What&rsquo;s your priority right now?
+          </legend>
+          <div class="grid gap-2 md:grid-cols-2">
+            {['Reduce time', 'Reduce errors', 'Scale without hiring', 'All three'].map((opt) => (
+              <label class="diag-option">
+                <input type="radio" name="priority" value={opt} required />
+                <span>{opt}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- Optional email -->
+        <fieldset>
+          <legend class="mb-3 font-display text-[18px] text-text-primary md:text-[20px]">
+            Where should I follow up? <span class="font-body text-[12px] font-normal text-text-tertiary">— optional</span>
+          </legend>
+          <input
+            type="email"
+            name="email"
+            autocomplete="email"
+            placeholder="you@firm.co.uk"
+            class="diag-input"
+          />
+          <p class="mt-2 font-body text-[12px] text-text-tertiary">
+            Skip if you&rsquo;d rather see the result and reach out yourself.
+          </p>
+        </fieldset>
+
+        <div>
+          <button type="submit" class="diag-submit">
+            <span data-state="idle">See my result &rarr;</span>
+            <span data-state="loading" class="hidden">Working it out&hellip;</span>
+          </button>
+          <p id="diag-error" class="mt-3 hidden font-body text-[13px] text-red-600"></p>
+        </div>
+      </form>
+
+      <!-- Result panel (revealed on submit) -->
+      <div id="diagnostic-result" class="hidden mt-10 border-l-2 border-accent pl-6 md:pl-7">
+        <p class="mb-2 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent" data-result-tier>Result</p>
+        <h2 class="mb-4 font-display text-[28px] leading-[1.15] text-text-primary md:text-[36px]" data-result-heading></h2>
+        <p class="mb-6 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]" data-result-body></p>
+        <a
+          href="#"
+          class="inline-flex items-center gap-3 border border-accent bg-accent px-6 py-3 font-body text-[13px] font-medium uppercase tracking-[0.12em] text-white no-underline transition-all duration-150 hover:bg-accent-hover hover:border-accent-hover"
+          style="border-radius: 3px;"
+          data-result-cta
+        >
+          <span data-result-cta-label>Continue</span>
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+</Base>
+
+<style>
+  .diag-option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: var(--color-bg-surface);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+  .diag-option:hover { border-color: var(--color-border-hover); }
+  .diag-option:has(input:checked) {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent-light);
+  }
+  .diag-option input { accent-color: var(--color-accent); }
+
+  .diag-input,
+  .diag-textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .diag-textarea { resize: vertical; min-height: 5rem; }
+  .diag-input:focus,
+  .diag-textarea:focus { border-color: var(--color-accent); }
+
+  .diag-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 2rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    background-color: var(--color-accent);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .diag-submit:hover {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+  }
+  .diag-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
+
+<script>
+  const form = document.getElementById('diagnostic-form') as HTMLFormElement | null
+  const intro = document.getElementById('diagnostic-intro')
+  const result = document.getElementById('diagnostic-result')
+  const errEl = document.getElementById('diag-error')
+
+  function scoreFit(data: any): { tier: 'high'|'medium'|'low'; score: number } {
+    let s = 0
+    if (data.hours === '10h+') s += 3
+    else if (data.hours === '2-10h') s += 2
+    else s += 1
+    if ((data.task || '').length >= 20) s += 1
+    if ((data.stack || '').length > 0) s += 1
+    if (data.priority === 'All three') s += 2
+    else if (data.priority) s += 1
+    const tier = s >= 6 ? 'high' : s >= 4 ? 'medium' : 'low'
+    return { tier, score: s }
+  }
+
+  const RESULTS = {
+    high: {
+      tier: 'Strong fit',
+      heading: 'Worth booking a scoping call.',
+      body: 'Your task volume, clarity and priority all line up with the kind of build I take on. The fastest next step is a 30-minute scoping call — bring the task and the rough cost in hours, and I\'ll tell you what a build would look like.',
+      ctaLabel: 'Book a scoping call',
+      ctaHref: '/contact',
+    },
+    medium: {
+      tier: 'Could fit — worth a closer look',
+      heading: 'Start with the free site audit.',
+      body: 'There\'s a decent chance a build would pay back, but the picture isn\'t quite clear yet. The free site audit is the cheapest way to surface what\'s actually worth automating — and we can talk through it on a call afterwards if it does.',
+      ctaLabel: 'Run a free site audit',
+      ctaHref: '/tools/site-audit',
+    },
+    low: {
+      tier: 'Probably not yet',
+      heading: 'A custom build is likely overkill right now.',
+      body: 'Honest answer: at this volume, a custom AI build is probably more friction than benefit. Have a look at the prompt library — it covers the kind of one-off prompts that handle the same problem without commissioning anything.',
+      ctaLabel: 'See the prompt library',
+      ctaHref: '/resources/prompt-library-for-professional-services',
+    },
+  } as const
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    errEl?.classList.add('hidden')
+    if (errEl) errEl.textContent = ''
+
+    const fd = new FormData(form)
+    const data: Record<string, any> = {
+      _hp: fd.get('_hp') || '',
+      businessType: fd.get('businessType'),
+      task: (fd.get('task') as string)?.trim(),
+      hours: fd.get('hours'),
+      stack: (fd.get('stack') as string)?.trim(),
+      priority: fd.get('priority'),
+      email: (fd.get('email') as string)?.trim() || null,
+    }
+
+    if (!data.businessType || !data.task || !data.hours || !data.priority) {
+      if (errEl) {
+        errEl.textContent = 'Please answer the four required questions before continuing.'
+        errEl.classList.remove('hidden')
+      }
+      return
+    }
+
+    const { tier, score } = scoreFit(data)
+    data.fitScore = String(score)
+    data.fitTier = tier
+
+    const btn = form.querySelector('button[type=submit]') as HTMLButtonElement
+    const idleEl = btn.querySelector('[data-state=idle]') as HTMLElement
+    const loadEl = btn.querySelector('[data-state=loading]') as HTMLElement
+    btn.disabled = true
+    idleEl?.classList.add('hidden')
+    loadEl?.classList.remove('hidden')
+
+    try {
+      await fetch('/api/diagnostic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+    } catch { /* non-fatal — still show the result */ }
+
+    ;(window as any).dataLayer = (window as any).dataLayer || []
+    ;(window as any).dataLayer.push({ event: 'diagnostic_submit', fit_tier: tier, fit_score: score })
+
+    // Reveal result
+    const r = RESULTS[tier]
+    document.querySelector('[data-result-tier]')!.textContent = r.tier
+    document.querySelector('[data-result-heading]')!.textContent = r.heading
+    document.querySelector('[data-result-body]')!.textContent = r.body
+    document.querySelector('[data-result-cta-label]')!.textContent = r.ctaLabel
+    ;(document.querySelector('[data-result-cta]') as HTMLAnchorElement).href = r.ctaHref
+
+    form.classList.add('hidden')
+    intro?.classList.add('hidden')
+    result?.classList.remove('hidden')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+</script>

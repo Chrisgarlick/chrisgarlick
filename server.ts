@@ -353,6 +353,73 @@ app.get('/api/tools/audit/logs', async (c) => {
 })
 
 // ---------------------------------------------------------------------------
+// Diagnostic: 5-question lead qualifier. Stores submission, optional internal notify.
+// ---------------------------------------------------------------------------
+
+app.post('/api/diagnostic', async (c) => {
+  let body: Record<string, any>
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ error: 'Invalid request body.' }, 400)
+  }
+  if (body._hp) return c.json({ ok: true })
+
+  // Minimal required fields — the other questions are nice-to-have
+  if (!body.businessType || !body.task || !body.hours || !body.priority) {
+    return c.json({ error: 'Missing required fields.' }, 400)
+  }
+
+  const ip = c.req.header('X-Forwarded-For')?.split(',')[0]?.trim() || c.req.header('X-Real-IP') || null
+  const userAgent = c.req.header('User-Agent') || null
+
+  try {
+    const formRows = await sql`SELECT id FROM forms WHERE slug = 'diagnostic' LIMIT 1`
+    if (formRows.length > 0) {
+      const formId = (formRows[0] as any).id
+      await sql`
+        INSERT INTO form_submissions (form_id, data, ip_address, user_agent)
+        VALUES (${formId}, ${JSON.stringify(body)}::jsonb, ${ip}, ${userAgent})
+      `
+    }
+  } catch (err: any) {
+    console.error('[Diagnostic] DB error:', err)
+  }
+
+  // Internal notify — only for high-fit submissions, to avoid noise
+  if (body.fitTier === 'high') {
+    try {
+      const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
+      const internalTo = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
+      const esc = (s: any) => String(s ?? '').replace(/[<>&]/g, '')
+      await resend.emails.send({
+        from: fromEmail,
+        to: internalTo,
+        subject: `Diagnostic — high-fit lead (${esc(body.businessType)}, ${esc(body.hours)})`,
+        html: `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;color:#111827">
+            <p><strong>High-fit diagnostic submission</strong></p>
+            <ul style="font-size:14px;line-height:1.7">
+              <li>Business type: ${esc(body.businessType)}</li>
+              <li>Task: ${esc(body.task)}</li>
+              <li>Hours/wk: ${esc(body.hours)}</li>
+              <li>Stack: ${esc(body.stack) || '—'}</li>
+              <li>Priority: ${esc(body.priority)}</li>
+              <li>Email: ${esc(body.email) || '—'}</li>
+              <li>Score: ${esc(body.fitScore)} / Tier: ${esc(body.fitTier)}</li>
+              <li>IP: ${esc(ip)}</li>
+            </ul>
+          </div>`,
+      })
+    } catch (err: any) {
+      console.error('[Diagnostic] Notify failed:', err)
+    }
+  }
+
+  return c.json({ ok: true })
+})
+
+// ---------------------------------------------------------------------------
 // Resource gating: email capture, magic-link token, download delivery
 // ---------------------------------------------------------------------------
 

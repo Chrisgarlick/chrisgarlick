@@ -5,7 +5,18 @@ import BlockRenderer from '../../components/BlockRenderer.astro'
 import { cms } from '../../lib/cms'
 
 export async function getStaticPaths() {
-  const serviceSlugs = new Set(['ai-implementation', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms'])
+  const serviceSlugs = new Set([
+    // Outcome verticals — what's actually being built (post-pivot, May 2026)
+    'workflow-automation',
+    'ai-agents',
+    'data-extraction',
+    // Pillar
+    'ai-implementation',
+    // Industry verticals — funnel-context pages, reframed around problem/outcome
+    'ai-for-law-firms',
+    'ai-for-agencies',
+    'ai-for-accountancy-firms',
+  ])
   const client = cms()
   const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
   const pages = result?.data ?? []

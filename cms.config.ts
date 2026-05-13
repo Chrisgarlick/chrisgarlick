@@ -21,6 +21,21 @@ addForm('resource-gate', {
   ],
 })
 
+// Diagnostic form: 5-question lead qualifier. Submissions appear under /admin/forms/diagnostic.
+addForm('diagnostic', {
+  name: 'Diagnostic',
+  fields: [
+    { name: 'businessType', type: 'select',   label: 'Business type', options: ['Agency', 'Professional services', 'E-commerce', 'Other'], required: true },
+    { name: 'task',         type: 'textarea', label: 'Task to automate', required: true },
+    { name: 'hours',        type: 'select',   label: 'Hours per week', options: ['<2h', '2-10h', '10h+'], required: true },
+    { name: 'stack',        type: 'text',     label: 'Existing tools / stack' },
+    { name: 'priority',     type: 'select',   label: 'Priority', options: ['Reduce time', 'Reduce errors', 'Scale without hiring', 'All three'], required: true },
+    { name: 'email',        type: 'email',    label: 'Email (optional)' },
+    { name: 'fitScore',     type: 'text',     label: 'Computed fit score' },
+    { name: 'fitTier',      type: 'text',     label: 'Computed fit tier' },
+  ],
+})
+
 export default defineConfig({
   site: {
     name: 'Chris Garlick',
