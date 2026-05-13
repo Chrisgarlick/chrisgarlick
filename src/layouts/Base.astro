@@ -5,9 +5,13 @@ import '../styles/global.css'
 
 interface Props {
   class?: string
+  /** When true, hides the global nav and replaces the standard footer with a minimal one (privacy link only).
+   *  Used for single-purpose cold-traffic landing pages like /start. */
+  bare?: boolean
 }
 
-const { class: className } = Astro.props
+const { class: className, bare = false } = Astro.props
+const year = new Date().getFullYear()
 ---
 
 <!doctype html>
@@ -34,10 +38,19 @@ const { class: className } = Astro.props
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N6FD4K8Z" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <Nav />
-    <main id="main" class="pt-16">
+    {!bare && <Nav />}
+    <main id="main" class={bare ? '' : 'pt-16'}>
       <slot />
     </main>
-    <Footer />
+    {bare ? (
+      <footer class="border-t border-border bg-bg-muted">
+        <div class="mx-auto flex max-w-[1080px] flex-col items-center justify-between gap-3 px-6 py-8 text-[12px] text-text-tertiary md:flex-row md:px-8">
+          <span>&copy; {year} Chris Garlick</span>
+          <a href="/privacy" class="text-text-tertiary no-underline hover:text-text-secondary">Privacy</a>
+        </div>
+      </footer>
+    ) : (
+      <Footer />
+    )}
   </body>
 </html>

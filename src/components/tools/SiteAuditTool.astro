@@ -23,6 +23,23 @@ const apiUrl = '/api'
     </div>
     <p class="audit-hint">Enter any URL to get a free site health report.</p>
     <p class="audit-error hidden" id="audit-error-validation">Please enter a valid URL (e.g. https://example.com)</p>
+
+    <!-- Segmentation field — optional, used to route post-audit follow-up to the right case study / service page -->
+    <div class="audit-segmentation">
+      <label for="audit-task" class="audit-segmentation-label">
+        What manual task do you wish you never had to do again?
+        <span class="audit-segmentation-optional">— optional, helps me tailor the report</span>
+      </label>
+      <input
+        type="text"
+        id="audit-task"
+        name="task"
+        maxlength="200"
+        placeholder="e.g. client intake, monthly reports, contract review…"
+        class="audit-input audit-segmentation-input"
+        autocomplete="off"
+      />
+    </div>
   </form>
 
   <!-- Loading -->
@@ -168,6 +185,30 @@ const apiUrl = '/api'
     margin-top: 0.5rem;
     font-size: 0.875rem;
     color: var(--color-text-tertiary);
+  }
+
+  .audit-segmentation {
+    margin-top: 1.25rem;
+  }
+
+  .audit-segmentation-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .audit-segmentation-optional {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .audit-segmentation-input {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    font-size: 14px;
   }
 
   .audit-error {
@@ -490,11 +531,14 @@ const apiUrl = '/api'
     submitBtn.textContent = 'Analysing...'
     loading?.classList.remove('hidden')
 
+    const taskInput = document.getElementById('audit-task')
+    const task = (taskInput?.value || '').trim().slice(0, 200) || null
+
     try {
       const res = await fetch(apiUrl + '/tools/audit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, task }),
       })
 
       loading?.classList.add('hidden')

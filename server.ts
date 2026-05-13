@@ -40,6 +40,11 @@ sql`
   )
 `.catch((err: any) => console.warn(`[Audit] Table setup: ${err}`))
 
+// Segmentation field added in Phase 1 of the pivot — captures "what manual task do you wish
+// you never had to do again?" so post-audit follow-ups can be tailored.
+sql`ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS task text`
+  .catch((err: any) => console.warn(`[Audit] task column setup: ${err}`))
+
 // Resource-gating tables
 sql`
   CREATE TABLE IF NOT EXISTS resource_leads (
