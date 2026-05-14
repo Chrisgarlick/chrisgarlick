@@ -21,6 +21,27 @@ addForm('resource-gate', {
   ],
 })
 
+// Audit intake form: the bespoke /audit form (see conditional.md). The full sector-specific
+// payload lives on audit_submissions.data (jsonb) — only the universally-required fields are
+// declared here so the admin's form-submissions view shows something meaningful at a glance.
+addForm('audit-intake', {
+  name: 'AI Readiness Audit intake',
+  fields: [
+    { name: 'name',               type: 'text',     label: 'Your name',      required: true },
+    { name: 'email',               type: 'email',    label: 'Email',          required: true },
+    { name: 'companyName',         type: 'text',     label: 'Company name',   required: true },
+    { name: 'website',             type: 'text',     label: 'Website',        required: true },
+    { name: 'sector',              type: 'select',   label: 'Sector',         required: true,
+      options: ['law-firm', 'accountancy', 'agency', 'consultancy', 'recruitment', 'architecture', 'other'] },
+    { name: 'teamSize',            type: 'select',   label: 'Team size',      required: true,
+      options: ['Just me', '2-5', '6-15', '16-50', '50+'] },
+    { name: 'biggestBottleneck',   type: 'textarea', label: 'Biggest manual bottleneck', required: true },
+    { name: 'budgetRange',         type: 'select',   label: 'Budget',
+      options: ['£500-2k', '£2-5k', '£5-15k', '£15k+', 'Not sure yet'] },
+    { name: 'auditRef',            type: 'text',     label: 'Audit ref' },
+  ],
+})
+
 // Diagnostic form: 5-question lead qualifier. Submissions appear under /admin/forms/diagnostic.
 addForm('diagnostic', {
   name: 'Diagnostic',

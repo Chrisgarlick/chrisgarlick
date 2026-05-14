@@ -116,7 +116,8 @@ server {
     # Static files root
     root /var/www/chrisgarlick/dist/client;
 
-    # Redirect /blog/* → /article/*
+    # Wildcard rewrites stay in this config because the Kritano admin redirects only
+    # support exact paths. Add /blog/* → /article/* below.
     location /blog/ {
         rewrite ^/blog/(.*)$ /article/$1 permanent;
     }
@@ -124,17 +125,9 @@ server {
         return 301 /article;
     }
 
-    # Redirect /start → /audit (page decommissioned 14 May 2026 — superseded by /audit)
-    location = /start {
-        return 301 /audit;
-    }
-    location = /start/ {
-        return 301 /audit;
-    }
-
-    # All other redirects live here, NOT in the Kritano admin /admin/redirects panel.
-    # The CMS admin has a redirects UI but it doesn't actually intercept requests yet
-    # (see kritano-issues.md #17). Until that's fixed upstream, manage everything here.
+    # All exact-path redirects live in the Kritano admin (/admin/redirects). The CMS
+    # writes them to this snippet on every save, then reloads nginx. True 301s.
+    include /etc/nginx/snippets/kritano-redirects.conf;
 
     # Static media files
     location /media/ {

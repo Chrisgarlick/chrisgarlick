@@ -399,6 +399,241 @@ app.get('/api/tools/audit/logs', async (c) => {
 })
 
 // ---------------------------------------------------------------------------
+// /audit — AI Readiness Audit intake (conditional.md). Validates, generates a
+// CG-YYYY-NNN audit_ref, writes to audit_submissions + form_submissions, sends
+// an acknowledgement to the prospect and a notification to chris@chrisgarlick.com.
+// ---------------------------------------------------------------------------
+
+import auditFormSchemaJson from './config/audit-form.json' with { type: 'json' }
+const auditFormSchema = auditFormSchemaJson as any
+
+// Universal required fields — every submission must have these regardless of sector.
+const AUDIT_REQUIRED = ['name', 'email', 'companyName', 'website', 'sector', 'teamSize', 'biggestBottleneck']
+const AUDIT_VALID_SECTORS = new Set(auditFormSchema.sectors.map((s: any) => s.value))
+const URL_RE = /^https?:\/\/[^\s/$.?#].[^\s]*$/i
+
+const auditRateLimits = new Map<string, { count: number; resetAt: number }>()
+function checkAuditRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = auditRateLimits.get(ip)
+  if (!entry || entry.resetAt <= now) {
+    auditRateLimits.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    return true
+  }
+  if (entry.count >= 5) return false
+  entry.count++
+  return true
+}
+setInterval(() => {
+  const now = Date.now()
+  for (const [ip, entry] of auditRateLimits) {
+    if (entry.resetAt <= now) auditRateLimits.delete(ip)
+  }
+}, 10 * 60 * 1000)
+
+// Generate CG-YYYY-NNN audit_ref. NNN is per-year sequence based on existing rows.
+// Race-safe via the unique constraint on audit_ref — if two submissions land in the
+// same millisecond and both pick the same number, the second INSERT fails and we retry.
+async function nextAuditRef(): Promise<string> {
+  const year = new Date().getFullYear()
+  const rows = await sql`
+    SELECT COALESCE(MAX(CAST(SPLIT_PART(audit_ref, '-', 3) AS INTEGER)), 0) AS max_n
+    FROM audit_submissions
+    WHERE audit_ref LIKE ${'CG-' + year + '-%'}
+  `
+  const nextN = ((rows[0] as any).max_n || 0) + 1
+  return `CG-${year}-${String(nextN).padStart(3, '0')}`
+}
+
+app.post('/api/audit/submit', async (c) => {
+  let body: Record<string, any>
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ error: 'Invalid request body.' }, 400)
+  }
+
+  // Honeypot
+  if (body._hp) return c.json({ ok: true })
+  delete (body as any)._hp
+
+  // Rate limit
+  const ip = clientIp(c)
+  if (!checkAuditRateLimit(ip)) {
+    return c.json({ error: 'Too many requests. Please try again later.' }, 429)
+  }
+
+  // Required-field check
+  for (const field of AUDIT_REQUIRED) {
+    const v = body[field]
+    if (typeof v !== 'string' || v.trim().length === 0) {
+      return c.json({ error: `Missing required field: ${field}` }, 400)
+    }
+  }
+
+  // Format checks
+  const email = String(body.email).trim().toLowerCase()
+  if (!EMAIL_RE.test(email)) return c.json({ error: 'Please enter a valid email address.' }, 400)
+
+  const website = String(body.website).trim()
+  if (!URL_RE.test(website)) return c.json({ error: 'Please enter a valid website URL.' }, 400)
+
+  if (!AUDIT_VALID_SECTORS.has(body.sector)) {
+    return c.json({ error: 'Invalid sector selection.' }, 400)
+  }
+
+  const biggestBottleneck = String(body.biggestBottleneck).trim()
+  if (biggestBottleneck.length < 50) {
+    return c.json({ error: 'Please give a bit more detail on your biggest bottleneck (50+ characters).' }, 400)
+  }
+
+  const userAgent = c.req.header('User-Agent') || null
+  const privacyNoticeVersion = auditFormSchema.privacy_notice_version
+
+  // Allocate an audit_ref. Retry once on collision (unique constraint race).
+  let auditRef = await nextAuditRef()
+  let submissionId: string | null = null
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const rows = await sql`
+        INSERT INTO audit_submissions (
+          audit_ref, email, data, status, ip_address, user_agent, privacy_notice_version
+        ) VALUES (
+          ${auditRef}, ${email}, ${JSON.stringify(body)}::jsonb, 'submitted',
+          ${ip}, ${userAgent}, ${privacyNoticeVersion}
+        )
+        RETURNING id
+      `
+      submissionId = (rows[0] as any).id
+      break
+    } catch (err: any) {
+      // Postgres unique-violation = 23505. Retry once with the next number.
+      if (err?.code === '23505' && attempt === 0) {
+        auditRef = await nextAuditRef()
+        continue
+      }
+      console.error('[Audit] audit_submissions insert failed:', err)
+      return c.json({ error: 'Could not save your submission. Please try again.' }, 500)
+    }
+  }
+
+  // Mirror into form_submissions so the entry shows up in /admin/forms/audit-intake
+  try {
+    const formRows = await sql`SELECT id FROM forms WHERE slug = 'audit-intake' LIMIT 1`
+    if (formRows.length > 0) {
+      const formId = (formRows[0] as any).id
+      const summary = {
+        name: body.name,
+        email,
+        companyName: body.companyName,
+        website,
+        sector: body.sector,
+        teamSize: body.teamSize,
+        biggestBottleneck,
+        budgetRange: body.budgetRange || null,
+        auditRef,
+      }
+      await sql`
+        INSERT INTO form_submissions (form_id, data, ip_address, user_agent)
+        VALUES (${formId}, ${JSON.stringify(summary)}::jsonb, ${ip}, ${userAgent})
+      `
+    }
+  } catch (err: any) {
+    console.error('[Audit] form_submissions mirror failed:', err)
+    // Non-fatal — audit_submissions has the canonical record
+  }
+
+  const fromEmail = process.env.EMAIL_FROM || 'Chris Garlick <chrisgarlick@kritano.com>'
+  const esc = (s: any) => String(s ?? '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]!))
+
+  // ── Transactional acknowledgement to the prospect ───────────────
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      replyTo: process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com',
+      subject: `Your AI readiness audit is being prepared — ${auditRef}`,
+      html: `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#111827">
+          <p style="font-size:15px;line-height:1.6">Hi ${esc(body.name).split(' ')[0]},</p>
+          <p style="font-size:15px;line-height:1.6">Thanks for your audit request. I'm reviewing your details and will have a personalised AI readiness report back to you within 24 hours.</p>
+          <p style="font-size:15px;line-height:1.6">It will cover the manual workflows I've identified in your business, what each one would look like automated, indicative build costs, and a recommended first engagement.</p>
+          <p style="font-size:15px;line-height:1.6">If you'd like to add anything before I start, reply to this email.</p>
+          <p style="font-size:15px;line-height:1.6">Chris</p>
+          <p style="font-size:12px;color:#6b7280;margin-top:24px">Reference: ${auditRef} · <a href="https://chrisgarlick.com" style="color:#6b7280">chrisgarlick.com</a></p>
+        </div>
+      `,
+    })
+  } catch (err: any) {
+    console.error('[Audit] Acknowledgement email failed:', err)
+    // Non-fatal — submission is stored, Chris can follow up manually
+  }
+
+  // ── Notification to Chris's personal inbox ──────────────────────
+  try {
+    const internalTo = process.env.CONTACT_EMAIL || 'cgarlick94@gmail.com'
+    const sectorFieldsBlock = Object.entries(body)
+      .filter(([k]) => !['_hp', 'name', 'email', 'companyName', 'website', 'sector', 'teamSize', 'biggestBottleneck', 'budgetRange', 'sixMonthWin', 'notes', 'referrer'].includes(k))
+      .map(([k, v]) => `<li><strong>${esc(k)}:</strong> ${esc(Array.isArray(v) ? v.join(', ') : v)}</li>`)
+      .join('')
+
+    await resend.emails.send({
+      from: fromEmail,
+      to: internalTo,
+      replyTo: email,
+      subject: `New audit request: ${esc(body.companyName)} (${esc(body.sector)}) — ${auditRef}`,
+      html: `
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:640px;color:#111827">
+          <p style="font-size:14px;color:#6b7280;margin:0 0 8px 0">${auditRef}</p>
+          <h2 style="font-size:20px;margin:0 0 16px 0">${esc(body.companyName)}</h2>
+
+          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px">
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280;width:140px">Name</td><td style="padding:6px 0"><strong>${esc(body.name)}</strong></td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Email</td><td style="padding:6px 0"><a href="mailto:${esc(email)}">${esc(email)}</a></td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Website</td><td style="padding:6px 0"><a href="${esc(website)}">${esc(website)}</a></td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Sector</td><td style="padding:6px 0"><strong>${esc(body.sector)}</strong></td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Team size</td><td style="padding:6px 0">${esc(body.teamSize)}</td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Budget</td><td style="padding:6px 0">${esc(body.budgetRange || '—')}</td></tr>
+            <tr><td style="padding:6px 12px 6px 0;color:#6b7280">Referrer</td><td style="padding:6px 0">${esc(body.referrer || '—')}</td></tr>
+          </table>
+
+          <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin:20px 0 8px 0">Biggest bottleneck</h3>
+          <p style="font-size:14px;line-height:1.6;padding:12px;background:#f9fafb;border-left:3px solid #B5522F;margin:0">${esc(body.biggestBottleneck)}</p>
+
+          ${body.sixMonthWin ? `
+            <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin:20px 0 8px 0">Six-month win</h3>
+            <p style="font-size:14px;line-height:1.6;margin:0">${esc(body.sixMonthWin)}</p>
+          ` : ''}
+
+          ${body.notes ? `
+            <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin:20px 0 8px 0">Anything else they said</h3>
+            <p style="font-size:14px;line-height:1.6;margin:0">${esc(body.notes)}</p>
+          ` : ''}
+
+          <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin:20px 0 8px 0">Sector-specific answers</h3>
+          <ul style="font-size:13px;line-height:1.7;padding-left:20px;margin:0">${sectorFieldsBlock || '<li>None</li>'}</ul>
+
+          <p style="font-size:12px;color:#9ca3af;margin-top:24px">IP: ${esc(ip)} · UA: ${esc(userAgent)}</p>
+        </div>
+      `,
+    })
+
+    // Log this outbound email so we have a record (audit-delivery later writes here too)
+    if (submissionId) {
+      sql`
+        INSERT INTO outbound_email_log (audit_submission_id, to_email, subject, template)
+        VALUES (${submissionId}, ${internalTo}, ${`New audit request: ${body.companyName} (${body.sector}) — ${auditRef}`}, 'audit_internal_notify')
+      `.catch((err: any) => console.error('[Audit] outbound_email_log notify-write failed:', err))
+    }
+  } catch (err: any) {
+    console.error('[Audit] Internal notify failed:', err)
+  }
+
+  return c.json({ ok: true, auditRef })
+})
+
+// ---------------------------------------------------------------------------
 // Diagnostic: 5-question lead qualifier. Stores submission, optional internal notify.
 // ---------------------------------------------------------------------------
 

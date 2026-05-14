@@ -243,17 +243,20 @@ const sectorOptions = schema.sectors
         <p id="form-error" class="hidden audit-form-error"></p>
       </form>
 
-      <!-- ── Success panel (A2 placeholder — A3 will replace with real submit) ── -->
+      <!-- ── Success panel (shown after a successful POST) ──────── -->
       <div id="success-panel" class="hidden mt-12 border-l-2 border-accent pl-6 md:pl-7">
-        <p class="mb-2 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">Form complete</p>
+        <p class="mb-2 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">Submitted</p>
         <h2 class="mb-4 font-display text-[28px] leading-[1.15] text-text-primary md:text-[36px]">
-          Got it. Thanks.
+          Your audit is being prepared.
         </h2>
+        <p class="mb-4 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
+          I'll review your details and send back a personalised AI readiness report within 24 hours. It covers the workflows worth automating, indicative pricing, and a recommended first engagement.
+        </p>
         <p class="mb-6 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
-          (A2 placeholder. This will become the real "Your audit is being prepared, 24-hour turnaround" confirmation once the submission endpoint is wired in A3.)
+          Check your inbox for a confirmation email. If anything else comes to mind in the meantime, reply to it and I'll fold it into the audit.
         </p>
         <details class="mt-6 text-[12px] text-text-tertiary">
-          <summary class="cursor-pointer font-body uppercase tracking-widest">Captured data (dev)</summary>
+          <summary class="cursor-pointer font-body uppercase tracking-widest">Submission details</summary>
           <pre id="submission-debug" class="mt-3 max-h-[400px] overflow-auto rounded-[3px] border border-border bg-bg-surface p-3 text-[11px] leading-relaxed"></pre>
         </details>
       </div>
@@ -555,8 +558,8 @@ const sectorOptions = schema.sectors
   // ── Live conditional refresh on any change ──────────────────────
   form?.addEventListener('change', refreshConditionals)
 
-  // ── Submit (A2 placeholder: just log + show success state) ─────
-  form?.addEventListener('submit', (e) => {
+  // ── Submit — real POST to /api/audit/submit ─────────────────────
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault()
     const result = validateStep(currentStep)
     if (!result.ok) {
@@ -564,29 +567,61 @@ const sectorOptions = schema.sectors
       show(formError)
       return
     }
-
     if (!form) return
+
+    const submit = document.getElementById('submit-btn') as HTMLButtonElement
+    submit.disabled = true
+    const originalLabel = submit.textContent
+    submit.textContent = 'Sending…'
+    hide(formError)
+
+    // Collect form data, coercing multiselect repeats into arrays
     const fd = new FormData(form)
-    // Collapse multiselect values (multiple entries per name) into arrays
     const data: Record<string, any> = {}
     for (const key of new Set(fd.keys())) {
-      if (key === '_hp') continue
       const values = fd.getAll(key).filter(Boolean)
+      if (values.length === 0) continue
       data[key] = values.length > 1 ? values : values[0]
     }
 
-    // A2 placeholder behaviour. A3 will replace this with a real POST.
-    console.log('[audit] submission captured (not yet sent):', data)
-    if (debugOut) debugOut.textContent = JSON.stringify(data, null, 2)
+    try {
+      const res = await fetch('/api/audit/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const json = await res.json().catch(() => ({}))
 
-    ;(window as any).dataLayer = (window as any).dataLayer || []
-    ;(window as any).dataLayer.push({ event: 'audit_form_submit_local', sector: data.sector || null })
+      if (!res.ok) {
+        formError.textContent = json.error || 'Something went wrong. Please try again.'
+        show(formError)
+        submit.disabled = false
+        submit.textContent = originalLabel
+        return
+      }
 
-    hide(introPanel)
-    hide(progressPanel)
-    hide(form)
-    show(successPanel)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+      // GTM event
+      ;(window as any).dataLayer = (window as any).dataLayer || []
+      ;(window as any).dataLayer.push({
+        event: 'audit_form_submit',
+        sector: data.sector || null,
+        audit_ref: json.auditRef || null,
+      })
+
+      if (debugOut) debugOut.textContent = `Audit ref: ${json.auditRef || '(none)'}\n\n${JSON.stringify(data, null, 2)}`
+
+      hide(introPanel)
+      hide(progressPanel)
+      hide(form)
+      show(successPanel)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err: any) {
+      console.error('[audit] submit failed:', err)
+      formError.textContent = 'Network error. Please check your connection and try again.'
+      show(formError)
+      submit.disabled = false
+      submit.textContent = originalLabel
+    }
   })
 
   // ── Initial state ───────────────────────────────────────────────

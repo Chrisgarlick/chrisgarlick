@@ -219,6 +219,27 @@ ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 rm -f /etc/nginx/sites-available/${DOMAIN}-temp
 nginx -t && systemctl reload nginx
 
+# ── 11b. Kritano CMS-managed redirects ──
+# Kritano writes exact-path redirects to a snippet file on every admin save and
+# reloads nginx via passwordless sudo. The main nginx config `include`s this file.
+echo "→ Setting up Kritano CMS-managed redirects..."
+SNIPPET_PATH="/etc/nginx/snippets/kritano-redirects.conf"
+touch "$SNIPPET_PATH"
+chown $APP_USER:$APP_USER "$SNIPPET_PATH"
+chmod 644 "$SNIPPET_PATH"
+
+# Allow the CMS user to validate and reload nginx without a password
+cat > /etc/sudoers.d/cms-nginx << SUDOEOF
+$APP_USER ALL=(root) NOPASSWD: /usr/sbin/nginx -t, /usr/sbin/nginx -s reload
+SUDOEOF
+chmod 440 /etc/sudoers.d/cms-nginx
+
+# Append the env var to .env if not already present
+if ! grep -q '^NGINX_REDIRECTS_SNIPPET=' "$APP_DIR/.env" 2>/dev/null; then
+  echo "NGINX_REDIRECTS_SNIPPET=$SNIPPET_PATH" >> "$APP_DIR/.env"
+  chown $APP_USER:$APP_USER "$APP_DIR/.env"
+fi
+
 # ── 12. Create systemd service ──
 echo "→ Creating systemd service..."
 cat > /etc/systemd/system/chrisgarlick.service << SERVICEEOF
