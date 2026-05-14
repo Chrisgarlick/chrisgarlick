@@ -172,7 +172,9 @@
   if (current === 'accepted') {
     loadGtm()
   } else if (current === 'rejected') {
-    // No load. Don't show banner.
+    // GA4 may have left orphaned cookies behind from a previous accept-then-reject
+    // race. Wipe them now that GA4 isn't loaded (so it can't immediately re-set them).
+    clearGaCookies()
   } else {
     // First visit (null). Show the banner.
     show()
@@ -186,15 +188,16 @@
 
   rejectBtn?.addEventListener('click', () => {
     setConsent('rejected')
-    clearGaCookies()
-    hide()
-    // If GTM is already loaded in memory (user previously accepted, now rejecting),
-    // it'll silently re-set the _ga cookies on the next event it processes. Clearing
-    // cookies while GA4 is still active just clears them for ~50ms. A page reload
-    // fully unloads GA4; the 'rejected' consent state then blocks GTM on next load.
     if ((window as any).__gtmLoaded) {
-      // Tiny delay so the banner hide animation completes before the reload jolts
-      setTimeout(() => window.location.reload(), 150)
+      // GA4 is loaded in memory and re-creates session cookies faster than any
+      // setTimeout delay can compete with. Reload immediately to fully unload it;
+      // the on-load clearGaCookies() above will sweep any cookies that GA4 set
+      // during the brief click-to-reload window.
+      window.location.reload()
+    } else {
+      // GA4 was never loaded — no cookies to fight, just hide the banner.
+      clearGaCookies()
+      hide()
     }
   })
 
