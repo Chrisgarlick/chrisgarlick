@@ -504,7 +504,16 @@ import SEO from '../../components/SEO.astro'
   ])
 
   function renderDetail(d: Detail) {
-    const data = d.data || {}
+    // The postgres-js driver under some Kritano builds returns jsonb as a raw
+    // string instead of a parsed object. Parse defensively so either shape works.
+    let data: Record<string, any> = {}
+    if (d.data) {
+      if (typeof d.data === 'string') {
+        try { data = JSON.parse(d.data) } catch { data = {} }
+      } else {
+        data = d.data as Record<string, any>
+      }
+    }
     $('page-title').textContent = data.companyName || d.audit_ref
 
     $('d-ref').textContent       = d.audit_ref
