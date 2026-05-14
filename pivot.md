@@ -845,7 +845,106 @@ Avoid generic anchor text. Every internal link should use descriptive, keyword-i
 
 Do a full once over of new cluster pages & pillar pages and push them to notion, please tick which ones are already live. 
 
+-----
+
+## Part 11: Status & Remaining Work (as of 13 May 2026)
+
+Snapshot after the May 2026 implementation pass. Almost everything from Phases 1–3 has shipped. The remaining items are deliberately spaced out to avoid flooding Google Search Console — pushing ~30 URLs at once triggers a long "Discovered, currently not indexed" tail.
+
+### Shipped
+
+- **All of Phase 1**: /start page, homepage hero rewrite, audit segmentation field, first article (Automate Client Intake).
+- **All of Phase 2 except case studies**: /services/workflow-automation, /services/ai-agents, /services hub rebuild, /services/ai-implementation pillar expansion, three industry page rewrites, /diagnostic, /about rebuild, /contact pricing anchor.
+- **Most of Phase 3**: /services/data-extraction, "Replacing Manual Data Entry with AI Agents" article, sticky CTA standardisation on all 8 articles, industry-page → outcome-page internal linking, cross-link sweep across pillar/outcomes/industries/articles.
+- **Bonus shipped beyond pivot scope**: FAQ schema on the pillar (was Phase 4), BreadcrumbList JSON-LD on every service page, OG image fallback so new pages don't 404 their social cards, em-dash sweep across all CMS content + brand voice rules in CLAUDE.md.
+
+### Remaining work — sequenced by GSC-friendly cadence
+
+The order below is deliberately paced. Ship one item per week (or per fortnight for the heavier ones) and let Google index each before the next lands. This is what stops the new URLs being lumped together and downranked by association.
+
+#### 1. Article: "What vertical AI implementation actually looks like for a small business"
+- **Lift**: ~1.5 hours of writing time. Same pattern as the existing articles (~1,800 words, full SEO block, sticky CTA, internal links to /services/ai-implementation + /diagnostic).
+- **Target keyword**: "AI implementation small business"
+- **Why it matters**: closes a content gap — the pillar talks about *what* implementation is, this article talks about *who it's for and what it feels like* at small-business scale.
+- **Deploy**: single article rebuild.
+
+#### 2. Resource: Workflow Audit Template
+- **Lift**: ~half a day. Markdown content (~5–7 KB like the prompt library), CMS record with full SEO block + typeset client slug, brand styling already in place from the prompt library.
+- **Shape**: a fillable template (markdown headings the user can copy and complete) that walks a reader through auditing their own workflows to identify automation candidates. Maps directly to the methodology I already pitch on /services/ai-implementation.
+- **Why it matters**: gives /diagnostic a "low fit" landing destination that still feels valuable. Currently low-fit users get the prompt library, which doesn't quite fit "I'm not ready yet" intent.
+
+#### 3. Resource: AI Implementation Checklist
+- **Lift**: ~half a day. Same shape as the audit template.
+- **Shape**: a tactical pre-flight checklist for someone evaluating whether they're ready to commission an implementation (data hygiene, team readiness, technical prerequisites, success-metric definition).
+- **Why it matters**: targets the "evaluating readiness" intent that sits one step before "actually book a call". Strong lead magnet for medium-fit diagnostic submissions.
+
+#### 4. Article: "The 3-step process I use to identify what to automate first"
+- **Lift**: ~1.5 hours. Pattern-matches the existing methodology articles.
+- **Why it matters**: methodology pieces build trust before a discovery call. Currently I have one (the playbook) — adding a second deepens the "this person has a process" signal.
+- **Internal links**: /diagnostic, /tools/site-audit, /services/ai-implementation.
+
+#### 5. Article: "Why I use Astro and Next.js — and what it means for your AI implementation"
+- **Lift**: ~2 hours. More technical than the others; the audience here is the technical-buyer subset.
+- **Why it matters**: differentiates from non-technical AI consultants. The kind of piece that makes a CTO Slack a partner saying "this one actually knows what they're doing."
+- **Internal links**: /about, /services/ai-implementation, /services/data-extraction.
+
+#### 6. /resources hub expansion
+- **Lift**: ~30 minutes once the two new resources above exist. Just CMS records reordering + a cleaner intro on the listing page.
+- **Dependencies**: must come after #2 and #3 ship.
+
+#### 7. Audit follow-up email sequences (T+24h, T+72h)
+- **Lift**: ~half a day. This is the biggest architecture piece left.
+- **What needs building**:
+  - Add an `email` field to the audit submit (currently captures URL + task only)
+  - Store on `audit_logs` with timestamps for sequencer
+  - Write or wire a sequencer (cron or queue) that polls for due sends
+  - Two email templates: T+24h ("your audit didn't cover everything — the time your team spends on \[X\]") and T+72h ("case study relevant to your segmentation field answer")
+  - Resend integration for actual sending (already in place for transactional)
+- **Why it matters**: without it the audit is a one-shot conversion event. With it, audit submissions become a 7-day nurture funnel.
+- **Worth flagging**: this is the only Phase 3/4 item that requires real engineering effort. Everything else is content.
+
+### Deferred until data or client work exists
+
+These can't be shipped on demand — they're gated by real-world signals.
+
+- **Case studies — reframe existing two + add a third**: needs paying client work with measurable outcomes. Current /work pages are positioning-only and labelled INTERNAL. Revisit once a real engagement ships.
+- **A/B test CTA copy on /start and /tools/site-audit**: needs traffic volume to power statistical significance. Defer until LinkedIn outbound is running and analytics show ≥100 weekly /start visits.
+- **Review diagnostic routing data and adjust qualification thresholds**: needs actual diagnostic submissions to analyse. Revisit at ~50 submissions, probably 2–3 months after launch.
+- **Add 4th case study to /work**: same as case studies above.
+- **Plan next industry page** (recruiters / property / consultancy): pivot suggests letting LinkedIn outbound data dictate which sector earns its own page next. Revisit at ~20 outbound conversations.
+
+### Dropped from the original plan
+
+For the record, so they don't get accidentally picked up later:
+
+- **Rename prompt library to `/resources/ai-prompts-for-business-workflows`** and 301-redirect — kept the existing URL on the basis that the resource is already audience-tailored to professional services and the URL is fine.
+- **301 from `/article/what-ai-implementation-means-law-firm` to the playbook** — kept the law-firm article live. It ranks for sector-specific long-tail searches and the playbook article serves a different intent.
+
+### Recommended cadence
+
+One new asset per week is the safest cadence for SEO and for personal bandwidth. A rough four-week plan to clear the content backlog:
+
+| Week | Ship |
+|---|---|
+| 1 | Article: "What vertical AI implementation actually looks like" |
+| 2 | Resource: Workflow Audit Template |
+| 3 | Resource: AI Implementation Checklist |
+| 4 | Article: "The 3-step process I use to identify what to automate first" |
+
+Then a fortnight gap, then:
+
+| Week | Ship |
+|---|---|
+| 6 | Article: "Why I use Astro and Next.js" |
+| 7 | /resources hub expansion |
+| 8–10 | Email-sequence architecture (half-day build + testing + go-live) |
+
+Total: 8–10 weeks to fully complete the pivot from this status point.
+
+-----
+
 *Plan compiled by Claude — May 2026*
 *Based on: Gemini Phase Plan + sitemap analysis + conversion architecture review*
 *v1.1: Industry pages retained and reframed rather than redirected*
 *v1.2: Internal linking architecture added (Part 9)*
+*v1.3: Status snapshot + remaining-work plan added (Part 11), 13 May 2026*

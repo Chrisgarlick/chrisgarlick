@@ -75,6 +75,52 @@ sql`
 sql`CREATE INDEX IF NOT EXISTS resource_downloads_slug_idx ON resource_downloads (resource_slug)`
   .catch((err: any) => console.warn(`[Resources] index setup: ${err}`))
 
+// AI Readiness Audit tables (see conditional.md). audit_submissions holds the workflow state
+// for each /audit form submission; outbound_email_log records each delivery email sent.
+// Kritano's upcoming GDPR feature will register audit_submissions as a custom source via
+// registerGdprSource() once available — until then, gdpr_runbook.md documents the manual SQL.
+sql`
+  CREATE TABLE IF NOT EXISTS audit_submissions (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    audit_ref text NOT NULL UNIQUE,
+    email text NOT NULL,
+    data jsonb NOT NULL,
+    status text NOT NULL DEFAULT 'submitted',
+    pdf_path text,
+    ip_address text,
+    user_agent text,
+    privacy_notice_version text NOT NULL,
+    submitted_at timestamptz NOT NULL DEFAULT now(),
+    sent_at timestamptz,
+    deleted_at timestamptz,
+    deletion_reason text
+  )
+`.catch((err: any) => console.warn(`[Audit] audit_submissions setup: ${err}`))
+
+sql`CREATE INDEX IF NOT EXISTS audit_submissions_email_idx ON audit_submissions (email)`
+  .catch((err: any) => console.warn(`[Audit] email index setup: ${err}`))
+
+sql`CREATE INDEX IF NOT EXISTS audit_submissions_status_idx ON audit_submissions (status)`
+  .catch((err: any) => console.warn(`[Audit] status index setup: ${err}`))
+
+sql`CREATE INDEX IF NOT EXISTS audit_submissions_submitted_at_idx ON audit_submissions (submitted_at)`
+  .catch((err: any) => console.warn(`[Audit] submitted_at index setup: ${err}`))
+
+sql`
+  CREATE TABLE IF NOT EXISTS outbound_email_log (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    audit_submission_id uuid REFERENCES audit_submissions(id) ON DELETE SET NULL,
+    to_email text NOT NULL,
+    subject text NOT NULL,
+    template text NOT NULL,
+    sent_at timestamptz NOT NULL DEFAULT now(),
+    resend_message_id text
+  )
+`.catch((err: any) => console.warn(`[Audit] outbound_email_log setup: ${err}`))
+
+sql`CREATE INDEX IF NOT EXISTS outbound_email_log_to_email_idx ON outbound_email_log (to_email)`
+  .catch((err: any) => console.warn(`[Audit] outbound email index setup: ${err}`))
+
 // ---------------------------------------------------------------------------
 // Form submission → stores in DB + sends email via Resend
 // Standalone route so it works regardless of CMS version

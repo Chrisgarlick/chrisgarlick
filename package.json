@@ -3,12 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cms dev",
-    "build": "cms build",
+    "dev": "bun run build:audit-form && cms dev",
+    "build": "bun run build:audit-form && cms build",
     "start": "bun run ./server.ts",
     "migrate": "cms migrate",
     "migrate:create": "cms migrate:create",
-    "generate": "cms generate"
+    "generate": "cms generate",
+    "build:audit-form": "bun scripts/build-audit-form.mjs"
   },
   "dependencies": {
     "@astrojs/node": "9.1.3",
@@ -25,5 +26,8 @@
     "esbuild",
     "msgpackr-extract",
     "sharp"
-  ]
+  ],
+  "devDependencies": {
+    "yaml": "^2.9.0"
+  }
 }
