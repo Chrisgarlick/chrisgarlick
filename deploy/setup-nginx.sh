@@ -124,6 +124,18 @@ server {
         return 301 /article;
     }
 
+    # Redirect /start → /audit (page decommissioned 14 May 2026 — superseded by /audit)
+    location = /start {
+        return 301 /audit;
+    }
+    location = /start/ {
+        return 301 /audit;
+    }
+
+    # All other redirects live here, NOT in the Kritano admin /admin/redirects panel.
+    # The CMS admin has a redirects UI but it doesn't actually intercept requests yet
+    # (see kritano-issues.md #17). Until that's fixed upstream, manage everything here.
+
     # Static media files
     location /media/ {
         alias /var/www/chrisgarlick/media/;

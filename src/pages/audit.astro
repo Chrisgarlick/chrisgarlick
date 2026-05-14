@@ -10,21 +10,45 @@ const sectorStep = schema.steps.find((s: any) => s.conditional?.on === 'sector')
 const sectorOptions = schema.sectors
 ---
 
-<Base bare={true}>
+<Base>
   <SEO
     slot="head"
-    title="AI Readiness Audit | Chris Garlick"
-    description="Tell me about your business in 4 short steps. I'll send you a personalised AI readiness audit within 24 hours covering specific automations and indicative pricing."
+    title="Free AI Readiness Audit for UK Businesses | Chris Garlick"
+    description="Free personalised AI readiness audit. Tell me about your business in 4 short steps; I'll send back a costed plan covering automation opportunities, indicative pricing and a recommended first build within 24 hours."
     canonical="https://chrisgarlick.com/audit"
-    keywords="ai readiness audit, free ai audit uk, business workflow audit, ai implementation audit, custom ai assessment"
-    noindex={true}
-    jsonLd={{
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'AI Readiness Audit',
-      url: 'https://chrisgarlick.com/audit',
-      description: 'Multi-step intake for a free, personalised AI readiness audit. UK-based businesses.',
-    }}
+    keywords="ai readiness audit, free ai audit uk, business workflow audit, ai implementation audit, custom ai assessment, ai opportunity analysis, ai automation audit, ai readiness check, ai for small business uk"
+    author="Chris Garlick"
+    breadcrumbs={[
+      { name: 'Home',  url: '/' },
+      { name: 'Audit', url: '/audit' },
+    ]}
+    jsonLd={[
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: 'AI Readiness Audit',
+        description: 'Free personalised AI readiness audit for UK businesses. 4-step intake form, costed plan returned within 24 hours.',
+        url: 'https://chrisgarlick.com/audit',
+        provider: {
+          '@type': 'Person',
+          name: 'Chris Garlick',
+          url: 'https://chrisgarlick.com/about',
+        },
+        areaServed: { '@type': 'Country', name: 'United Kingdom' },
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'GBP' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        name: 'How the audit works',
+        step: [
+          { '@type': 'HowToStep', position: 1, name: 'Tell me about your business', text: 'Name, email, company name and website.' },
+          { '@type': 'HowToStep', position: 2, name: 'Pick your sector', text: 'Law firm, accountancy, agency, consultancy, recruitment, architecture, or other professional services.' },
+          { '@type': 'HowToStep', position: 3, name: 'Answer a few sector-specific questions', text: 'How your team operates, what software you use, where the manual time goes.' },
+          { '@type': 'HowToStep', position: 4, name: 'Receive your personalised audit within 24 hours', text: 'Workflows worth automating, indicative pricing, and a recommended first engagement.' },
+        ],
+      },
+    ]}
   />
 
   <section class="py-16 md:py-24">

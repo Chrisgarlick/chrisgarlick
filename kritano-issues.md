@@ -168,6 +168,28 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 
 **Still open — knock-on:** `cms build` still rebuilds admin unconditionally even when the consumer only changes theme/frontend code. For a frontend-only deploy, the admin rebuild is wasted work and re-introduces the OOM risk on small servers (the consumer workaround is `bunx astro build`, which skips it). `cms build` should either skip admin when its source is unchanged (timestamp/hash check on `packages/admin/src/` vs the package's shipped `dist/`), or expose a `--frontend-only` flag, or simply not bundle the admin build into the default consumer build at all (consumers don't have the admin source to build from anyway, post-fix). Right now the rebuild path only makes sense inside the CMS repo itself.
 
+### 17. Redirects admin UI exists but redirects don't actually fire
+**Severity:** High (silent failure — admins add redirects expecting them to work, but the requests aren't intercepted)
+**Description:** The Kritano admin has a `/admin/redirects` page with full CRUD UI: search, add, import/export CSV, hit-count column, status-code per redirect. The data model and UI are clearly built out. But the request-handling layer that would actually intercept incoming requests and serve the 301/302 isn't wired up, so adding a row in the admin has zero effect on traffic.
+
+This is worse than not having the feature at all, because admins reasonably assume "the UI exists, the rows save, therefore redirects work" — and only discover otherwise when an old URL keeps 404ing.
+
+**Reproduced 2026-05-14 on chrisgarlick.com:** the admin already had a populated redirects list (`/apply → /contact`, several `/work/*` → `/work`, several `/blog/*` → `/blog`). None of them actually fire — visiting `/apply` 404s rather than redirecting to `/contact`. The functional redirects on the site (e.g. `/blog/* → /article/*`) all live in `deploy/setup-nginx.sh`.
+
+**Root cause (architectural):** The Kritano CMS server (Hono on :3005) is only in the request path for `/api/*` and `/admin`. Static content is served directly by nginx with `try_files $uri $uri/index.html $uri.html =404` — no fallback to the CMS for missing files. So even if the CMS knows about a redirect, nginx never asks.
+
+**Suggested fixes (pick one):**
+
+1. **CMS-generated nginx include** — when a redirect is added/edited/deleted, the CMS writes `/etc/nginx/snippets/redirects.conf` and triggers `nginx -s reload`. Fast at request time, no architectural change to the request path. Needs the CMS to have write access to that file and shell access to reload — fine for single-server deployments, awkward for managed/multi-server.
+
+2. **Nginx fallback to CMS on 404** — change the consumer nginx config to route 404s to the CMS server, which checks the redirects table and either returns a 301 or serves a real 404. Per-request lookup adds latency but is the cleanest architectural fit. Needs caching to be tolerable at scale.
+
+3. **Astro middleware path** — if the consumer is using `output: 'server'` or `'hybrid'`, an Astro middleware can hit the redirects table on every request. Doesn't work for pure `'static'` consumers (which is what chrisgarlick.com is), so not a universal fix.
+
+Recommended: option 1. Generates static nginx config from the DB on every save, hot-reloads, fast at request time, no consumer architectural change. Awkward only when the CMS doesn't have shell/file access (which is the minority case).
+
+**Interim workaround for consumers:** manage redirects in `deploy/setup-nginx.sh` (or whichever consumer-side server config is in play), not the admin. Document this so admins don't keep adding rows that silently do nothing. Either remove the admin UI entirely until the backend is wired (cleanest), or add a banner: "Heads up: redirects added here don't currently fire on requests. Manage via your server config until the feature is complete."
+
 ### 16. HTML entities in TipTap content render as literal text
 **Severity:** Medium (silent content corruption)
 **Description:** TipTap stores text nodes as plain strings. Kritano's TipTap-to-HTML renderer (`tiptapToHtml` / its `escapeHtml`) correctly escapes ampersands for HTML safety. The combination means any HTML entity written into rich-text content (`&mdash;`, `&rsquo;`, `&hellip;`, etc.) is treated as 7 literal characters, escaped on render (`&amp;mdash;`), and displayed as the literal entity string in the browser.
