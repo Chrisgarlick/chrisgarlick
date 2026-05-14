@@ -1,0 +1,195 @@
+---
+// Cookie consent banner. Brand-consistent, non-blocking, UK GDPR + PECR compliant.
+//
+// Consent states stored in localStorage under `cg-cookie-consent`:
+//   - 'accepted' → GTM/GA4 loaded
+//   - 'rejected' → nothing loaded, any existing _ga cookies cleared
+//   - null       → first visit, banner shown
+//
+// The footer's "Cookie preferences" link dispatches a `cg-show-cookie-banner`
+// CustomEvent which re-renders this banner over the top of the current state.
+//
+// GTM ID is hardcoded here rather than re-fetched from Base.astro to keep the
+// consent logic in one place. If you ever change the GTM ID, update both.
+---
+
+<div id="cookie-banner" class="cookie-banner hidden" role="region" aria-label="Cookie consent" aria-live="polite">
+  <div class="cookie-banner-inner">
+    <p class="cookie-banner-text">
+      I use Google Analytics 4 to understand how visitors find and use this site. It sets cookies. Nothing is set until you choose. <a href="/privacy#cookies" class="cookie-banner-link">Read more</a>.
+    </p>
+    <div class="cookie-banner-actions">
+      <button type="button" id="cookie-reject" class="cookie-btn cookie-btn-secondary">Reject</button>
+      <button type="button" id="cookie-accept" class="cookie-btn cookie-btn-primary">Accept</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 60;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: var(--color-bg-surface);
+    box-shadow: 0 8px 30px rgba(26, 23, 21, 0.12);
+    padding: 1rem 1.25rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .cookie-banner-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (min-width: 720px) {
+    .cookie-banner { padding: 1.25rem 1.5rem; }
+    .cookie-banner-inner {
+      flex-direction: row;
+      align-items: center;
+      gap: 1.5rem;
+    }
+  }
+
+  .cookie-banner-text {
+    flex: 1;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .cookie-banner-link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cookie-banner-link:hover { color: var(--color-accent-hover); }
+
+  .cookie-banner-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .cookie-btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 3px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid;
+    flex: 1;
+  }
+
+  @media (min-width: 720px) {
+    .cookie-btn { flex: initial; min-width: 110px; }
+  }
+
+  .cookie-btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+  .cookie-btn-primary:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+  }
+
+  .cookie-btn-secondary {
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .cookie-btn-secondary:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+
+  .cookie-banner.hidden { display: none; }
+</style>
+
+<script>
+  const STORAGE_KEY = 'cg-cookie-consent'
+  const GTM_ID = 'GTM-N6FD4K8Z'
+
+  function getConsent(): string | null {
+    try { return localStorage.getItem(STORAGE_KEY) } catch { return null }
+  }
+
+  function setConsent(value: 'accepted' | 'rejected'): void {
+    try { localStorage.setItem(STORAGE_KEY, value) } catch { /* ignore */ }
+  }
+
+  // Standard GTM snippet, lifted from Google's docs. Inlined so we can fire it
+  // on demand after consent rather than on page load.
+  function loadGtm(): void {
+    if ((window as any).__gtmLoaded) return
+    ;(window as any).__gtmLoaded = true
+    ;(window as any).dataLayer = (window as any).dataLayer || []
+    ;(window as any).dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+    const f = document.getElementsByTagName('script')[0]
+    const j = document.createElement('script')
+    j.async = true
+    j.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`
+    f.parentNode?.insertBefore(j, f)
+  }
+
+  // When user explicitly rejects, also wipe any _ga* cookies that may have been
+  // set on a previous visit when they accepted. Cookies are first-party,
+  // path-scoped to / and domain-scoped to chrisgarlick.com.
+  function clearGaCookies(): void {
+    const expiry = 'expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    const hostname = window.location.hostname
+    document.cookie.split(';').forEach((c) => {
+      const name = c.split('=')[0].trim()
+      if (!name.startsWith('_ga') && !name.startsWith('_gid') && !name.startsWith('_gat')) return
+      document.cookie = `${name}=; ${expiry}; path=/`
+      document.cookie = `${name}=; ${expiry}; path=/; domain=${hostname}`
+      document.cookie = `${name}=; ${expiry}; path=/; domain=.${hostname}`
+    })
+  }
+
+  const banner = document.getElementById('cookie-banner') as HTMLElement | null
+  const acceptBtn = document.getElementById('cookie-accept') as HTMLButtonElement | null
+  const rejectBtn = document.getElementById('cookie-reject') as HTMLButtonElement | null
+
+  function show(): void { banner?.classList.remove('hidden') }
+  function hide(): void { banner?.classList.add('hidden') }
+
+  // On first paint, decide whether to load GTM or show the banner.
+  const current = getConsent()
+  if (current === 'accepted') {
+    loadGtm()
+  } else if (current === 'rejected') {
+    // No load. Don't show banner.
+  } else {
+    // First visit (null). Show the banner.
+    show()
+  }
+
+  acceptBtn?.addEventListener('click', () => {
+    setConsent('accepted')
+    loadGtm()
+    hide()
+  })
+
+  rejectBtn?.addEventListener('click', () => {
+    setConsent('rejected')
+    clearGaCookies()
+    hide()
+  })
+
+  // Footer "Cookie preferences" link fires this custom event to reopen the banner.
+  window.addEventListener('cg-show-cookie-banner', () => show())
+</script>

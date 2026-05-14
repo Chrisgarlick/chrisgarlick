@@ -29,9 +29,21 @@ const year = new Date().getFullYear()
       <div class="flex gap-6">
         <a href="/privacy" class="text-text-tertiary no-underline hover:text-text-secondary">Privacy</a>
         <a href="/terms" class="text-text-tertiary no-underline hover:text-text-secondary">Terms</a>
+        <button type="button" data-cookie-prefs class="text-text-tertiary no-underline hover:text-text-secondary bg-transparent border-0 p-0 cursor-pointer font-body text-[12px]">
+          Cookie preferences
+        </button>
         <a href="/sitemap-index.xml" class="text-text-tertiary no-underline hover:text-text-secondary">Sitemap</a>
       </div>
       <span>Built on <a href="https://github.com/Kritano/Kritano-cms" class="text-text-tertiary no-underline hover:text-text-secondary">Kritano CMS</a></span>
     </div>
   </div>
 </footer>
+
+<script>
+  // Footer "Cookie preferences" button re-opens the cookie banner.
+  document.querySelectorAll('[data-cookie-prefs]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      window.dispatchEvent(new Event('cg-show-cookie-banner'))
+    })
+  })
+</script>

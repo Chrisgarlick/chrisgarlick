@@ -6,8 +6,27 @@ import SEO from '../components/SEO.astro'
 <Base>
   <SEO
     slot="head"
-    title="Terms of Service — Chris Garlick"
-    description="Terms of service for chrisgarlick.com. Governed by the laws of England and Wales."
+    title="Terms of Service | Chris Garlick"
+    description="Terms of service for chrisgarlick.com — use of the site, intellectual property, application forms, limitation of liability. Governed by the laws of England and Wales."
+    canonical="https://chrisgarlick.com/terms"
+    ogType="article"
+    author="Chris Garlick"
+    breadcrumbs={[
+      { name: 'Home',             url: '/' },
+      { name: 'Terms of Service', url: '/terms' },
+    ]}
+    jsonLd={{
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Terms of Service',
+      url: 'https://chrisgarlick.com/terms',
+      description: 'Terms of service for chrisgarlick.com, governed by the laws of England and Wales.',
+      inLanguage: 'en-GB',
+      isPartOf: { '@type': 'WebSite', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+      author: { '@type': 'Person', name: 'Chris Garlick', url: 'https://chrisgarlick.com/about' },
+      publisher: { '@type': 'Organization', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+      dateModified: '2026-05-02',
+    }}
   />
 
   <section class="py-20 md:py-24">
