@@ -505,7 +505,7 @@ app.post('/api/audit/submit', async (c) => {
         INSERT INTO audit_submissions (
           audit_ref, email, data, status, ip_address, user_agent, privacy_notice_version
         ) VALUES (
-          ${auditRef}, ${email}, ${JSON.stringify(body)}::jsonb, 'submitted',
+          ${auditRef}, ${email}, ${body}, 'submitted',
           ${ip}, ${userAgent}, ${privacyNoticeVersion}
         )
         RETURNING id
