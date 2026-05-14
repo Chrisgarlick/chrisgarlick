@@ -188,6 +188,14 @@
     setConsent('rejected')
     clearGaCookies()
     hide()
+    // If GTM is already loaded in memory (user previously accepted, now rejecting),
+    // it'll silently re-set the _ga cookies on the next event it processes. Clearing
+    // cookies while GA4 is still active just clears them for ~50ms. A page reload
+    // fully unloads GA4; the 'rejected' consent state then blocks GTM on next load.
+    if ((window as any).__gtmLoaded) {
+      // Tiny delay so the banner hide animation completes before the reload jolts
+      setTimeout(() => window.location.reload(), 150)
+    }
   })
 
   // Footer "Cookie preferences" link fires this custom event to reopen the banner.
