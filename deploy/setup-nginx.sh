@@ -127,7 +127,9 @@ server {
 
     # All exact-path redirects live in the Kritano admin (/admin/redirects). The CMS
     # writes them to this snippet on every save, then reloads nginx. True 301s.
-    include /etc/nginx/snippets/kritano-redirects.conf;
+    # Note: the snippet lives in a deploy-owned subdirectory so atomic-write (.tmp →
+    # rename) works without weakening permissions on the parent snippets/ directory.
+    include /etc/nginx/snippets/kritano/redirects.conf;
 
     # Static media files
     location /media/ {

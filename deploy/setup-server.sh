@@ -220,10 +220,16 @@ rm -f /etc/nginx/sites-available/${DOMAIN}-temp
 nginx -t && systemctl reload nginx
 
 # ── 11b. Kritano CMS-managed redirects ──
-# Kritano writes exact-path redirects to a snippet file on every admin save and
-# reloads nginx via passwordless sudo. The main nginx config `include`s this file.
+# Kritano writes exact-path redirects to a snippet file on every admin save (atomic:
+# writes .tmp first, then renames). To do that it needs WRITE access to the parent
+# directory, not just the snippet file — so we give it its own subdirectory under
+# /etc/nginx/snippets/ rather than weakening permissions on the shared snippets dir.
 echo "→ Setting up Kritano CMS-managed redirects..."
-SNIPPET_PATH="/etc/nginx/snippets/kritano-redirects.conf"
+SNIPPET_DIR="/etc/nginx/snippets/kritano"
+SNIPPET_PATH="$SNIPPET_DIR/redirects.conf"
+mkdir -p "$SNIPPET_DIR"
+chown $APP_USER:$APP_USER "$SNIPPET_DIR"
+chmod 755 "$SNIPPET_DIR"
 touch "$SNIPPET_PATH"
 chown $APP_USER:$APP_USER "$SNIPPET_PATH"
 chmod 644 "$SNIPPET_PATH"

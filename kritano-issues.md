@@ -168,27 +168,76 @@ Option 1 is the long-term goal if Kritano CMS becomes a self-serve product. Opti
 
 **Still open — knock-on:** `cms build` still rebuilds admin unconditionally even when the consumer only changes theme/frontend code. For a frontend-only deploy, the admin rebuild is wasted work and re-introduces the OOM risk on small servers (the consumer workaround is `bunx astro build`, which skips it). `cms build` should either skip admin when its source is unchanged (timestamp/hash check on `packages/admin/src/` vs the package's shipped `dist/`), or expose a `--frontend-only` flag, or simply not bundle the admin build into the default consumer build at all (consumers don't have the admin source to build from anyway, post-fix). Right now the rebuild path only makes sense inside the CMS repo itself.
 
-### 17. Redirects admin UI exists but redirects don't actually fire
-**Severity:** High (silent failure — admins add redirects expecting them to work, but the requests aren't intercepted)
-**Description:** The Kritano admin has a `/admin/redirects` page with full CRUD UI: search, add, import/export CSV, hit-count column, status-code per redirect. The data model and UI are clearly built out. But the request-handling layer that would actually intercept incoming requests and serve the 301/302 isn't wired up, so adding a row in the admin has zero effect on traffic.
+### 17. Redirects admin UI exists but redirects don't actually fire (FIXED with caveats)
+**Severity:** High (was: silent failure — admins added redirects expecting them to work, but requests weren't intercepted)
+**Description:** The Kritano admin had a `/admin/redirects` page with full CRUD UI (search, add, import/export CSV, hit-count column, status-code per redirect) but no backend wiring — adding a row had zero effect on traffic. Static content was served directly by nginx; the CMS server was only in the request path for `/api/*` and `/admin`, so even if the CMS knew about a redirect, nginx never asked.
 
-This is worse than not having the feature at all, because admins reasonably assume "the UI exists, the rows save, therefore redirects work" — and only discover otherwise when an old URL keeps 404ing.
+**Reproduced 2026-05-14 on chrisgarlick.com:** the admin already had 13 populated redirects (`/apply → /contact`, several `/work/*`, several `/blog/*`). None fired. Visiting `/apply` 404'd rather than redirecting to `/contact`.
 
-**Reproduced 2026-05-14 on chrisgarlick.com:** the admin already had a populated redirects list (`/apply → /contact`, several `/work/*` → `/work`, several `/blog/*` → `/blog`). None of them actually fire — visiting `/apply` 404s rather than redirecting to `/contact`. The functional redirects on the site (e.g. `/blog/* → /article/*`) all live in `deploy/setup-nginx.sh`.
+**Fix (landed 2026-05-14):** Kritano now uses the **CMS-generated nginx include** pattern. On every admin save the CMS writes the entire redirects table to a snippet file at the path in `NGINX_REDIRECTS_SNIPPET`, then shells out `sudo /usr/sbin/nginx -s reload`. nginx reads the snippet via an `include` directive in the main server block and serves true 301s at request time. No build needed, no Astro middleware, no per-request DB lookup.
 
-**Root cause (architectural):** The Kritano CMS server (Hono on :3005) is only in the request path for `/api/*` and `/admin`. Static content is served directly by nginx with `try_files $uri $uri/index.html $uri.html =404` — no fallback to the CMS for missing files. So even if the CMS knows about a redirect, nginx never asks.
+**Consumer setup steps required to make this work** (chrisgarlick.com walked through this on 2026-05-14 — captured here because the current Kritano docs miss some of it):
 
-**Suggested fixes (pick one):**
+1. Create a deploy-user-owned subdirectory under `/etc/nginx/snippets/` (NOT just a chown'd file in the shared snippets dir — see "Caveat 1" below):
+   ```
+   sudo mkdir -p /etc/nginx/snippets/kritano
+   sudo chown deploy:deploy /etc/nginx/snippets/kritano
+   sudo chmod 755 /etc/nginx/snippets/kritano
+   sudo -u deploy touch /etc/nginx/snippets/kritano/redirects.conf
+   ```
 
-1. **CMS-generated nginx include** — when a redirect is added/edited/deleted, the CMS writes `/etc/nginx/snippets/redirects.conf` and triggers `nginx -s reload`. Fast at request time, no architectural change to the request path. Needs the CMS to have write access to that file and shell access to reload — fine for single-server deployments, awkward for managed/multi-server.
+2. Sudoers entry allowing the CMS user to validate and reload nginx without a password:
+   ```
+   echo 'deploy ALL=(root) NOPASSWD: /usr/sbin/nginx -t, /usr/sbin/nginx -s reload' | sudo tee /etc/sudoers.d/cms-nginx > /dev/null
+   sudo chmod 440 /etc/sudoers.d/cms-nginx
+   sudo visudo -c
+   ```
 
-2. **Nginx fallback to CMS on 404** — change the consumer nginx config to route 404s to the CMS server, which checks the redirects table and either returns a 301 or serves a real 404. Per-request lookup adds latency but is the cleanest architectural fit. Needs caching to be tolerable at scale.
+3. Set the env var in the CMS environment file (substituting the actual user and path):
+   ```
+   echo 'NGINX_REDIRECTS_SNIPPET=/etc/nginx/snippets/kritano/redirects.conf' | sudo tee -a /var/www/chrisgarlick/.env > /dev/null
+   ```
 
-3. **Astro middleware path** — if the consumer is using `output: 'server'` or `'hybrid'`, an Astro middleware can hit the redirects table on every request. Doesn't work for pure `'static'` consumers (which is what chrisgarlick.com is), so not a universal fix.
+4. Add an `include` line inside the main `server { }` block of the site's nginx config:
+   ```
+   include /etc/nginx/snippets/kritano/redirects.conf;
+   ```
 
-Recommended: option 1. Generates static nginx config from the DB on every save, hot-reloads, fast at request time, no consumer architectural change. Awkward only when the CMS doesn't have shell/file access (which is the minority case).
+5. Validate and reload nginx, then restart the CMS service. The CMS writes the snippet from the DB on boot and reloads nginx itself.
 
-**Interim workaround for consumers:** manage redirects in `deploy/setup-nginx.sh` (or whichever consumer-side server config is in play), not the admin. Document this so admins don't keep adding rows that silently do nothing. Either remove the admin UI entirely until the backend is wired (cleanest), or add a banner: "Heads up: redirects added here don't currently fire on requests. Manage via your server config until the feature is complete."
+**Caveat 1 — directory write access, not file write access.** The Kritano write logic is atomic (writes `redirects.conf.tmp` then renames). Atomic write requires write access to the **parent directory**, not just to the existing file. The original setup docs said "chown the snippet file to the deploy user" — that wasn't enough. Result: first restart fails with `[nginx-redirects] Write failed: Error: EACCES: permission denied, open '/etc/nginx/snippets/kritano-redirects.conf.tmp'` and no redirects are written.
+
+The correct pattern is what's documented above: a deploy-owned **subdirectory** dedicated to Kritano's snippets, rather than weakening permissions on the shared `/etc/nginx/snippets/` directory (which also holds things like `security-headers.conf` that the deploy user shouldn't be able to modify).
+
+**Caveat 2 — error message is opaque.** The `EACCES` log line currently doesn't hint at the most common cause. Worth changing the log to something like:
+```
+[nginx-redirects] Write failed (EACCES: permission denied on .tmp file).
+   Most common cause: the CMS user does not have write access to the parent directory.
+   Atomic write requires directory write permission, not just file write permission.
+   See <docs link> for setup instructions.
+```
+
+**Caveat 3 — heredoc instructions are paste-fragile.** The current setup docs use a multiline `sudo bash -c 'cat > /etc/sudoers.d/cms-nginx << EOF ... EOF'` pattern. When admins paste from a code block with any leading whitespace on the closing `EOF`, bash doesn't recognise the delimiter and the command hangs/produces empty output. Single-line `echo … | sudo tee` is paste-robust and worth using in docs instead.
+
+**Recommendation for Kritano (still open):** make the server setup automatic. There's no reason a consumer should run five sequential sudo commands by hand. Suggested:
+
+```bash
+# Run once after first install, on the box, as root
+bunx cms setup:nginx-redirects --user deploy
+```
+
+This command would:
+1. Detect the running CMS user (or take it as a flag).
+2. Create `/etc/nginx/snippets/kritano/` with the right ownership and perms.
+3. Touch `redirects.conf` with the right ownership and perms.
+4. Write `/etc/sudoers.d/cms-nginx` with the correct rule (after `visudo -c` validation).
+5. Append `NGINX_REDIRECTS_SNIPPET=…` to the project's `.env` if not already present.
+6. Print the single nginx-config line for the admin to add to their site config (or, if the site config path is detectable, append it automatically).
+7. Idempotent — re-running is safe.
+
+A 60-second one-command setup vs the current 5-step manual dance is the difference between "Kritano just works" and "we lost an hour to permission errors". Worth doing.
+
+**Reproduced fix and setup quirks 2026-05-14 on chrisgarlick.com:** all 13 admin redirects now fire as true 301s. `/start → /audit` was added in the admin UI immediately after the fix landed and worked first try. Snippet file regenerates atomically on every admin save and nginx auto-reloads via the sudoers rule.
 
 ### 16. HTML entities in TipTap content render as literal text
 **Severity:** Medium (silent content corruption)

@@ -634,6 +634,135 @@ app.post('/api/audit/submit', async (c) => {
 })
 
 // ---------------------------------------------------------------------------
+// Self-serve audit data deletion. The audit-delivery email (Phase C) will include
+// a tokenised link `/data/delete?t=<token>`. Token is HMAC-signed, no expiry, so
+// the link in the email keeps working indefinitely — a prospect should always be
+// able to ask for their data to be removed.
+//
+// Two-step flow to avoid email-prefetcher / link-scanner accidental triggers:
+//   GET /api/audit/preview-delete?t=<token>  → returns submission metadata (no delete)
+//   POST /api/audit/confirm-delete            → actually performs the deletion
+// ---------------------------------------------------------------------------
+
+function signAuditDeleteToken(submissionId: string): string {
+  // Token shape: { k: 'ad' (kind discriminator), s: submissionId }. No expiry.
+  const payload = { k: 'ad', s: submissionId }
+  const body = b64url(JSON.stringify(payload))
+  const sig = createHmac('sha256', TOKEN_SECRET).update(body).digest()
+  return `${body}.${b64url(sig)}`
+}
+
+function verifyAuditDeleteToken(token: string | undefined | null): { submissionId: string } | null {
+  if (!token) return null
+  const [body, sig] = token.split('.')
+  if (!body || !sig) return null
+  const expected = createHmac('sha256', TOKEN_SECRET).update(body).digest()
+  const provided = b64urlDecode(sig)
+  if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) return null
+  try {
+    const payload = JSON.parse(b64urlDecode(body).toString('utf8'))
+    if (payload.k !== 'ad' || typeof payload.s !== 'string') return null
+    return { submissionId: payload.s }
+  } catch { return null }
+}
+
+// Tiny utility endpoint so test tokens can be minted from the dev box. Only enabled
+// when ADMIN_SECRET env var is set and presented as a bearer token. Hand-mint a delete
+// link with: curl -H "Authorization: Bearer $ADMIN_SECRET" \
+//                 "https://chrisgarlick.com/api/audit/mint-delete-token?id=<submission-id>"
+app.get('/api/audit/mint-delete-token', async (c) => {
+  const adminSecret = process.env.ADMIN_SECRET
+  if (!adminSecret) return c.json({ error: 'ADMIN_SECRET not configured.' }, 503)
+  const auth = c.req.header('authorization') || ''
+  if (auth !== `Bearer ${adminSecret}`) return c.json({ error: 'Unauthorized.' }, 401)
+
+  const submissionId = c.req.query('id') || ''
+  if (!/^[0-9a-f-]{36}$/i.test(submissionId)) return c.json({ error: 'Invalid submission id.' }, 400)
+
+  const token = signAuditDeleteToken(submissionId)
+  return c.json({ token, url: `${SITE_ORIGIN}/data/delete?t=${token}` })
+})
+
+app.get('/api/audit/preview-delete', async (c) => {
+  const verified = verifyAuditDeleteToken(c.req.query('t'))
+  if (!verified) return c.json({ error: 'Invalid or expired link.' }, 401)
+
+  try {
+    const rows = await sql`
+      SELECT id, audit_ref, email, submitted_at, deleted_at,
+             COALESCE(data->>'name', '') AS name,
+             COALESCE(data->>'companyName', '') AS company_name
+      FROM audit_submissions
+      WHERE id = ${verified.submissionId}
+      LIMIT 1
+    `
+    if (rows.length === 0) return c.json({ error: 'Submission not found.' }, 404)
+    const row = rows[0] as any
+    return c.json({
+      auditRef:    row.audit_ref,
+      email:       row.email,
+      name:        row.name || null,
+      companyName: row.company_name || null,
+      submittedAt: row.submitted_at,
+      alreadyDeleted: row.deleted_at != null,
+    })
+  } catch (err: any) {
+    console.error('[Audit] preview-delete failed:', err)
+    return c.json({ error: 'Could not look up your submission.' }, 500)
+  }
+})
+
+app.post('/api/audit/confirm-delete', async (c) => {
+  let body: { t?: string } = {}
+  try { body = await c.req.json() } catch { /* ignore */ }
+  const verified = verifyAuditDeleteToken(body.t)
+  if (!verified) return c.json({ error: 'Invalid or expired link.' }, 401)
+
+  // Look up first so we can clean up the PDF file (if any) before deleting the row
+  let pdfPath: string | null = null
+  try {
+    const rows = await sql`SELECT pdf_path FROM audit_submissions WHERE id = ${verified.submissionId} LIMIT 1`
+    if (rows.length === 0) return c.json({ error: 'Submission not found.' }, 404)
+    pdfPath = (rows[0] as any).pdf_path
+  } catch (err: any) {
+    console.error('[Audit] confirm-delete lookup failed:', err)
+    return c.json({ error: 'Could not look up your submission.' }, 500)
+  }
+
+  // Soft-delete the row and clear PII fields. Hard delete happens via the gdpr_runbook
+  // retention sweep — once Kritano's GDPR admin ships, this row will be picked up by
+  // its registered source and hard-deleted automatically.
+  try {
+    await sql`
+      UPDATE audit_submissions
+      SET deleted_at = now(),
+          deletion_reason = 'self-serve via /data/delete',
+          email = 'redacted@gdpr.local',
+          data = '{}'::jsonb,
+          ip_address = NULL,
+          user_agent = NULL,
+          pdf_path = NULL
+      WHERE id = ${verified.submissionId}
+    `
+  } catch (err: any) {
+    console.error('[Audit] confirm-delete update failed:', err)
+    return c.json({ error: 'Could not complete deletion. Please email privacy@chrisgarlick.com.' }, 500)
+  }
+
+  // Best-effort PDF cleanup; if it fails we've still scrubbed the row
+  if (pdfPath) {
+    try {
+      const { unlink } = await import('node:fs/promises')
+      await unlink(pdfPath)
+    } catch (err: any) {
+      console.warn('[Audit] PDF cleanup failed (non-fatal):', err.message)
+    }
+  }
+
+  return c.json({ ok: true })
+})
+
+// ---------------------------------------------------------------------------
 // Diagnostic: 5-question lead qualifier. Stores submission, optional internal notify.
 // ---------------------------------------------------------------------------
 
