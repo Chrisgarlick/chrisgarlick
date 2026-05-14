@@ -1,0 +1,602 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+---
+
+<Base bare={true}>
+  <SEO
+    slot="head"
+    title="Audit submissions | Studio"
+    description="Internal admin for AI readiness audit submissions."
+    noindex={true}
+  />
+
+  <section class="py-10 md:py-16">
+    <div class="mx-auto w-full max-w-[1080px] px-5 md:px-8">
+
+      <div class="mb-8 flex items-center justify-between">
+        <div>
+          <p class="mb-1 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
+            Studio
+          </p>
+          <h1 class="font-display text-[28px] leading-[1.1] text-text-primary md:text-[36px]" id="page-title">
+            Audit submissions
+          </h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" id="refresh-btn" class="studio-btn-secondary hidden">Refresh</button>
+          <button type="button" id="logout-btn" class="studio-btn-tertiary hidden">Sign out</button>
+        </div>
+      </div>
+
+      <!-- ── Login state ─────────────────────────────────────────────── -->
+      <div id="state-login" class="hidden max-w-[480px]">
+        <p class="mb-6 text-[15px] leading-[1.6] text-text-secondary">
+          Enter the admin secret to access audit submissions.
+        </p>
+        <form id="login-form" class="space-y-4">
+          <input
+            type="password"
+            id="login-input"
+            placeholder="Admin secret"
+            autocomplete="off"
+            class="studio-input"
+          />
+          <button type="submit" class="studio-btn-primary">Sign in</button>
+          <p id="login-error" class="hidden text-[13px] text-red-600"></p>
+        </form>
+      </div>
+
+      <!-- ── Loading ─────────────────────────────────────────────────── -->
+      <div id="state-loading" class="hidden text-[14px] text-text-tertiary">Loading&hellip;</div>
+
+      <!-- ── List ───────────────────────────────────────────────────── -->
+      <div id="state-list" class="hidden">
+        <div id="list-empty" class="hidden py-12 text-center">
+          <p class="text-[15px] text-text-secondary">No audit submissions yet.</p>
+          <p class="mt-2 text-[13px] text-text-tertiary">Submissions will appear here once visitors complete the form at <a href="/audit" class="text-accent">/audit</a>.</p>
+        </div>
+        <div id="list-rows" class="hidden">
+          <div class="overflow-x-auto border border-border bg-bg-surface" style="border-radius: 3px;">
+            <table class="w-full text-left text-[13px]">
+              <thead class="border-b border-border bg-bg-muted">
+                <tr>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Ref</th>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Company</th>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Sector</th>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Status</th>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Submitted</th>
+                  <th class="px-4 py-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary"></th>
+                </tr>
+              </thead>
+              <tbody id="list-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Detail ─────────────────────────────────────────────────── -->
+      <div id="state-detail" class="hidden">
+        <div class="mb-6">
+          <button type="button" id="back-btn" class="studio-link-btn">&larr; Back to all submissions</button>
+        </div>
+
+        <div class="mb-8 grid gap-6 md:grid-cols-[1fr_320px]">
+          <div>
+            <p class="mb-2 font-body text-[11px] uppercase tracking-widest text-text-tertiary" id="d-ref"></p>
+            <h2 class="mb-2 font-display text-[28px] leading-[1.15] text-text-primary md:text-[36px]" id="d-company"></h2>
+            <p class="text-[14px] text-text-secondary" id="d-sector-team"></p>
+          </div>
+          <div class="border border-border bg-bg-surface p-4" style="border-radius: 3px;">
+            <dl class="grid grid-cols-[100px_1fr] gap-y-2 font-body text-[12px]">
+              <dt class="text-text-tertiary uppercase tracking-widest">Status</dt>
+              <dd class="text-text-primary"><span id="d-status" class="studio-status-badge"></span></dd>
+              <dt class="text-text-tertiary uppercase tracking-widest">Submitted</dt>
+              <dd class="text-text-primary" id="d-submitted"></dd>
+              <dt class="text-text-tertiary uppercase tracking-widest">Sent</dt>
+              <dd class="text-text-primary" id="d-sent"></dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Submitter -->
+        <section class="mb-8 border border-border bg-bg-surface p-6" style="border-radius: 3px;">
+          <h3 class="mb-4 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Submitter</h3>
+          <dl class="grid gap-y-3 md:grid-cols-[160px_1fr]">
+            <dt class="font-body text-[13px] text-text-tertiary">Name</dt>
+            <dd class="text-[14px] text-text-primary" id="d-name"></dd>
+            <dt class="font-body text-[13px] text-text-tertiary">Email</dt>
+            <dd class="text-[14px] text-text-primary"><a id="d-email" class="text-accent hover:text-accent-hover" href=""></a></dd>
+            <dt class="font-body text-[13px] text-text-tertiary">Website</dt>
+            <dd class="text-[14px] text-text-primary"><a id="d-website" class="text-accent hover:text-accent-hover" target="_blank" rel="noopener" href=""></a></dd>
+            <dt class="font-body text-[13px] text-text-tertiary">Referrer</dt>
+            <dd class="text-[14px] text-text-primary" id="d-referrer"></dd>
+          </dl>
+        </section>
+
+        <!-- The bottleneck -->
+        <section class="mb-8">
+          <h3 class="mb-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Biggest bottleneck</h3>
+          <p class="border-l-2 border-accent bg-bg-surface p-4 text-[15px] leading-[1.7] text-text-primary" id="d-bottleneck" style="border-radius: 0 3px 3px 0;"></p>
+        </section>
+
+        <!-- Headline signals -->
+        <section class="mb-8 grid gap-6 md:grid-cols-3">
+          <div class="border border-border bg-bg-surface p-4" style="border-radius: 3px;">
+            <p class="mb-1 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Team size</p>
+            <p class="font-display text-[20px] text-text-primary" id="d-team"></p>
+          </div>
+          <div class="border border-border bg-bg-surface p-4" style="border-radius: 3px;">
+            <p class="mb-1 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Budget</p>
+            <p class="font-display text-[20px] text-text-primary" id="d-budget"></p>
+          </div>
+          <div class="border border-border bg-bg-surface p-4" style="border-radius: 3px;">
+            <p class="mb-1 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Six-month win</p>
+            <p class="text-[13px] leading-[1.5] text-text-primary" id="d-win"></p>
+          </div>
+        </section>
+
+        <!-- Sector-specific -->
+        <section class="mb-8">
+          <h3 class="mb-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Sector-specific answers</h3>
+          <div class="border border-border bg-bg-surface p-4" style="border-radius: 3px;">
+            <dl id="d-sector-fields" class="grid gap-y-2 md:grid-cols-[200px_1fr] text-[14px]"></dl>
+          </div>
+        </section>
+
+        <!-- "Anything else" notes from the submission -->
+        <section class="mb-8 hidden" id="d-notes-block">
+          <h3 class="mb-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">Anything else they said</h3>
+          <p class="border border-border bg-bg-surface p-4 text-[14px] leading-[1.7] text-text-primary" id="d-notes" style="border-radius: 3px;"></p>
+        </section>
+
+        <!-- Admin notes editor -->
+        <section class="mb-8">
+          <h3 class="mb-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">
+            My notes
+            <span id="d-notes-saved" class="ml-3 font-body text-[10px] text-accent normal-case tracking-normal hidden">Saved &check;</span>
+          </h3>
+          <textarea
+            id="d-admin-notes"
+            rows="5"
+            class="studio-input"
+            placeholder="Context before I generate. Quick win to look for, budget gut feel, where I met them, anything that should flavour the audit."
+          ></textarea>
+          <p class="mt-2 font-body text-[11px] text-text-tertiary">Auto-saves on blur.</p>
+        </section>
+
+        <!-- Metadata footer -->
+        <section class="mb-8 text-[12px] text-text-tertiary">
+          <p>IP: <span id="d-ip"></span> · UA: <span id="d-ua"></span> · Privacy notice: <span id="d-pnv"></span></p>
+        </section>
+      </div>
+
+      <!-- ── Error ───────────────────────────────────────────────────── -->
+      <div id="state-error" class="hidden">
+        <p class="text-[15px] text-red-600" id="error-text"></p>
+        <button type="button" class="studio-btn-secondary mt-4" onclick="window.location.reload()">Retry</button>
+      </div>
+
+    </div>
+  </section>
+</Base>
+
+<style>
+  .studio-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .studio-input:focus { border-color: var(--color-accent); }
+
+  .studio-btn-primary,
+  .studio-btn-secondary,
+  .studio-btn-tertiary {
+    padding: 0.625rem 1.25rem;
+    border-radius: 3px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid;
+  }
+  .studio-btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+  .studio-btn-primary:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+  }
+  .studio-btn-secondary {
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .studio-btn-secondary:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+  .studio-btn-tertiary {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-text-tertiary);
+  }
+  .studio-btn-tertiary:hover { color: var(--color-text-primary); }
+
+  .studio-link-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .studio-link-btn:hover { color: var(--color-text-primary); }
+
+  .studio-row {
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .studio-row:hover { background: var(--color-bg-muted); }
+  .studio-row td { padding: 0.875rem 1rem; border-top: 1px solid var(--color-border); vertical-align: middle; }
+
+  .studio-status-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    background: var(--color-bg-muted);
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .studio-status-badge[data-status="submitted"]     { background: #FDF0EC; color: #B5522F; }
+  .studio-status-badge[data-status="ready_to_send"] { background: #E8F4EA; color: #2d7d46; }
+  .studio-status-badge[data-status="sent"]          { background: var(--color-bg-muted); color: var(--color-text-tertiary); }
+  .studio-status-badge[data-status="deleted"]       { background: #FBE9E7; color: #6B6560; text-decoration: line-through; }
+
+  .deleted-row { opacity: 0.5; }
+</style>
+
+<script>
+  const STORAGE_KEY = 'cg-admin-secret'
+
+  type ListRow = {
+    id: string
+    audit_ref: string
+    email: string
+    status: string
+    submitted_at: string
+    sent_at: string | null
+    deleted_at: string | null
+    company_name: string | null
+    sector: string | null
+    contact_name: string | null
+    budget_range: string | null
+    team_size: string | null
+    has_notes: boolean
+  }
+
+  type Detail = {
+    id: string
+    audit_ref: string
+    email: string
+    status: string
+    submitted_at: string
+    sent_at: string | null
+    deleted_at: string | null
+    ip_address: string | null
+    user_agent: string | null
+    privacy_notice_version: string
+    admin_notes: string | null
+    data: Record<string, any>
+  }
+
+  // ── Elements ────────────────────────────────────────────────────
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
+
+  const states = {
+    login:   $('state-login'),
+    loading: $('state-loading'),
+    list:    $('state-list'),
+    detail:  $('state-detail'),
+    error:   $('state-error'),
+  }
+  function showState(name: keyof typeof states) {
+    for (const [key, el] of Object.entries(states)) {
+      el.classList.toggle('hidden', key !== name)
+    }
+  }
+
+  function setError(msg: string) {
+    $('error-text').textContent = msg
+    showState('error')
+  }
+
+  function fmtDate(iso: string | null): string {
+    if (!iso) return '—'
+    try {
+      return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    } catch { return iso }
+  }
+
+  function getSecret(): string | null {
+    try { return localStorage.getItem(STORAGE_KEY) } catch { return null }
+  }
+  function setSecret(value: string) {
+    try { localStorage.setItem(STORAGE_KEY, value) } catch {}
+  }
+  function clearSecret() {
+    try { localStorage.removeItem(STORAGE_KEY) } catch {}
+  }
+
+  async function authedFetch(url: string, init: RequestInit = {}): Promise<Response> {
+    const secret = getSecret()
+    return fetch(url, {
+      ...init,
+      headers: { ...(init.headers || {}), 'Authorization': `Bearer ${secret}` },
+    })
+  }
+
+  // ── Login flow ──────────────────────────────────────────────────
+  $('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const input = $('login-input') as HTMLInputElement
+    const errEl = $('login-error')
+    errEl.classList.add('hidden')
+    const value = input.value.trim()
+    if (!value) return
+
+    setSecret(value)
+    // Try a list fetch to validate
+    const res = await authedFetch('/api/admin/audits')
+    if (res.status === 401) {
+      clearSecret()
+      errEl.textContent = 'Wrong secret.'
+      errEl.classList.remove('hidden')
+      return
+    }
+    if (!res.ok) {
+      errEl.textContent = 'Sign-in failed. Try again.'
+      errEl.classList.remove('hidden')
+      return
+    }
+    route()
+  })
+
+  $('logout-btn').addEventListener('click', () => {
+    clearSecret()
+    window.location.search = ''
+  })
+
+  // ── Routing ─────────────────────────────────────────────────────
+  function getRouteId(): string | null {
+    return new URLSearchParams(window.location.search).get('id')
+  }
+
+  function navigate(id: string | null) {
+    const url = new URL(window.location.href)
+    if (id) url.searchParams.set('id', id); else url.searchParams.delete('id')
+    history.pushState({}, '', url.toString())
+    route()
+  }
+
+  window.addEventListener('popstate', () => route())
+
+  async function route() {
+    if (!getSecret()) {
+      showState('login')
+      $('refresh-btn').classList.add('hidden')
+      $('logout-btn').classList.add('hidden')
+      $('page-title').textContent = 'Audit submissions'
+      return
+    }
+    $('logout-btn').classList.remove('hidden')
+
+    const id = getRouteId()
+    if (id) {
+      $('refresh-btn').classList.add('hidden')
+      await loadDetail(id)
+    } else {
+      $('refresh-btn').classList.remove('hidden')
+      $('page-title').textContent = 'Audit submissions'
+      await loadList()
+    }
+  }
+
+  // ── List view ───────────────────────────────────────────────────
+  $('refresh-btn').addEventListener('click', () => loadList())
+
+  async function loadList() {
+    showState('loading')
+    try {
+      const res = await authedFetch('/api/admin/audits')
+      if (res.status === 401) { clearSecret(); showState('login'); return }
+      if (!res.ok) { setError('Could not load submissions.'); return }
+      const { data } = await res.json() as { data: ListRow[] }
+      renderList(data)
+    } catch {
+      setError('Network error loading submissions.')
+    }
+  }
+
+  function renderList(rows: ListRow[]) {
+    const empty = $('list-empty')
+    const listRows = $('list-rows')
+    const tbody = $('list-tbody')
+
+    if (rows.length === 0) {
+      empty.classList.remove('hidden')
+      listRows.classList.add('hidden')
+    } else {
+      empty.classList.add('hidden')
+      listRows.classList.remove('hidden')
+      tbody.innerHTML = rows.map((r) => {
+        const status = r.deleted_at ? 'deleted' : r.status
+        const deletedClass = r.deleted_at ? 'deleted-row' : ''
+        return `
+          <tr class="studio-row ${deletedClass}" data-id="${r.id}">
+            <td><span class="font-body text-[12px] text-text-secondary">${r.audit_ref}</span></td>
+            <td>
+              <div class="text-[14px] text-text-primary">${escapeHtml(r.company_name || '—')}</div>
+              <div class="text-[12px] text-text-tertiary">${escapeHtml(r.contact_name || '')}</div>
+            </td>
+            <td><span class="text-[13px] text-text-secondary">${escapeHtml(r.sector || '—')}</span></td>
+            <td><span class="studio-status-badge" data-status="${status}">${status.replace(/_/g, ' ')}</span></td>
+            <td><span class="text-[12px] text-text-tertiary">${fmtDate(r.submitted_at)}</span></td>
+            <td>
+              ${r.has_notes ? '<span title="Has notes" style="color: var(--color-accent); font-size: 11px;">●</span>' : ''}
+            </td>
+          </tr>
+        `
+      }).join('')
+      tbody.querySelectorAll('.studio-row').forEach((tr) => {
+        tr.addEventListener('click', () => {
+          const id = (tr as HTMLElement).dataset.id
+          if (id) navigate(id)
+        })
+      })
+    }
+    showState('list')
+  }
+
+  function escapeHtml(s: string): string {
+    return s.replace(/[<>&"]/g, (c) => ({ '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;' }[c]!))
+  }
+
+  // ── Detail view ─────────────────────────────────────────────────
+  $('back-btn').addEventListener('click', () => navigate(null))
+
+  async function loadDetail(id: string) {
+    showState('loading')
+    try {
+      const res = await authedFetch(`/api/admin/audits/${id}`)
+      if (res.status === 401) { clearSecret(); showState('login'); return }
+      if (!res.ok) { setError('Could not load this submission.'); return }
+      const { data } = await res.json() as { data: Detail }
+      renderDetail(data)
+    } catch {
+      setError('Network error loading submission.')
+    }
+  }
+
+  // Reserved field names that have their own slot in the UI — everything else goes
+  // into the "sector-specific answers" section.
+  const RESERVED = new Set([
+    'name', 'email', 'companyName', 'website', 'sector', 'teamSize',
+    'biggestBottleneck', 'budgetRange', 'sixMonthWin', 'notes', 'referrer',
+  ])
+
+  function renderDetail(d: Detail) {
+    const data = d.data || {}
+    $('page-title').textContent = data.companyName || d.audit_ref
+
+    $('d-ref').textContent       = d.audit_ref
+    $('d-company').textContent   = data.companyName || '—'
+    $('d-sector-team').textContent = [data.sector, data.teamSize].filter(Boolean).join(' · ') || '—'
+
+    const statusEl = $('d-status')
+    const status = d.deleted_at ? 'deleted' : d.status
+    statusEl.textContent = status.replace(/_/g, ' ')
+    statusEl.setAttribute('data-status', status)
+
+    $('d-submitted').textContent = fmtDate(d.submitted_at)
+    $('d-sent').textContent      = fmtDate(d.sent_at)
+
+    $('d-name').textContent      = data.name || '—'
+    const emailLink = $('d-email') as HTMLAnchorElement
+    emailLink.textContent        = d.email
+    emailLink.href               = `mailto:${d.email}`
+    const websiteLink = $('d-website') as HTMLAnchorElement
+    websiteLink.textContent      = data.website || '—'
+    websiteLink.href             = data.website || '#'
+    $('d-referrer').textContent  = data.referrer || '—'
+
+    $('d-bottleneck').textContent = data.biggestBottleneck || '—'
+
+    $('d-team').textContent      = data.teamSize || '—'
+    $('d-budget').textContent    = data.budgetRange || 'Not stated'
+    $('d-win').textContent       = data.sixMonthWin || '—'
+
+    // Sector-specific answers — everything in data that isn't reserved
+    const sectorFields = Object.entries(data).filter(([k]) => !RESERVED.has(k))
+    $('d-sector-fields').innerHTML = sectorFields.length === 0
+      ? '<dt class="text-text-tertiary col-span-2 text-[13px] italic">No sector-specific answers</dt>'
+      : sectorFields.map(([k, v]) => `
+          <dt class="font-body text-[12px] text-text-tertiary uppercase tracking-widest">${escapeHtml(humanise(k))}</dt>
+          <dd class="text-[14px] text-text-primary">${escapeHtml(Array.isArray(v) ? v.join(', ') : String(v ?? '—'))}</dd>
+        `).join('')
+
+    // Submitter's "anything else" notes
+    const notesBlock = $('d-notes-block')
+    if (data.notes) {
+      $('d-notes').textContent = data.notes
+      notesBlock.classList.remove('hidden')
+    } else {
+      notesBlock.classList.add('hidden')
+    }
+
+    // Admin notes editor
+    const notesEl = $('d-admin-notes') as HTMLTextAreaElement
+    notesEl.value = d.admin_notes || ''
+    notesEl.dataset.lastSaved = d.admin_notes || ''
+    notesEl.dataset.submissionId = d.id
+
+    // Metadata
+    $('d-ip').textContent  = d.ip_address || '—'
+    $('d-ua').textContent  = (d.user_agent || '—').slice(0, 80)
+    $('d-pnv').textContent = d.privacy_notice_version || '—'
+
+    showState('detail')
+  }
+
+  function humanise(camelKey: string): string {
+    return camelKey
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (c) => c.toUpperCase())
+      .trim()
+  }
+
+  // Auto-save admin notes on blur
+  document.addEventListener('blur', async (e) => {
+    const target = e.target as HTMLElement
+    if (target?.id !== 'd-admin-notes') return
+    const ta = target as HTMLTextAreaElement
+    const submissionId = ta.dataset.submissionId
+    const value = ta.value
+    if (!submissionId) return
+    if (value === ta.dataset.lastSaved) return
+
+    try {
+      const res = await authedFetch(`/api/admin/audits/${submissionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminNotes: value }),
+      })
+      if (!res.ok) return
+      ta.dataset.lastSaved = value
+      const saved = $('d-notes-saved')
+      saved.classList.remove('hidden')
+      setTimeout(() => saved.classList.add('hidden'), 1800)
+    } catch { /* ignore — user can re-blur */ }
+  }, true)
+
+  // Initial route
+  route()
+</script>

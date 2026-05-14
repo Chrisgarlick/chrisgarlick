@@ -121,6 +121,11 @@ sql`
 sql`CREATE INDEX IF NOT EXISTS outbound_email_log_to_email_idx ON outbound_email_log (to_email)`
   .catch((err: any) => console.warn(`[Audit] outbound email index setup: ${err}`))
 
+// Phase B1 — admin notes column. Used by /studio/audits for Chris's review notes
+// before generation (e.g. "spoke on LinkedIn", "budget likely £2-5k", "fit for workflow").
+sql`ALTER TABLE audit_submissions ADD COLUMN IF NOT EXISTS admin_notes text`
+  .catch((err: any) => console.warn(`[Audit] admin_notes column setup: ${err}`))
+
 // ---------------------------------------------------------------------------
 // Form submission → stores in DB + sends email via Resend
 // Standalone route so it works regardless of CMS version
@@ -760,6 +765,88 @@ app.post('/api/audit/confirm-delete', async (c) => {
   }
 
   return c.json({ ok: true })
+})
+
+// ---------------------------------------------------------------------------
+// Audit admin endpoints — backs the /studio/audits review page. Auth is a
+// shared secret in ADMIN_SECRET, sent as Authorization: Bearer <secret>.
+// Same pattern as the mint-delete-token endpoint above.
+// ---------------------------------------------------------------------------
+
+function requireAdmin(c: any): boolean {
+  const adminSecret = process.env.ADMIN_SECRET
+  if (!adminSecret) return false
+  const auth = c.req.header('authorization') || ''
+  return auth === `Bearer ${adminSecret}`
+}
+
+app.get('/api/admin/audits', async (c) => {
+  if (!requireAdmin(c)) return c.json({ error: 'Unauthorized' }, 401)
+  try {
+    const rows = await sql`
+      SELECT
+        id, audit_ref, email, status, submitted_at, sent_at, deleted_at,
+        data->>'companyName'  AS company_name,
+        data->>'sector'       AS sector,
+        data->>'name'         AS contact_name,
+        data->>'budgetRange'  AS budget_range,
+        data->>'teamSize'     AS team_size,
+        (admin_notes IS NOT NULL AND length(admin_notes) > 0) AS has_notes
+      FROM audit_submissions
+      ORDER BY submitted_at DESC
+      LIMIT 100
+    `
+    return c.json({ data: rows })
+  } catch (err: any) {
+    console.error('[Audit] admin list failed:', err)
+    return c.json({ error: 'Could not load submissions.' }, 500)
+  }
+})
+
+app.get('/api/admin/audits/:id', async (c) => {
+  if (!requireAdmin(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const id = c.req.param('id')
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return c.json({ error: 'Invalid submission id.' }, 400)
+  try {
+    const rows = await sql`SELECT * FROM audit_submissions WHERE id = ${id} LIMIT 1`
+    if (rows.length === 0) return c.json({ error: 'Submission not found.' }, 404)
+    return c.json({ data: rows[0] })
+  } catch (err: any) {
+    console.error('[Audit] admin detail failed:', err)
+    return c.json({ error: 'Could not load submission.' }, 500)
+  }
+})
+
+app.patch('/api/admin/audits/:id', async (c) => {
+  if (!requireAdmin(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const id = c.req.param('id')
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return c.json({ error: 'Invalid submission id.' }, 400)
+
+  let body: { adminNotes?: string; status?: string } = {}
+  try { body = await c.req.json() } catch {}
+
+  // Build the SET clause from whatever the client sent. Only allow specific fields.
+  const updates: { adminNotes?: string; status?: string } = {}
+  if (typeof body.adminNotes === 'string') updates.adminNotes = body.adminNotes
+  if (typeof body.status === 'string' && /^[a-z_]+$/.test(body.status)) updates.status = body.status
+
+  if (Object.keys(updates).length === 0) {
+    return c.json({ error: 'No valid fields to update.' }, 400)
+  }
+
+  try {
+    if (updates.adminNotes !== undefined && updates.status !== undefined) {
+      await sql`UPDATE audit_submissions SET admin_notes = ${updates.adminNotes}, status = ${updates.status} WHERE id = ${id}`
+    } else if (updates.adminNotes !== undefined) {
+      await sql`UPDATE audit_submissions SET admin_notes = ${updates.adminNotes} WHERE id = ${id}`
+    } else if (updates.status !== undefined) {
+      await sql`UPDATE audit_submissions SET status = ${updates.status} WHERE id = ${id}`
+    }
+    return c.json({ ok: true })
+  } catch (err: any) {
+    console.error('[Audit] admin patch failed:', err)
+    return c.json({ error: 'Could not update submission.' }, 500)
+  }
 })
 
 // ---------------------------------------------------------------------------
