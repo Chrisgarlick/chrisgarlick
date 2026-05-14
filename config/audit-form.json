@@ -334,9 +334,9 @@
             "type": "select",
             "label": "Regular client deliverables?",
             "options": [
-              "Yes — weekly",
-              "Yes — monthly",
-              "Yes — per project",
+              "Yes, weekly",
+              "Yes, monthly",
+              "Yes, per project",
               "No"
             ]
           },

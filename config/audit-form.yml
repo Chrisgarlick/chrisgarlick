@@ -91,7 +91,7 @@ steps:
         - { name: bottleneckAreas,    type: multiselect, label: "Where the team spends the most manual time",
             options: ["Proposal writing", Research, "Report generation", "Client communication", Billing, "Data analysis"] }
         - { name: deliverableCadence, type: select,      label: "Regular client deliverables?",
-            options: ["Yes — weekly", "Yes — monthly", "Yes — per project", "No"] }
+            options: ["Yes, weekly", "Yes, monthly", "Yes, per project", "No"] }
         - { name: usesAI,             type: select,      label: "Currently using any AI or automation tools?",
             options: [Yes, No, "Not sure"] }
         - { name: aiToolsList,        type: text,        label: "Which ones?",

@@ -1,0 +1,571 @@
+---
+import Base from '../layouts/Base.astro'
+import SEO from '../components/SEO.astro'
+import schema from '../../config/audit-form.json'
+
+// Step indexing helpers — derived from the schema so renaming/reordering steps in
+// audit-form.yml is a single-file change.
+const stepCount = schema.steps.length
+const sectorStep = schema.steps.find((s: any) => s.conditional?.on === 'sector')
+const sectorOptions = schema.sectors
+---
+
+<Base bare={true}>
+  <SEO
+    slot="head"
+    title="AI Readiness Audit | Chris Garlick"
+    description="Tell me about your business in 4 short steps. I'll send you a personalised AI readiness audit within 24 hours covering specific automations and indicative pricing."
+    canonical="https://chrisgarlick.com/audit"
+    keywords="ai readiness audit, free ai audit uk, business workflow audit, ai implementation audit, custom ai assessment"
+    noindex={true}
+    jsonLd={{
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'AI Readiness Audit',
+      url: 'https://chrisgarlick.com/audit',
+      description: 'Multi-step intake for a free, personalised AI readiness audit. UK-based businesses.',
+    }}
+  />
+
+  <section class="py-16 md:py-24">
+    <div class="mx-auto w-full max-w-[680px] px-5 md:px-8">
+
+      <!-- ── Intro ─────────────────────────────────────────────────── -->
+      <div id="audit-intro">
+        <p class="mb-3 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
+          AI Readiness Audit
+        </p>
+        <h1 class="mb-5 font-display text-[36px] leading-[1.1] text-text-primary md:text-[48px]">
+          Tell me about your business. Get a costed AI plan back.
+        </h1>
+        <p class="mb-10 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
+          Four short steps. Three minutes. Within 24 hours I&rsquo;ll send back a personalised audit: the workflows in your business worth automating, indicative pricing, and a recommended first engagement. No pitch deck.
+        </p>
+      </div>
+
+      <!-- ── Progress ──────────────────────────────────────────────── -->
+      <div id="audit-progress" class="mb-8">
+        <div class="mb-3 flex items-center justify-between font-body text-[12px] uppercase tracking-[0.14em] text-text-tertiary">
+          <span>Step <span id="step-current">1</span> of {stepCount}</span>
+          <span id="step-title-display"></span>
+        </div>
+        <div class="h-[2px] w-full bg-bg-muted">
+          <div id="progress-bar" class="h-full bg-accent transition-all duration-300" style="width: 25%;"></div>
+        </div>
+      </div>
+
+      <!-- ── Form ──────────────────────────────────────────────────── -->
+      <form id="audit-form" class="space-y-10" novalidate>
+        <input type="text" name="_hp" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true" />
+
+        {schema.steps.map((step: any, stepIdx: number) => (
+          <fieldset
+            class={`audit-step ${stepIdx === 0 ? '' : 'hidden'}`}
+            data-step={stepIdx}
+            data-step-id={step.id}
+            aria-labelledby={`step-title-${step.id}`}
+          >
+            <legend id={`step-title-${step.id}`} class="sr-only">{step.title}</legend>
+            <h2 class="mb-6 font-display text-[22px] text-text-primary md:text-[26px]">{step.title}</h2>
+
+            {/* Non-conditional steps: render `fields` directly */}
+            {step.fields && step.fields.map((field: any) => (
+              <div class="mb-5" data-field-wrap={field.name} data-show-if={field.showIf ? JSON.stringify(field.showIf) : undefined}>
+                <label for={`f-${field.name}`} class="audit-label">
+                  {field.label}
+                  {field.required && <span class="audit-req">*</span>}
+                  {field.help && <span class="audit-help">{field.help}</span>}
+                </label>
+
+                {field.type === 'text' && (
+                  <input
+                    type="text"
+                    id={`f-${field.name}`}
+                    name={field.name}
+                    placeholder={field.placeholder || ''}
+                    maxlength={field.maxLength}
+                    class="audit-input"
+                    data-required={field.required || false}
+                    data-min-length={field.minLength || 0}
+                  />
+                )}
+                {field.type === 'email' && (
+                  <input
+                    type="email"
+                    id={`f-${field.name}`}
+                    name={field.name}
+                    placeholder={field.placeholder || 'you@firm.co.uk'}
+                    maxlength={field.maxLength}
+                    autocomplete="email"
+                    class="audit-input"
+                    data-required={field.required || false}
+                  />
+                )}
+                {field.type === 'url' && (
+                  <input
+                    type="url"
+                    id={`f-${field.name}`}
+                    name={field.name}
+                    placeholder={field.placeholder || 'https://'}
+                    autocomplete="url"
+                    class="audit-input"
+                    data-required={field.required || false}
+                  />
+                )}
+                {field.type === 'textarea' && (
+                  <textarea
+                    id={`f-${field.name}`}
+                    name={field.name}
+                    rows="3"
+                    maxlength={field.maxLength}
+                    class="audit-textarea"
+                    data-required={field.required || false}
+                    data-min-length={field.minLength || 0}
+                  ></textarea>
+                )}
+                {field.type === 'select' && (
+                  <div class="audit-options">
+                    {(field.optionsFrom === 'sectors' ? sectorOptions : (field.options || []).map((o: any) => typeof o === 'string' ? { value: o, label: o } : o)).map((opt: any) => (
+                      <label class="audit-option">
+                        <input type="radio" name={field.name} value={opt.value} data-required={field.required || false} />
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+                {field.type === 'multiselect' && (
+                  <div class="audit-options">
+                    {(field.options || []).map((opt: any) => {
+                      const o = typeof opt === 'string' ? { value: opt, label: opt } : opt
+                      return (
+                        <label class="audit-option">
+                          <input type="checkbox" name={field.name} value={o.value} />
+                          <span>{o.label}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                )}
+                <p class="audit-error hidden" data-error-for={field.name}></p>
+              </div>
+            ))}
+
+            {/* Conditional step: render every sector block, JS toggles visibility */}
+            {step.fieldsBySector && Object.entries(step.fieldsBySector).map(([sectorKey, sectorFields]: [string, any]) => (
+              <div class="audit-sector-block hidden" data-sector-block={sectorKey}>
+                {sectorFields.map((field: any) => (
+                  <div class="mb-5" data-field-wrap={field.name} data-show-if={field.showIf ? JSON.stringify(field.showIf) : undefined}>
+                    <label for={`f-${sectorKey}-${field.name}`} class="audit-label">
+                      {field.label}
+                      {field.required && <span class="audit-req">*</span>}
+                      {field.help && <span class="audit-help">{field.help}</span>}
+                    </label>
+
+                    {field.type === 'text' && (
+                      <input type="text" id={`f-${sectorKey}-${field.name}`} name={field.name} placeholder={field.placeholder || ''} maxlength={field.maxLength} class="audit-input" data-required={field.required || false} data-sector-field={sectorKey} />
+                    )}
+                    {field.type === 'textarea' && (
+                      <textarea id={`f-${sectorKey}-${field.name}`} name={field.name} rows="3" maxlength={field.maxLength} class="audit-textarea" data-required={field.required || false} data-sector-field={sectorKey} data-min-length={field.minLength || 0}></textarea>
+                    )}
+                    {field.type === 'select' && (
+                      <div class="audit-options">
+                        {(field.options || []).map((opt: any) => {
+                          const o = typeof opt === 'string' ? { value: opt, label: opt } : opt
+                          return (
+                            <label class="audit-option">
+                              <input type="radio" name={field.name} value={o.value} data-required={field.required || false} data-sector-field={sectorKey} />
+                              <span>{o.label}</span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    )}
+                    {field.type === 'multiselect' && (
+                      <div class="audit-options">
+                        {(field.options || []).map((opt: any) => {
+                          const o = typeof opt === 'string' ? { value: opt, label: opt } : opt
+                          return (
+                            <label class="audit-option">
+                              <input type="checkbox" name={field.name} value={o.value} data-sector-field={sectorKey} />
+                              <span>{o.label}</span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    )}
+                    <p class="audit-error hidden" data-error-for={field.name}></p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </fieldset>
+        ))}
+
+        <!-- ── Navigation ─────────────────────────────────────────── -->
+        <div class="pt-4 flex items-center justify-between gap-4">
+          <button type="button" id="back-btn" class="audit-back-btn hidden">
+            &larr; Back
+          </button>
+          <div class="ml-auto flex gap-3">
+            <button type="button" id="next-btn" class="audit-primary-btn">
+              Next &rarr;
+            </button>
+            <button type="submit" id="submit-btn" class="audit-primary-btn hidden">
+              Submit audit request &rarr;
+            </button>
+          </div>
+        </div>
+
+        <p id="form-error" class="hidden audit-form-error"></p>
+      </form>
+
+      <!-- ── Success panel (A2 placeholder — A3 will replace with real submit) ── -->
+      <div id="success-panel" class="hidden mt-12 border-l-2 border-accent pl-6 md:pl-7">
+        <p class="mb-2 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-accent">Form complete</p>
+        <h2 class="mb-4 font-display text-[28px] leading-[1.15] text-text-primary md:text-[36px]">
+          Got it. Thanks.
+        </h2>
+        <p class="mb-6 text-[15px] leading-[1.7] text-text-secondary md:text-[16px]">
+          (A2 placeholder. This will become the real "Your audit is being prepared, 24-hour turnaround" confirmation once the submission endpoint is wired in A3.)
+        </p>
+        <details class="mt-6 text-[12px] text-text-tertiary">
+          <summary class="cursor-pointer font-body uppercase tracking-widest">Captured data (dev)</summary>
+          <pre id="submission-debug" class="mt-3 max-h-[400px] overflow-auto rounded-[3px] border border-border bg-bg-surface p-3 text-[11px] leading-relaxed"></pre>
+        </details>
+      </div>
+
+    </div>
+  </section>
+</Base>
+
+<style>
+  .audit-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+  .audit-req { color: var(--color-accent); margin-left: 0.2rem; }
+  .audit-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .audit-input,
+  .audit-textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background-color: var(--color-bg-surface);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-primary);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .audit-textarea { resize: vertical; min-height: 5rem; }
+  .audit-input:focus,
+  .audit-textarea:focus { border-color: var(--color-accent); }
+  .audit-input::placeholder,
+  .audit-textarea::placeholder { color: var(--color-text-tertiary); }
+
+  .audit-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .audit-options { grid-template-columns: 1fr 1fr; }
+  }
+
+  .audit-option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: var(--color-bg-surface);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+  .audit-option:hover { border-color: var(--color-border-hover); }
+  .audit-option:has(input:checked) {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent-light);
+  }
+  .audit-option input { accent-color: var(--color-accent); }
+
+  .audit-error {
+    margin-top: 0.4rem;
+    font-size: 12px;
+    color: var(--color-destructive);
+    font-family: var(--font-body);
+  }
+  .audit-form-error {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-destructive);
+    background: var(--color-error-bg);
+    border-radius: 3px;
+    font-size: 13px;
+    color: var(--color-destructive);
+  }
+
+  .audit-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 3px;
+    background: var(--color-accent);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .audit-primary-btn:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+  }
+  .audit-primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .audit-back-btn {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .audit-back-btn:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+</style>
+
+<script>
+  type ShowIfRule = { field: string; equals: string }
+
+  const form = document.getElementById('audit-form') as HTMLFormElement | null
+  const nextBtn = document.getElementById('next-btn') as HTMLButtonElement
+  const backBtn = document.getElementById('back-btn') as HTMLButtonElement
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement
+  const stepCurrent = document.getElementById('step-current') as HTMLElement
+  const stepTitle = document.getElementById('step-title-display') as HTMLElement
+  const progressBar = document.getElementById('progress-bar') as HTMLElement
+  const formError = document.getElementById('form-error') as HTMLElement
+  const successPanel = document.getElementById('success-panel') as HTMLElement
+  const introPanel = document.getElementById('audit-intro') as HTMLElement
+  const progressPanel = document.getElementById('audit-progress') as HTMLElement
+  const debugOut = document.getElementById('submission-debug') as HTMLElement
+
+  const steps = Array.from(document.querySelectorAll<HTMLElement>('.audit-step'))
+  const totalSteps = steps.length
+
+  let currentStep = 0
+
+  function show(el: HTMLElement | null) { el?.classList.remove('hidden') }
+  function hide(el: HTMLElement | null) { el?.classList.add('hidden') }
+
+  function setStep(idx: number) {
+    steps.forEach((s, i) => i === idx ? show(s) : hide(s))
+    stepCurrent.textContent = String(idx + 1)
+    progressBar.style.width = `${((idx + 1) / totalSteps) * 100}%`
+    stepTitle.textContent = steps[idx].querySelector('h2')?.textContent || ''
+
+    if (idx === 0) hide(backBtn); else show(backBtn)
+    if (idx === totalSteps - 1) { hide(nextBtn); show(submitBtn) }
+    else { show(nextBtn); hide(submitBtn) }
+
+    hide(formError)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    // After step change, re-run conditional logic (e.g. sector block selection on step 3)
+    refreshConditionals()
+  }
+
+  // ── Conditional visibility ──────────────────────────────────────
+  function getValue(name: string): string | null {
+    if (!form) return null
+    const els = form.elements.namedItem(name) as RadioNodeList | HTMLInputElement | null
+    if (!els) return null
+    if (els instanceof RadioNodeList) {
+      const checked = Array.from(els).find((el: any) => el.checked)
+      return checked ? (checked as HTMLInputElement).value : null
+    }
+    return (els as HTMLInputElement).value || null
+  }
+
+  function refreshConditionals() {
+    // 1. Sector-block visibility on step 3
+    const selectedSector = getValue('sector')
+    document.querySelectorAll<HTMLElement>('.audit-sector-block').forEach((block) => {
+      const matches = block.dataset.sectorBlock === selectedSector
+      matches ? show(block) : hide(block)
+    })
+
+    // 2. Field-level showIf rules — within visible blocks only
+    document.querySelectorAll<HTMLElement>('[data-show-if]').forEach((wrap) => {
+      const rule: ShowIfRule = JSON.parse(wrap.dataset.showIf || '{}')
+      const controllingValue = getValue(rule.field)
+      const matches = controllingValue === rule.equals
+      matches ? show(wrap) : hide(wrap)
+    })
+  }
+
+  // ── Validation ──────────────────────────────────────────────────
+  function isFieldVisible(field: HTMLElement): boolean {
+    let el: HTMLElement | null = field
+    while (el && el !== document.body) {
+      if (el.classList.contains('hidden')) return false
+      el = el.parentElement
+    }
+    return true
+  }
+
+  function validateStep(idx: number): { ok: boolean; firstErrorField?: string } {
+    const stepEl = steps[idx]
+    // Clear previous errors in this step
+    stepEl.querySelectorAll<HTMLElement>('.audit-error').forEach((e) => hide(e))
+
+    const fields = stepEl.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[data-required], textarea[data-required]')
+    let firstErrorField: string | undefined
+
+    for (const field of Array.from(fields)) {
+      const wrap = field.closest('[data-field-wrap]') as HTMLElement | null
+      if (wrap && !isFieldVisible(wrap)) continue   // skip hidden fields (step, sector branch, or showIf)
+
+      const required = field.dataset.required === 'true'
+      if (!required) continue
+
+      // Radio group: at least one must be checked
+      if (field.type === 'radio') {
+        const name = field.name
+        const anyChecked = stepEl.querySelector(`input[name="${name}"]:checked`)
+        if (!anyChecked) {
+          if (!firstErrorField) firstErrorField = name
+          showError(name, 'Please pick one to continue.')
+        }
+        continue
+      }
+
+      // Text-likes: required, min length
+      const value = (field.value || '').trim()
+      if (!value) {
+        if (!firstErrorField) firstErrorField = field.name
+        showError(field.name, 'This field is required.')
+        continue
+      }
+      const minLen = parseInt(field.dataset.minLength || '0', 10)
+      if (minLen > 0 && value.length < minLen) {
+        if (!firstErrorField) firstErrorField = field.name
+        showError(field.name, `Please give a bit more detail (${minLen} characters or more).`)
+        continue
+      }
+      // Email / URL native validity
+      if ((field as HTMLInputElement).type === 'email' && !field.checkValidity()) {
+        if (!firstErrorField) firstErrorField = field.name
+        showError(field.name, 'Please enter a valid email address.')
+        continue
+      }
+      if ((field as HTMLInputElement).type === 'url' && !field.checkValidity()) {
+        if (!firstErrorField) firstErrorField = field.name
+        showError(field.name, 'Please enter a valid URL (starting with http:// or https://).')
+        continue
+      }
+    }
+
+    return { ok: !firstErrorField, firstErrorField }
+  }
+
+  function showError(fieldName: string, message: string) {
+    document.querySelectorAll<HTMLElement>(`[data-error-for="${fieldName}"]`).forEach((el) => {
+      el.textContent = message
+      show(el)
+    })
+  }
+
+  // ── Navigation handlers ─────────────────────────────────────────
+  nextBtn?.addEventListener('click', () => {
+    const result = validateStep(currentStep)
+    if (!result.ok) {
+      formError.textContent = 'Please fill in the highlighted fields before continuing.'
+      show(formError)
+      return
+    }
+    currentStep = Math.min(currentStep + 1, totalSteps - 1)
+    setStep(currentStep)
+  })
+
+  backBtn?.addEventListener('click', () => {
+    currentStep = Math.max(currentStep - 1, 0)
+    setStep(currentStep)
+  })
+
+  // ── Live conditional refresh on any change ──────────────────────
+  form?.addEventListener('change', refreshConditionals)
+
+  // ── Submit (A2 placeholder: just log + show success state) ─────
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const result = validateStep(currentStep)
+    if (!result.ok) {
+      formError.textContent = 'Please fill in the highlighted fields before submitting.'
+      show(formError)
+      return
+    }
+
+    if (!form) return
+    const fd = new FormData(form)
+    // Collapse multiselect values (multiple entries per name) into arrays
+    const data: Record<string, any> = {}
+    for (const key of new Set(fd.keys())) {
+      if (key === '_hp') continue
+      const values = fd.getAll(key).filter(Boolean)
+      data[key] = values.length > 1 ? values : values[0]
+    }
+
+    // A2 placeholder behaviour. A3 will replace this with a real POST.
+    console.log('[audit] submission captured (not yet sent):', data)
+    if (debugOut) debugOut.textContent = JSON.stringify(data, null, 2)
+
+    ;(window as any).dataLayer = (window as any).dataLayer || []
+    ;(window as any).dataLayer.push({ event: 'audit_form_submit_local', sector: data.sector || null })
+
+    hide(introPanel)
+    hide(progressPanel)
+    hide(form)
+    show(successPanel)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+
+  // ── Initial state ───────────────────────────────────────────────
+  setStep(0)
+  refreshConditionals()
+</script>
