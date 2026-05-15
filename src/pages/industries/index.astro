@@ -20,7 +20,7 @@ const seoKeywords = [
 const rawContent = page?.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
-const jsonLd = {
+const collectionLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'AI Implementation by Industry',
@@ -28,12 +28,38 @@ const jsonLd = {
   url: 'https://chrisgarlick.com/industries',
   inLanguage: 'en-GB',
   isPartOf: { '@type': 'WebSite', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+  about: { '@type': 'Country', name: 'United Kingdom' },
   hasPart: [
-    { '@type': 'WebPage', name: 'AI for Law Firms',          url: 'https://chrisgarlick.com/industries/ai-for-law-firms' },
-    { '@type': 'WebPage', name: 'AI for Accountancy Firms',  url: 'https://chrisgarlick.com/industries/ai-for-accountancy-firms' },
-    { '@type': 'WebPage', name: 'AI for Agencies',           url: 'https://chrisgarlick.com/industries/ai-for-agencies' },
+    { '@type': 'WebPage', name: 'AI for UK Law Firms',         url: 'https://chrisgarlick.com/industries/ai-for-law-firms' },
+    { '@type': 'WebPage', name: 'AI for UK Accountancy Firms', url: 'https://chrisgarlick.com/industries/ai-for-accountancy-firms' },
+    { '@type': 'WebPage', name: 'AI for UK Agencies',          url: 'https://chrisgarlick.com/industries/ai-for-agencies' },
   ],
 }
+
+const providerLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Chris Garlick',
+  url: 'https://chrisgarlick.com',
+  image: 'https://chrisgarlick.com/og/home.png',
+  description: 'UK-based AI engineer building custom AI implementation for law firms, accountancy practices, agencies and other professional services.',
+  areaServed: [
+    { '@type': 'Country', name: 'United Kingdom' },
+    { '@type': 'AdministrativeArea', name: 'England' },
+    { '@type': 'AdministrativeArea', name: 'Scotland' },
+    { '@type': 'AdministrativeArea', name: 'Wales' },
+    { '@type': 'AdministrativeArea', name: 'Northern Ireland' },
+  ],
+  address: { '@type': 'PostalAddress', addressCountry: 'GB' },
+  founder: {
+    '@type': 'Person',
+    name: 'Chris Garlick',
+    url: 'https://chrisgarlick.com/about',
+  },
+  serviceType: 'AI Implementation',
+}
+
+const jsonLd = [collectionLd, providerLd]
 
 const breadcrumbs = [
   { name: 'Home',       url: '/' },

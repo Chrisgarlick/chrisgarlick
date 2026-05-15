@@ -45,23 +45,44 @@ const breadcrumbs = [
   { name: page.title,   url: `/industries/${slug}` },
 ]
 
+const audienceType = slug === 'ai-for-law-firms' ? 'UK law firms and solicitors'
+                   : slug === 'ai-for-accountancy-firms' ? 'UK accountancy practices and chartered accountants'
+                   : 'UK marketing, design and content agencies'
+
 const serviceLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
   name: page.title,
   description,
   url: `https://chrisgarlick.com/industries/${slug}`,
+  serviceType: 'AI Implementation',
   provider: {
-    '@type': 'Person',
+    '@type': 'ProfessionalService',
     name: 'Chris Garlick',
-    url: 'https://chrisgarlick.com/about',
+    url: 'https://chrisgarlick.com',
+    image: 'https://chrisgarlick.com/og/home.png',
+    areaServed: { '@type': 'Country', name: 'United Kingdom' },
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'GB',
+    },
+    founder: {
+      '@type': 'Person',
+      name: 'Chris Garlick',
+      url: 'https://chrisgarlick.com/about',
+    },
   },
-  areaServed: { '@type': 'Country', name: 'United Kingdom' },
+  areaServed: [
+    { '@type': 'Country', name: 'United Kingdom' },
+    { '@type': 'AdministrativeArea', name: 'England' },
+    { '@type': 'AdministrativeArea', name: 'Scotland' },
+    { '@type': 'AdministrativeArea', name: 'Wales' },
+    { '@type': 'AdministrativeArea', name: 'Northern Ireland' },
+  ],
   audience: {
     '@type': 'BusinessAudience',
-    audienceType: slug === 'ai-for-law-firms' ? 'Law firms'
-                : slug === 'ai-for-accountancy-firms' ? 'Accountancy practices'
-                : 'Marketing agencies',
+    audienceType,
+    geographicArea: { '@type': 'Country', name: 'United Kingdom' },
   },
 }
 ---

@@ -50,12 +50,32 @@ const serviceLd = {
   name: page.title,
   description,
   url: `https://chrisgarlick.com/services/${slug}`,
+  serviceType: 'AI Implementation',
   provider: {
-    '@type': 'Person',
+    '@type': 'ProfessionalService',
     name: 'Chris Garlick',
-    url: 'https://chrisgarlick.com/about',
+    url: 'https://chrisgarlick.com',
+    image: 'https://chrisgarlick.com/og/home.png',
+    areaServed: { '@type': 'Country', name: 'United Kingdom' },
+    address: { '@type': 'PostalAddress', addressCountry: 'GB' },
+    founder: {
+      '@type': 'Person',
+      name: 'Chris Garlick',
+      url: 'https://chrisgarlick.com/about',
+    },
   },
-  areaServed: { '@type': 'Country', name: 'United Kingdom' },
+  areaServed: [
+    { '@type': 'Country', name: 'United Kingdom' },
+    { '@type': 'AdministrativeArea', name: 'England' },
+    { '@type': 'AdministrativeArea', name: 'Scotland' },
+    { '@type': 'AdministrativeArea', name: 'Wales' },
+    { '@type': 'AdministrativeArea', name: 'Northern Ireland' },
+  ],
+  audience: {
+    '@type': 'BusinessAudience',
+    audienceType: 'UK businesses and professional services firms',
+    geographicArea: { '@type': 'Country', name: 'United Kingdom' },
+  },
 }
 
 // The pillar page has an inline "Common questions" section — mirror those Q&As as FAQPage schema
@@ -86,7 +106,7 @@ const PILLAR_FAQ = slug === 'ai-implementation' ? {
       name: 'Do I need existing technical infrastructure?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No. Most builds work with the systems you already use — Google Workspace or Microsoft 365, your CRM (Clio, HubSpot, Notion, Airtable, whatever), your accounting tool, your inbox. The point is to slot into how you already work, not to force a migration.',
+        text: 'No. Most builds work with the systems you already use: Google Workspace or Microsoft 365, your CRM (Clio, HubSpot, Notion, Airtable, whatever), your accounting tool, your inbox. The point is to slot into how you already work, not to force a migration.',
       },
     },
     {
@@ -108,7 +128,57 @@ const PILLAR_FAQ = slug === 'ai-implementation' ? {
   ],
 } : null
 
-const jsonLd = [serviceLd, ...(PILLAR_FAQ ? [PILLAR_FAQ] : [])]
+// FAQ schema for the AI Engineering page. Mirrors the visible "Common questions"
+// block on the page so Google sees both the rendered content and the structured data.
+const AI_ENGINEERING_FAQ = slug === 'ai-engineering' ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is AI engineering different from AI implementation?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'AI implementation is the outcome: scope, build, deliver a working system that replaces manual work. AI engineering is the craft you bring to that project beyond writing prompts. Choosing models, designing retrieval, evaluating outputs, instrumenting failure modes. The two travel together. You cannot have a reliable implementation without the engineering depth.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why do most of your builds use Claude rather than GPT or open-source models?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Claude Sonnet currently leads on the kind of work most clients need: nuanced reasoning over real documents, reliable tool use, instruction-following without rambling. GPT is competitive on a few specific tasks, like very long-context exact match. Open-weight models are gaining fast but mostly have not caught up on tool use and structured output yet. Model choice gets revisited at scoping every project. If a different model wins on cost or quality for your workload, that is what gets built.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can you run AI on our own servers instead of calling an API?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, with caveats. The standard stack for on-premises is Ollama for smaller deployments and vLLM for larger ones, running open-weight models from the Llama, Mistral, Qwen or Gemma families. I have used Ollama with Gemma locally for prototyping. I have not deployed an on-premises model to production yet. For most builds the answer is a managed-cloud API with a properly scoped data-processing agreement and zero-retention mode, rather than self-hosted. Where compliance genuinely requires self-hosted, the stack above is the plan.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is RAG and do I need it?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Retrieval-augmented generation. Instead of relying on what the model learned at training time, you give the model your documents at query time. The model still does the language work. A search system finds the relevant chunks first. You need it whenever the right answer is in your data rather than the model\'s training data: internal knowledge bases, policy lookup, contract Q&A, document search at scale.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How long does an AI engineering build take?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most engineering-heavy builds run four to eight weeks. The first week is scoping and stack selection. The next two to four weeks are the build. The last week or two is evaluation, observability setup and handover. Smaller targeted engagements, like a single workflow or single model integration, can run two to four weeks total.',
+      },
+    },
+  ],
+} : null
+
+const faqLd = PILLAR_FAQ || AI_ENGINEERING_FAQ
+const jsonLd = [serviceLd, ...(faqLd ? [faqLd] : [])]
 ---
 
 <Base>
