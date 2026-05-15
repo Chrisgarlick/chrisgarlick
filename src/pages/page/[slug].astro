@@ -8,7 +8,7 @@ export async function getStaticPaths() {
   const client = cms()
   const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
   const pages = result?.data ?? []
-  const reservedSlugs = ['home', 'about', 'contact', 'services', 'ai-implementation', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms']
+  const reservedSlugs = ['home', 'about', 'contact', 'services', 'industries', 'ai-implementation', 'workflow-automation', 'ai-agents', 'data-extraction', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms']
   return pages.filter((p: any) => !reservedSlugs.includes(p.slug)).map((p: any) => ({ params: { slug: p.slug } }))
 }
 
@@ -21,7 +21,7 @@ try {
 } catch {}
 
 // Pages with reserved slugs are handled by their own routes
-const reservedSlugs = ['home', 'about', 'contact', 'services', 'ai-implementation', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms']
+const reservedSlugs = ['home', 'about', 'contact', 'services', 'industries', 'ai-implementation', 'workflow-automation', 'ai-agents', 'data-extraction', 'ai-for-law-firms', 'ai-for-agencies', 'ai-for-accountancy-firms']
 if (!page || reservedSlugs.includes(slug!)) {
   return Astro.redirect('/404')
 }

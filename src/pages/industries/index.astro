@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import BlockRenderer from '../../components/BlockRenderer.astro'
+import { cms } from '../../lib/cms'
+
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug: 'industries' } })
+} catch {}
+
+const title = page?.seo?.metaTitle || 'AI Implementation by Industry | Chris Garlick'
+const description = page?.seo?.metaDescription || 'Vertical-specific AI builds for law firms, accountancy practices, and agencies. Solo developer, UK-based, fixed pricing. Pick your industry to see what gets automated.'
+const seoKeywords = [
+  page?.seo?.focusKeyword,
+  ...(page?.seo?.secondaryKeywords ? page.seo.secondaryKeywords.split(',').map((k: string) => k.trim()) : []),
+].filter(Boolean).join(', ') || undefined
+const rawContent = page?.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'AI Implementation by Industry',
+  description,
+  url: 'https://chrisgarlick.com/industries',
+  inLanguage: 'en-GB',
+  isPartOf: { '@type': 'WebSite', name: 'Chris Garlick', url: 'https://chrisgarlick.com' },
+  hasPart: [
+    { '@type': 'WebPage', name: 'AI for Law Firms',          url: 'https://chrisgarlick.com/industries/ai-for-law-firms' },
+    { '@type': 'WebPage', name: 'AI for Accountancy Firms',  url: 'https://chrisgarlick.com/industries/ai-for-accountancy-firms' },
+    { '@type': 'WebPage', name: 'AI for Agencies',           url: 'https://chrisgarlick.com/industries/ai-for-agencies' },
+  ],
+}
+
+const breadcrumbs = [
+  { name: 'Home',       url: '/' },
+  { name: 'Industries', url: '/industries' },
+]
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    keywords={seoKeywords}
+    ogImage={page?.seo?.ogImage}
+    breadcrumbs={breadcrumbs}
+    jsonLd={jsonLd}
+  />
+
+  {contentBlocks.length > 0 ? (
+    <BlockRenderer blocks={contentBlocks} />
+  ) : (
+    <section class="flex min-h-[60vh] items-center justify-center pt-16">
+      <p class="text-text-secondary">Industries page coming soon.</p>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,85 @@
+---
+import Base from '../../layouts/Base.astro'
+import SEO from '../../components/SEO.astro'
+import BlockRenderer from '../../components/BlockRenderer.astro'
+import { cms } from '../../lib/cms'
+
+const INDUSTRY_SLUGS = new Set([
+  'ai-for-law-firms',
+  'ai-for-accountancy-firms',
+  'ai-for-agencies',
+])
+
+export async function getStaticPaths() {
+  const slugs = ['ai-for-law-firms', 'ai-for-accountancy-firms', 'ai-for-agencies']
+  const client = cms()
+  const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
+  const pages = result?.data ?? []
+  return pages.filter((p: any) => slugs.includes(p.slug)).map((p: any) => ({ params: { slug: p.slug } }))
+}
+
+const { slug } = Astro.params
+if (!INDUSTRY_SLUGS.has(slug as string)) return Astro.redirect('/404')
+
+const client = cms()
+
+let page: any = null
+try {
+  page = await client.collection('page').findOne({ where: { slug } })
+} catch {}
+
+if (!page) return Astro.redirect('/404')
+
+const title = page.seo?.metaTitle || `${page.title} — Chris Garlick`
+const description = page.seo?.metaDescription || ''
+const seoKeywords = [
+  page.seo?.focusKeyword,
+  ...(page.seo?.secondaryKeywords ? page.seo.secondaryKeywords.split(',').map((k: string) => k.trim()) : []),
+].filter(Boolean).join(', ') || undefined
+const rawContent = page.content ?? []
+const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
+
+const breadcrumbs = [
+  { name: 'Home',       url: '/' },
+  { name: 'Industries', url: '/industries' },
+  { name: page.title,   url: `/industries/${slug}` },
+]
+
+const serviceLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: page.title,
+  description,
+  url: `https://chrisgarlick.com/industries/${slug}`,
+  provider: {
+    '@type': 'Person',
+    name: 'Chris Garlick',
+    url: 'https://chrisgarlick.com/about',
+  },
+  areaServed: { '@type': 'Country', name: 'United Kingdom' },
+  audience: {
+    '@type': 'BusinessAudience',
+    audienceType: slug === 'ai-for-law-firms' ? 'Law firms'
+                : slug === 'ai-for-accountancy-firms' ? 'Accountancy practices'
+                : 'Marketing agencies',
+  },
+}
+---
+
+<Base>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    keywords={seoKeywords}
+    ogType={page.seo?.ogType || 'website'}
+    ogTitle={page.seo?.ogTitle}
+    ogDescription={page.seo?.ogDescription}
+    ogImage={page.seo?.ogImage}
+    breadcrumbs={breadcrumbs}
+    author="Chris Garlick"
+    jsonLd={serviceLd}
+  />
+
+  <BlockRenderer blocks={contentBlocks} />
+</Base>

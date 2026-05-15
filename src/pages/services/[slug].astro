@@ -5,17 +5,12 @@ import BlockRenderer from '../../components/BlockRenderer.astro'
 import { cms } from '../../lib/cms'
 
 export async function getStaticPaths() {
+  // Outcome verticals only. Industry-specific pages now live under /industries/[slug].
   const serviceSlugs = new Set([
-    // Outcome verticals (post-pivot, May 2026)
     'workflow-automation',
     'ai-agents',
     'data-extraction',
-    // Pillar
     'ai-implementation',
-    // Industry verticals — funnel-context pages, reframed around problem/outcome
-    'ai-for-law-firms',
-    'ai-for-agencies',
-    'ai-for-accountancy-firms',
   ])
   const client = cms()
   const result = await client.collection('page').findMany({ where: { status: 'published' }, limit: 500 })
@@ -42,15 +37,10 @@ const seoKeywords = [
 const rawContent = page.content ?? []
 const contentBlocks = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent
 
-// Build a friendly breadcrumb label for the service category.
-const serviceCategory = ['ai-for-law-firms','ai-for-agencies','ai-for-accountancy-firms'].includes(slug as string)
-  ? { label: 'Industries', href: '/services' }
-  : { label: 'Services',   href: '/services' }
-
 const breadcrumbs = [
-  { name: 'Home',            url: '/' },
-  { name: serviceCategory.label, url: serviceCategory.href },
-  { name: page.title,        url: `/services/${slug}` },
+  { name: 'Home',     url: '/' },
+  { name: 'Services', url: '/services' },
+  { name: page.title, url: `/services/${slug}` },
 ]
 
 const serviceLd = {
