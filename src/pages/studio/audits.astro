@@ -165,6 +165,26 @@ import SEO from '../../components/SEO.astro'
           <p class="mt-2 font-body text-[11px] text-text-tertiary">Auto-saves on blur.</p>
         </section>
 
+        <!-- Audit markdown + PDF render -->
+        <section class="mb-8">
+          <h3 class="mb-3 font-body text-[11px] uppercase tracking-widest text-text-tertiary">
+            Audit markdown
+            <span id="d-md-saved" class="ml-3 font-body text-[10px] text-accent normal-case tracking-normal hidden">Saved &check;</span>
+          </h3>
+          <textarea
+            id="d-audit-markdown"
+            rows="18"
+            class="studio-input font-mono"
+            placeholder="Paste the audit markdown produced from Claude here. Includes YAML frontmatter at the top (title, subtitle, author, date) followed by the audit body."
+          ></textarea>
+          <div class="mt-3 flex flex-wrap items-center gap-3">
+            <button type="button" id="d-render-pdf" class="studio-btn-primary">Render PDF</button>
+            <a id="d-view-pdf" href="#" target="_blank" rel="noopener" class="studio-btn-secondary hidden">View latest PDF</a>
+            <span id="d-render-status" class="font-body text-[12px] text-text-tertiary"></span>
+          </div>
+          <p class="mt-2 font-body text-[11px] text-text-tertiary">Markdown auto-saves on blur. "Render PDF" calls typeset and saves the file on the server.</p>
+        </section>
+
         <!-- Metadata footer -->
         <section class="mb-8 text-[12px] text-text-tertiary">
           <p>IP: <span id="d-ip"></span> · UA: <span id="d-ua"></span> · Privacy notice: <span id="d-pnv"></span></p>
@@ -305,6 +325,8 @@ import SEO from '../../components/SEO.astro'
     user_agent: string | null
     privacy_notice_version: string
     admin_notes: string | null
+    audit_markdown: string | null
+    pdf_path: string | null
     data: Record<string, any>
   }
 
@@ -567,6 +589,21 @@ import SEO from '../../components/SEO.astro'
     notesEl.dataset.lastSaved = d.admin_notes || ''
     notesEl.dataset.submissionId = d.id
 
+    // Audit markdown editor
+    const mdEl = $('d-audit-markdown') as HTMLTextAreaElement
+    mdEl.value = d.audit_markdown || ''
+    mdEl.dataset.lastSaved = d.audit_markdown || ''
+    mdEl.dataset.submissionId = d.id
+
+    // View-PDF link — submissionId set unconditionally so the click handler works
+    // both for already-rendered PDFs and PDFs rendered in this session.
+    const viewBtn = $('d-view-pdf') as HTMLAnchorElement
+    viewBtn.dataset.submissionId = d.id
+    viewBtn.classList.toggle('hidden', !d.pdf_path)
+    const renderBtn = $('d-render-pdf') as HTMLButtonElement
+    renderBtn.dataset.submissionId = d.id
+    $('d-render-status').textContent = ''
+
     // Metadata
     $('d-ip').textContent  = d.ip_address || '—'
     $('d-ua').textContent  = (d.user_agent || '—').slice(0, 80)
@@ -582,29 +619,88 @@ import SEO from '../../components/SEO.astro'
       .trim()
   }
 
-  // Auto-save admin notes on blur
-  document.addEventListener('blur', async (e) => {
-    const target = e.target as HTMLElement
-    if (target?.id !== 'd-admin-notes') return
-    const ta = target as HTMLTextAreaElement
+  // Auto-save admin notes + audit markdown on blur (same pattern, different field).
+  async function autoSaveField(ta: HTMLTextAreaElement, payloadKey: 'adminNotes' | 'auditMarkdown', savedBadgeId: string) {
     const submissionId = ta.dataset.submissionId
     const value = ta.value
     if (!submissionId) return
     if (value === ta.dataset.lastSaved) return
-
     try {
       const res = await authedFetch(`/api/admin/audits/${submissionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminNotes: value }),
+        body: JSON.stringify({ [payloadKey]: value }),
       })
       if (!res.ok) return
       ta.dataset.lastSaved = value
-      const saved = $('d-notes-saved')
+      const saved = $(savedBadgeId)
       saved.classList.remove('hidden')
       setTimeout(() => saved.classList.add('hidden'), 1800)
     } catch { /* ignore — user can re-blur */ }
+  }
+  document.addEventListener('blur', async (e) => {
+    const target = e.target as HTMLElement
+    if (target?.id === 'd-admin-notes') {
+      await autoSaveField(target as HTMLTextAreaElement, 'adminNotes', 'd-notes-saved')
+    } else if (target?.id === 'd-audit-markdown') {
+      await autoSaveField(target as HTMLTextAreaElement, 'auditMarkdown', 'd-md-saved')
+    }
   }, true)
+
+  // Render PDF button
+  $('d-render-pdf').addEventListener('click', async () => {
+    const btn = $('d-render-pdf') as HTMLButtonElement
+    const submissionId = btn.dataset.submissionId
+    if (!submissionId) return
+    const mdEl = $('d-audit-markdown') as HTMLTextAreaElement
+    const markdown = mdEl.value
+    if (markdown.trim().length === 0) {
+      $('d-render-status').textContent = 'Add some markdown first.'
+      return
+    }
+    btn.disabled = true
+    $('d-render-status').textContent = 'Rendering…'
+    try {
+      const res = await authedFetch(`/api/admin/audits/${submissionId}/render`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markdown }),
+      })
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Render failed.' })) as { error?: string }
+        $('d-render-status').textContent = error || 'Render failed.'
+        return
+      }
+      mdEl.dataset.lastSaved = markdown
+      $('d-render-status').textContent = 'Rendered.'
+      $('d-view-pdf').classList.remove('hidden')
+    } catch {
+      $('d-render-status').textContent = 'Network error.'
+    } finally {
+      btn.disabled = false
+    }
+  })
+
+  // View PDF — fetches with bearer auth, opens as a blob URL (browsers can't send
+  // the Authorization header on a plain <a href> click).
+  $('d-view-pdf').addEventListener('click', async (e) => {
+    e.preventDefault()
+    const submissionId = ($('d-view-pdf') as HTMLAnchorElement).dataset.submissionId
+    if (!submissionId) return
+    try {
+      const res = await authedFetch(`/api/admin/audits/${submissionId}/pdf`)
+      if (!res.ok) {
+        $('d-render-status').textContent = 'Could not load PDF.'
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+      setTimeout(() => URL.revokeObjectURL(url), 60_000)
+    } catch {
+      $('d-render-status').textContent = 'Network error opening PDF.'
+    }
+  })
 
   // Initial route
   route()

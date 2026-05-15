@@ -126,6 +126,11 @@ sql`CREATE INDEX IF NOT EXISTS outbound_email_log_to_email_idx ON outbound_email
 sql`ALTER TABLE audit_submissions ADD COLUMN IF NOT EXISTS admin_notes text`
   .catch((err: any) => console.warn(`[Audit] admin_notes column setup: ${err}`))
 
+// audit_markdown: the markdown body of the deliverable audit, pasted in from Claude
+// locally. Persisted so the PDF can be re-rendered if the template changes.
+sql`ALTER TABLE audit_submissions ADD COLUMN IF NOT EXISTS audit_markdown text`
+  .catch((err: any) => console.warn(`[Audit] audit_markdown column setup: ${err}`))
+
 // ---------------------------------------------------------------------------
 // Form submission → stores in DB + sends email via Resend
 // Standalone route so it works regardless of CMS version
@@ -822,12 +827,13 @@ app.patch('/api/admin/audits/:id', async (c) => {
   const id = c.req.param('id')
   if (!/^[0-9a-f-]{36}$/i.test(id)) return c.json({ error: 'Invalid submission id.' }, 400)
 
-  let body: { adminNotes?: string; status?: string } = {}
+  let body: { adminNotes?: string; status?: string; auditMarkdown?: string } = {}
   try { body = await c.req.json() } catch {}
 
   // Build the SET clause from whatever the client sent. Only allow specific fields.
-  const updates: { adminNotes?: string; status?: string } = {}
-  if (typeof body.adminNotes === 'string') updates.adminNotes = body.adminNotes
+  const updates: Record<string, string> = {}
+  if (typeof body.adminNotes === 'string')    updates.admin_notes     = body.adminNotes
+  if (typeof body.auditMarkdown === 'string') updates.audit_markdown  = body.auditMarkdown
   if (typeof body.status === 'string' && /^[a-z_]+$/.test(body.status)) updates.status = body.status
 
   if (Object.keys(updates).length === 0) {
@@ -835,13 +841,7 @@ app.patch('/api/admin/audits/:id', async (c) => {
   }
 
   try {
-    if (updates.adminNotes !== undefined && updates.status !== undefined) {
-      await sql`UPDATE audit_submissions SET admin_notes = ${updates.adminNotes}, status = ${updates.status} WHERE id = ${id}`
-    } else if (updates.adminNotes !== undefined) {
-      await sql`UPDATE audit_submissions SET admin_notes = ${updates.adminNotes} WHERE id = ${id}`
-    } else if (updates.status !== undefined) {
-      await sql`UPDATE audit_submissions SET status = ${updates.status} WHERE id = ${id}`
-    }
+    await sql`UPDATE audit_submissions SET ${sql(updates)} WHERE id = ${id}`
     return c.json({ ok: true })
   } catch (err: any) {
     console.error('[Audit] admin patch failed:', err)
@@ -852,6 +852,81 @@ app.patch('/api/admin/audits/:id', async (c) => {
 // ---------------------------------------------------------------------------
 // Diagnostic: 5-question lead qualifier. Stores submission, optional internal notify.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Audit PDF rendering: takes the saved audit_markdown for a submission and
+// renders it via typeset.chrisgarlick.com. The PDF is written to disk and the
+// path stored on the row so it can be re-served or attached to email later.
+// ---------------------------------------------------------------------------
+const AUDIT_PDF_DIR = resolve(import.meta.dir, '.audits')
+try { mkdirSync(AUDIT_PDF_DIR, { recursive: true }) } catch { /* ignore */ }
+const TYPESET_AUDIT_CLIENT = process.env.TYPESET_AUDIT_CLIENT || 'chrisgarlick'
+
+app.post('/api/admin/audits/:id/render', async (c) => {
+  if (!requireAdmin(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const id = c.req.param('id')
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return c.json({ error: 'Invalid submission id.' }, 400)
+
+  // Allow the client to pass the latest markdown in the same request (avoids the
+  // race where the user clicks "Render" before the blur-save has reached the DB).
+  let body: { markdown?: string } = {}
+  try { body = await c.req.json() } catch {}
+
+  const rows = await sql`SELECT audit_ref, audit_markdown FROM audit_submissions WHERE id = ${id} LIMIT 1`
+  if (rows.length === 0) return c.json({ error: 'Submission not found.' }, 404)
+  const row = rows[0] as { audit_ref: string; audit_markdown: string | null }
+
+  const markdown = (typeof body.markdown === 'string' && body.markdown.length > 0)
+    ? body.markdown
+    : (row.audit_markdown || '')
+  if (markdown.trim().length === 0) {
+    return c.json({ error: 'Add some markdown before rendering.' }, 400)
+  }
+
+  // Persist whatever we're about to render so the row reflects what produced the PDF.
+  await sql`UPDATE audit_submissions SET audit_markdown = ${markdown} WHERE id = ${id}`
+
+  const rendered = await renderViaTypeset({
+    slug: `audit-${row.audit_ref}`,
+    markdown,
+    format: 'pdf',
+    client: TYPESET_AUDIT_CLIENT,
+  })
+  if (!rendered.ok) return c.json({ error: rendered.error }, rendered.status as any)
+
+  const pdfPath = join(AUDIT_PDF_DIR, `${row.audit_ref}.pdf`)
+  try {
+    await Bun.write(pdfPath, rendered.bytes)
+  } catch (err: any) {
+    console.error('[Audit] PDF write failed:', err)
+    return c.json({ error: 'PDF rendered but could not be saved.' }, 500)
+  }
+
+  await sql`UPDATE audit_submissions SET pdf_path = ${pdfPath} WHERE id = ${id}`
+  return c.json({ ok: true, audit_ref: row.audit_ref })
+})
+
+app.get('/api/admin/audits/:id/pdf', async (c) => {
+  if (!requireAdmin(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const id = c.req.param('id')
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return c.json({ error: 'Invalid submission id.' }, 400)
+
+  const rows = await sql`SELECT audit_ref, pdf_path FROM audit_submissions WHERE id = ${id} LIMIT 1`
+  if (rows.length === 0) return c.json({ error: 'Submission not found.' }, 404)
+  const { audit_ref, pdf_path } = rows[0] as { audit_ref: string; pdf_path: string | null }
+  if (!pdf_path) return c.json({ error: 'No PDF has been rendered yet.' }, 404)
+
+  const file = Bun.file(pdf_path)
+  if (!(await file.exists())) return c.json({ error: 'PDF file missing on disk.' }, 410)
+
+  return new Response(file, {
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename="${audit_ref}.pdf"`,
+      'Cache-Control': 'private, no-store',
+    },
+  })
+})
 
 app.post('/api/diagnostic', async (c) => {
   let body: Record<string, any>
