@@ -4,18 +4,29 @@ interface Props {
   heading?: string
   column1Heading?: string
   column1Body?: string
+  column1Url?: string
+  column1CtaLabel?: string
   column2Heading?: string
   column2Body?: string
+  column2Url?: string
+  column2CtaLabel?: string
   column3Heading?: string
   column3Body?: string
+  column3Url?: string
+  column3CtaLabel?: string
 }
 
-const { label, heading, column1Heading, column1Body, column2Heading, column2Body, column3Heading, column3Body } = Astro.props
+const {
+  label, heading,
+  column1Heading, column1Body, column1Url, column1CtaLabel,
+  column2Heading, column2Body, column2Url, column2CtaLabel,
+  column3Heading, column3Body, column3Url, column3CtaLabel,
+} = Astro.props
 
 const columns = [
-  { num: '01', heading: column1Heading, body: column1Body },
-  { num: '02', heading: column2Heading, body: column2Body },
-  { num: '03', heading: column3Heading, body: column3Body },
+  { num: '01', heading: column1Heading, body: column1Body, url: column1Url, ctaLabel: column1CtaLabel },
+  { num: '02', heading: column2Heading, body: column2Body, url: column2Url, ctaLabel: column2CtaLabel },
+  { num: '03', heading: column3Heading, body: column3Body, url: column3Url, ctaLabel: column3CtaLabel },
 ].filter(c => c.heading)
 ---
 
@@ -30,20 +41,41 @@ const columns = [
       </h2>
     )}
     <div class="grid gap-12 md:gap-16 lg:grid-cols-3">
-      {columns.map((col) => (
-        <div class="relative">
-          <span class="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.16em] text-accent">
-            {col.num}
-          </span>
-          <h3 class="mb-3 font-display text-[1.375rem] text-text-primary">{col.heading}</h3>
-          {col.body && (
-            <p class="text-[15px] leading-[1.7] text-text-secondary">{col.body}</p>
-          )}
-        </div>
-      ))}
+      {columns.map((col) => {
+        const Tag = col.url ? 'a' : 'div'
+        const linkProps = col.url ? { href: col.url, class: 'columns-card-link' } : {}
+        return (
+          <Tag {...linkProps} class:list={['columns-card relative block no-underline', col.url && 'columns-card-link']}>
+            <span class="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.16em] text-accent">
+              {col.num}
+            </span>
+            <h3 class="mb-3 font-display text-[1.375rem] text-text-primary">{col.heading}</h3>
+            {col.body && (
+              <p class="text-[15px] leading-[1.7] text-text-secondary">{col.body}</p>
+            )}
+            {col.url && (
+              <span class="mt-5 inline-flex items-center gap-1 font-body text-[13px] font-medium uppercase tracking-[0.1em] text-accent">
+                {col.ctaLabel || 'Read more'} <span aria-hidden="true">→</span>
+              </span>
+            )}
+          </Tag>
+        )
+      })}
     </div>
   </div>
   <div class="mx-auto mt-20 max-w-[1080px] px-6 md:mt-28 md:px-8">
     <div class="h-px bg-border"></div>
   </div>
 </section>
+
+<style>
+  .columns-card-link {
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+  .columns-card-link:hover {
+    transform: translateY(-2px);
+  }
+  .columns-card-link:hover h3 {
+    color: var(--color-accent);
+  }
+</style>
