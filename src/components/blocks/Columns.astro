@@ -1,4 +1,6 @@
 ---
+type ServiceTint = 'workflow' | 'agents' | 'data' | 'engineering'
+
 interface Props {
   label?: string
   heading?: string
@@ -6,28 +8,42 @@ interface Props {
   column1Body?: string
   column1Url?: string
   column1CtaLabel?: string
+  column1Tint?: ServiceTint
   column2Heading?: string
   column2Body?: string
   column2Url?: string
   column2CtaLabel?: string
+  column2Tint?: ServiceTint
   column3Heading?: string
   column3Body?: string
   column3Url?: string
   column3CtaLabel?: string
+  column3Tint?: ServiceTint
+  column4Heading?: string
+  column4Body?: string
+  column4Url?: string
+  column4CtaLabel?: string
+  column4Tint?: ServiceTint
 }
 
 const {
   label, heading,
-  column1Heading, column1Body, column1Url, column1CtaLabel,
-  column2Heading, column2Body, column2Url, column2CtaLabel,
-  column3Heading, column3Body, column3Url, column3CtaLabel,
+  column1Heading, column1Body, column1Url, column1CtaLabel, column1Tint,
+  column2Heading, column2Body, column2Url, column2CtaLabel, column2Tint,
+  column3Heading, column3Body, column3Url, column3CtaLabel, column3Tint,
+  column4Heading, column4Body, column4Url, column4CtaLabel, column4Tint,
 } = Astro.props
 
 const columns = [
-  { num: '01', heading: column1Heading, body: column1Body, url: column1Url, ctaLabel: column1CtaLabel },
-  { num: '02', heading: column2Heading, body: column2Body, url: column2Url, ctaLabel: column2CtaLabel },
-  { num: '03', heading: column3Heading, body: column3Body, url: column3Url, ctaLabel: column3CtaLabel },
+  { num: '01', heading: column1Heading, body: column1Body, url: column1Url, ctaLabel: column1CtaLabel, tint: column1Tint },
+  { num: '02', heading: column2Heading, body: column2Body, url: column2Url, ctaLabel: column2CtaLabel, tint: column2Tint },
+  { num: '03', heading: column3Heading, body: column3Body, url: column3Url, ctaLabel: column3CtaLabel, tint: column3Tint },
+  { num: '04', heading: column4Heading, body: column4Body, url: column4Url, ctaLabel: column4CtaLabel, tint: column4Tint },
 ].filter(c => c.heading)
+
+const gridCols = columns.length === 4
+  ? 'sm:grid-cols-2 lg:grid-cols-4'
+  : 'lg:grid-cols-3'
 ---
 
 <section class="py-20 md:py-28">
@@ -40,12 +56,18 @@ const columns = [
         {heading}
       </h2>
     )}
-    <div class="grid gap-12 md:gap-16 lg:grid-cols-3">
+    <div class:list={['grid gap-10 md:gap-12', columns.length === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'lg:grid-cols-3']}>
       {columns.map((col) => {
         const Tag = col.url ? 'a' : 'div'
-        const linkProps = col.url ? { href: col.url, class: 'columns-card-link' } : {}
+        const linkProps = col.url ? { href: col.url } : {}
+        const cardClasses = [
+          'columns-card relative block no-underline',
+          col.url && 'columns-card-link',
+          col.tint && 'service-tinted',
+        ].filter(Boolean)
+        const tintAttr = col.tint ? { 'data-service-card': col.tint } : {}
         return (
-          <Tag {...linkProps} class:list={['columns-card relative block no-underline', col.url && 'columns-card-link']}>
+          <Tag {...linkProps} {...tintAttr} class:list={cardClasses}>
             <span class="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.16em] text-accent">
               {col.num}
             </span>
@@ -69,8 +91,17 @@ const columns = [
 </section>
 
 <style>
+  /* Tinted cards get a top accent stripe in their service colour, on top of
+     the regular hover lift. Untinted cards keep the existing minimal hover. */
+  .columns-card {
+    padding-top: 1.5rem;
+    border-top: 1px solid transparent;
+  }
+  .columns-card.service-tinted {
+    border-top: 2px solid var(--color-accent);
+  }
   .columns-card-link {
-    transition: transform 0.18s ease, opacity 0.18s ease;
+    transition: transform 0.18s ease, border-color 0.18s ease;
   }
   .columns-card-link:hover {
     transform: translateY(-2px);
