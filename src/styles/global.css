@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════
-   CHRIS GARLICK — THE ARCHITECT'S PORTFOLIO
-   Warm light mode. Paper texture. Sharp type.
+   CHRIS GARLICK — PARCHMENT / OXIDE + SERVICE COLOURS
+   Decision log: see colour_pallete.md (2026-05-18)
+   - Services are the colour classification axis.
+   - Industries, AI Implementation pillar, Audit form,
+     About, Contact, Footer all stay monochrome.
+   - --color-accent defaults to text-primary (ink).
+     Service pages override via [data-service="X"].
    ═══════════════════════════════════════════════ */
 
 @theme {
-  /* ── Palette ── */
-  --color-bg-primary: #FAF8F5;
-  --color-bg-surface: #FFFFFF;
-  --color-bg-muted: #F3F0EB;
-  --color-bg-dark: #1A1715;
-  --color-text-primary: #1A1715;
-  --color-text-secondary: #6E6862;
-  --color-text-tertiary: #6B6560;
-  --color-accent: #B5522F;
-  --color-accent-hover: #9E4828;
-  --color-accent-light: #FDF0EC;
-  --color-border: #E8E4DE;
-  --color-border-hover: #D4CFC8;
-  --color-destructive: #C0392B;
-  --color-error-bg: #FDF0EC;
+  /* ── Base palette (parchment + oxide) ── */
+  --color-bg-primary:       #F6F2EB;  /* warm parchment */
+  --color-bg-surface:       #EDE8DF;  /* deeper parchment for cards */
+  --color-bg-muted:         #F0ECE3;  /* between page + surface */
+  --color-bg-dark:          #131510;  /* oxide green-black */
+  --color-bg-dark-surface:  #1C1F19;  /* elevated dark surface */
+  --color-bg-dark-deeper:   #0D0F0B;  /* deeper dark for gaps, footer */
+
+  --color-text-primary:     #1A1814;  /* near-black warm — body + primary CTA bg */
+  --color-text-secondary:   #6B6358;  /* warm brown-grey body text */
+  --color-text-tertiary:    #A09890;  /* faint warm grey for labels / timestamps */
+  --color-text-dark:        #E4E0D8;  /* primary text on dark sections */
+  --color-text-dark-muted:  #888078;  /* secondary text on dark sections */
+
+  --color-border:           #D8D2C8;  /* parchment border */
+  --color-border-hover:     #C5BEB1;  /* slightly darker border on hover */
+  --color-border-dark:      #252820;  /* dark section dividers */
+
+  --color-destructive:      #C0392B;
+  --color-error-bg:         #F8E8E3;
+
+  /* ── Service colours (the 4 muted hues) ── */
+  --color-workflow:         #4A7A60;  /* sage forest */
+  --color-workflow-dark:    #5A8A70;  /* lighter on dark bg */
+  --color-workflow-bg:      rgba(74, 122, 96, 0.08);
+
+  --color-agents:           #5A6E8A;  /* steel slate */
+  --color-agents-dark:      #6A7E9A;
+  --color-agents-bg:        rgba(90, 110, 138, 0.08);
+
+  --color-data:             #8A6A40;  /* oxidised amber */
+  --color-data-dark:        #9A7A50;
+  --color-data-bg:          rgba(138, 106, 64, 0.08);
+
+  --color-engineering:      #6A5A7A;  /* muted violet */
+  --color-engineering-dark: #7A6A8A;
+  --color-engineering-bg:   rgba(106, 90, 122, 0.08);
+
+  /* ── Page accent — defaults to ink (monochrome) ──
+     Service templates set [data-service="..."] on <html> which re-points
+     these via the cascade below. Components read --color-accent and
+     just work. Defaults match text-primary / text-secondary / bg-muted. */
+  --color-accent:           #1A1814;
+  --color-accent-hover:     #6B6358;
+  --color-accent-light:     #F0ECE3;
 
   /* ── Typography ── */
   --font-display: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
@@ -48,6 +83,72 @@
   --duration-slow: 400ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ── Per-service accent overrides ──
+   Service templates render <html data-service="workflow"> etc. The cascade
+   re-points --color-accent to the service hue without any utility classes
+   needing to change. Industry pages, AI Implementation pillar, Audit form,
+   About, Contact and Home omit data-service entirely and stay monochrome.
+
+   Industry pages can still spotlight service colours per-card by wrapping
+   the card in [data-service-card="workflow"] — see the .service-tinted
+   helper below.
+*/
+[data-service="workflow"] {
+  --color-accent:       var(--color-workflow);
+  --color-accent-hover: var(--color-workflow-dark);
+  --color-accent-light: var(--color-workflow-bg);
+}
+[data-service="agents"] {
+  --color-accent:       var(--color-agents);
+  --color-accent-hover: var(--color-agents-dark);
+  --color-accent-light: var(--color-agents-bg);
+}
+[data-service="data"] {
+  --color-accent:       var(--color-data);
+  --color-accent-hover: var(--color-data-dark);
+  --color-accent-light: var(--color-data-bg);
+}
+[data-service="engineering"] {
+  --color-accent:       var(--color-engineering);
+  --color-accent-hover: var(--color-engineering-dark);
+  --color-accent-light: var(--color-engineering-bg);
+}
+
+/* Nav + footer are always monochrome, regardless of the page's service.
+   Reset --color-accent back to ink within these regions so service colours
+   never bleed into the chrome. The opt-in [data-monochrome] attribute
+   does the same for any other component that needs to escape the page hue. */
+nav, footer, [data-monochrome] {
+  --color-accent:       #1A1814;
+  --color-accent-hover: #6B6358;
+  --color-accent-light: #F0ECE3;
+}
+
+/* Same tinting available as a component-scoped helper so industry pages
+   can paint a single card in a service colour without affecting the rest
+   of the page. Usage: <div class="service-tinted" data-service-card="data">
+*/
+.service-tinted[data-service-card="workflow"] {
+  --color-accent:       var(--color-workflow);
+  --color-accent-hover: var(--color-workflow-dark);
+  --color-accent-light: var(--color-workflow-bg);
+}
+.service-tinted[data-service-card="agents"] {
+  --color-accent:       var(--color-agents);
+  --color-accent-hover: var(--color-agents-dark);
+  --color-accent-light: var(--color-agents-bg);
+}
+.service-tinted[data-service-card="data"] {
+  --color-accent:       var(--color-data);
+  --color-accent-hover: var(--color-data-dark);
+  --color-accent-light: var(--color-data-bg);
+}
+.service-tinted[data-service-card="engineering"] {
+  --color-accent:       var(--color-engineering);
+  --color-accent-hover: var(--color-engineering-dark);
+  --color-accent-light: var(--color-engineering-bg);
 }
 
 /* ── Base ── */
@@ -101,7 +202,7 @@
   /* Ensure links in body text are distinguishable */
   p a, li a, span a, td a {
     text-decoration: underline;
-    text-decoration-color: rgba(181, 82, 47, 0.3);
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
     text-underline-offset: 3px;
   }
 
@@ -187,7 +288,7 @@
 .prose-custom a {
   color: var(--color-accent);
   text-decoration: underline;
-  text-decoration-color: rgba(196, 93, 62, 0.3);
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
   text-underline-offset: 3px;
   transition: text-decoration-color var(--duration-fast);
 }

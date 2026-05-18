@@ -9,14 +9,19 @@ interface Props {
   /** When true, hides the global nav and replaces the standard footer with a minimal one (privacy link only).
    *  Used for single-purpose cold-traffic landing pages. */
   bare?: boolean
+  /** Paints the page in a service colour by re-pointing --color-accent via CSS cascade.
+   *  Set on outcome service pages (workflow, agents, data, engineering). Leave undefined
+   *  for monochrome pages: home, industries, AI implementation pillar, audit form,
+   *  about, contact, articles. */
+  service?: 'workflow' | 'agents' | 'data' | 'engineering'
 }
 
-const { class: className, bare = false } = Astro.props
+const { class: className, bare = false, service } = Astro.props
 const year = new Date().getFullYear()
 ---
 
 <!doctype html>
-<html lang="en-GB">
+<html lang="en-GB" data-service={service ?? null}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

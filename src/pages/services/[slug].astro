@@ -179,9 +179,19 @@ const AI_ENGINEERING_FAQ = slug === 'ai-engineering' ? {
 
 const faqLd = PILLAR_FAQ || AI_ENGINEERING_FAQ
 const jsonLd = [serviceLd, ...(faqLd ? [faqLd] : [])]
+
+// Paint the page in the right service colour. AI Implementation is the pillar
+// and stays monochrome (the umbrella service is the brand ink, not a colour).
+const SERVICE_COLOUR: Record<string, 'workflow' | 'agents' | 'data' | 'engineering'> = {
+  'workflow-automation': 'workflow',
+  'ai-agents':           'agents',
+  'data-extraction':     'data',
+  'ai-engineering':      'engineering',
+}
+const pageService = SERVICE_COLOUR[slug as string]
 ---
 
-<Base>
+<Base service={pageService}>
   <SEO
     slot="head"
     title={title}
