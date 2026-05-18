@@ -7,12 +7,13 @@ interface Props {
   ctaUrl?: string
   ctaSecondaryLabel?: string
   ctaSecondaryUrl?: string
+  theme?: 'light' | 'dark'
 }
 
-const { label, heading, subtext, ctaLabel, ctaUrl, ctaSecondaryLabel, ctaSecondaryUrl } = Astro.props
+const { label, heading, subtext, ctaLabel, ctaUrl, ctaSecondaryLabel, ctaSecondaryUrl, theme = 'light' } = Astro.props
 ---
 
-<section class="relative overflow-hidden pt-14">
+<section class="relative overflow-hidden pt-14" data-theme={theme}>
   <!-- Subtle geometric accent -->
   <div class="pointer-events-none absolute right-[-8%] top-[15%] h-[420px] w-[420px] rounded-full opacity-[0.04]"
     style="background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);"></div>

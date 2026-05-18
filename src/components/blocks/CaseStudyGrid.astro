@@ -6,9 +6,10 @@ interface Props {
   heading?: string
   subtext?: string
   limit?: number
+  theme?: 'light' | 'dark'
 }
 
-const { heading, subtext, limit = 4 } = Astro.props
+const { heading, subtext, limit = 4, theme = 'light' } = Astro.props
 
 const client = cms()
 let cases: any[] = []
@@ -25,7 +26,7 @@ try {
 if (cases.length === 0) return null
 ---
 
-<section class="py-20 md:py-28">
+<section class="py-20 md:py-28" data-theme={theme}>
   <div class="mx-auto max-w-[1080px] px-6 md:px-8">
     {heading && (
       <div class="mb-12">

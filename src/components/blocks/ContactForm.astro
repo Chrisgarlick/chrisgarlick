@@ -1,9 +1,10 @@
 ---
 interface Props {
   formSlug?: string
+  theme?: 'light' | 'dark'
 }
 
-const { formSlug = 'contact' } = Astro.props
+const { formSlug = 'contact', theme = 'light' } = Astro.props
 const apiUrl = import.meta.env.CMS_API_URL || process.env.CMS_API_URL || 'http://localhost:3000/api'
 
 let form: any = null
@@ -24,7 +25,7 @@ const successMessage = settings.successMessage || 'Thank you. Your submission ha
 ---
 
 {form ? (
-  <section class="pb-20 md:pb-24">
+  <section class="pb-20 md:pb-24" data-theme={theme}>
     <div class="cms-form-container">
       <form id="cms-form" class="cms-form" novalidate data-submit-url={submitUrl} data-success-message={successMessage}>
         {fields.map((field: any) => {
@@ -139,7 +140,7 @@ const successMessage = settings.successMessage || 'Thank you. Your submission ha
     </div>
   </section>
 ) : (
-  <section class="py-20 md:py-24">
+  <section class="py-20 md:py-24" data-theme={theme}>
     <div class="cms-form-container" style="text-align: center;">
       <p style="color: var(--color-text-secondary);">Form not found. Create a form with slug "{formSlug}" in the admin.</p>
     </div>

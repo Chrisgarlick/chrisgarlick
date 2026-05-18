@@ -4,22 +4,25 @@ interface Props {
   body?: string
   ctaLabel?: string
   ctaUrl?: string
+  theme?: 'light' | 'dark'
 }
 
-const { heading, body, ctaLabel = 'Apply', ctaUrl = '/apply' } = Astro.props
+// CTA defaults to dark — that's been the original treatment. Set theme="light"
+// from the CMS to flip individual CTAs to parchment.
+const { heading, body, ctaLabel = 'Apply', ctaUrl = '/apply', theme = 'dark' } = Astro.props
 ---
 
-<section class="bg-bg-dark py-20 md:py-28">
+<section class="py-20 md:py-28 bg-bg-primary" data-theme={theme}>
   <div class="mx-auto max-w-[680px] px-6 text-center md:px-8">
-    <h2 class="mb-5 font-display text-[1.75rem] text-white md:text-[2.25rem]" style="letter-spacing: -0.02em;">
+    <h2 class="mb-5 font-display text-[1.75rem] text-text-primary md:text-[2.25rem]" style="letter-spacing: -0.02em;">
       {heading}
     </h2>
     {body && (
-      <p class="mb-10 text-[15px] leading-[1.75] text-white/60">{body}</p>
+      <p class="mb-10 text-[15px] leading-[1.75] text-text-secondary">{body}</p>
     )}
     <a
       href={ctaUrl}
-      class="inline-block border border-white bg-white px-8 py-3 font-body text-[13px] font-medium uppercase tracking-wider text-bg-dark no-underline transition-all duration-150 hover:bg-white/90"
+      class="inline-block border border-text-primary bg-text-primary px-8 py-3 font-body text-[13px] font-medium uppercase tracking-wider text-bg-primary no-underline transition-all duration-150 hover:opacity-90"
       style="border-radius: 3px;"
     >
       {ctaLabel}

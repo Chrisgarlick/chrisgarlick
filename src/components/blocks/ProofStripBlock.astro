@@ -3,9 +3,10 @@ import { cms } from '../../lib/cms'
 
 interface Props {
   metrics?: string
+  theme?: 'light' | 'dark'
 }
 
-const { metrics: staticMetrics } = Astro.props
+const { metrics: staticMetrics, theme = 'light' } = Astro.props
 
 const client = cms()
 let items: string[] = []
@@ -26,7 +27,7 @@ if (items.length === 0) return null
 const doubled = [...items, ...items]
 ---
 
-<section class="border-y border-border bg-bg-muted" aria-hidden="true">
+<section class="border-y border-border bg-bg-muted" aria-hidden="true" data-theme={theme}>
   <div class="overflow-hidden py-4">
     <div class="marquee-track flex whitespace-nowrap">
       {doubled.map((item) => (

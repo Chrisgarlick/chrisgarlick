@@ -7,9 +7,10 @@ interface Props {
   tool1Body?: string
   tool2Name?: string
   tool2Body?: string
+  theme?: 'light' | 'dark'
 }
 
-const { label, tool1Name, tool1Body, tool2Name, tool2Body } = Astro.props
+const { label, tool1Name, tool1Body, tool2Name, tool2Body, theme = 'light' } = Astro.props
 
 // Try to fetch published tools from CMS
 let cmsTools: any[] = []
@@ -34,7 +35,7 @@ const tools = cmsTools.length > 0
 if (tools.length === 0) return null
 ---
 
-<section class="py-20 md:py-28">
+<section class="py-20 md:py-28" data-theme={theme}>
   <div class="mx-auto max-w-[1080px] px-6 md:px-8">
     {label && <p class="mb-10 font-body text-[0.8125rem] font-medium uppercase tracking-[0.12em] text-text-tertiary">{label}</p>}
     <div class="grid gap-8 md:grid-cols-2 md:gap-12">

@@ -13,8 +13,8 @@
 @theme {
   /* ── Base palette (parchment + oxide) ── */
   --color-bg-primary:       #F6F2EB;  /* warm parchment */
-  --color-bg-surface:       #EDE8DF;  /* deeper parchment for cards */
-  --color-bg-muted:         #F0ECE3;  /* between page + surface */
+  --color-bg-surface:       #FFFFFF;  /* pure white for cards, dropdowns, popovers */
+  --color-bg-muted:         #EFEAE0;  /* slightly deeper parchment, dividers, subtle bgs */
   --color-bg-dark:          #131510;  /* oxide green-black */
   --color-bg-dark-surface:  #1C1F19;  /* elevated dark surface */
   --color-bg-dark-deeper:   #0D0F0B;  /* deeper dark for gaps, footer */
@@ -116,6 +116,43 @@
   --color-accent-light: var(--color-engineering-bg);
 }
 
+/* Per-section dark theme. Any block can opt in by rendering its outermost
+   <section data-theme="dark">. This re-points the base bg/text/border tokens
+   inside that subtree, so every utility class (bg-bg-primary, text-text-primary,
+   border-border etc.) auto-flips without touching the block's markup. The page
+   itself stays parchment; only the sections that opt in go dark. */
+[data-theme="dark"] {
+  --color-bg-primary:     var(--color-bg-dark);
+  --color-bg-surface:     var(--color-bg-dark-surface);
+  --color-bg-muted:       var(--color-bg-dark-deeper);
+  --color-text-primary:   var(--color-text-dark);
+  --color-text-secondary: var(--color-text-dark-muted);
+  --color-text-tertiary:  var(--color-text-dark-muted);
+  --color-border:         var(--color-border-dark);
+  --color-border-hover:   var(--color-border-dark);
+  background-color:       var(--color-bg-dark);
+  color:                  var(--color-text-dark);
+}
+
+/* On service pages, the per-service accent uses the *-dark variant inside
+   dark sections so the colour reads on the dark background. */
+[data-theme="dark"][data-service="workflow"],
+[data-theme="dark"] [data-service-card="workflow"] {
+  --color-accent: var(--color-workflow-dark);
+}
+[data-theme="dark"][data-service="agents"],
+[data-theme="dark"] [data-service-card="agents"] {
+  --color-accent: var(--color-agents-dark);
+}
+[data-theme="dark"][data-service="data"],
+[data-theme="dark"] [data-service-card="data"] {
+  --color-accent: var(--color-data-dark);
+}
+[data-theme="dark"][data-service="engineering"],
+[data-theme="dark"] [data-service-card="engineering"] {
+  --color-accent: var(--color-engineering-dark);
+}
+
 /* Nav + footer are always monochrome, regardless of the page's service.
    Reset --color-accent back to ink within these regions so service colours
    never bleed into the chrome. The opt-in [data-monochrome] attribute
@@ -126,26 +163,27 @@ nav, footer, [data-monochrome] {
   --color-accent-light: #F0ECE3;
 }
 
-/* Same tinting available as a component-scoped helper so industry pages
-   can paint a single card in a service colour without affecting the rest
-   of the page. Usage: <div class="service-tinted" data-service-card="data">
-*/
-.service-tinted[data-service-card="workflow"] {
+/* Component-scoped tint. Any element with [data-service-card="X"] re-points
+   the accent variables to that service hue inside its own subtree. Used on
+   homepage service cards, industry page service cards, and nav dropdown links
+   so each one previews its destination's service colour. The attribute alone
+   is enough — no class needed. Specificity beats the nav/footer reset above. */
+[data-service-card="workflow"] {
   --color-accent:       var(--color-workflow);
   --color-accent-hover: var(--color-workflow-dark);
   --color-accent-light: var(--color-workflow-bg);
 }
-.service-tinted[data-service-card="agents"] {
+[data-service-card="agents"] {
   --color-accent:       var(--color-agents);
   --color-accent-hover: var(--color-agents-dark);
   --color-accent-light: var(--color-agents-bg);
 }
-.service-tinted[data-service-card="data"] {
+[data-service-card="data"] {
   --color-accent:       var(--color-data);
   --color-accent-hover: var(--color-data-dark);
   --color-accent-light: var(--color-data-bg);
 }
-.service-tinted[data-service-card="engineering"] {
+[data-service-card="engineering"] {
   --color-accent:       var(--color-engineering);
   --color-accent-hover: var(--color-engineering-dark);
   --color-accent-light: var(--color-engineering-bg);

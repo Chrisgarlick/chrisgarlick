@@ -1,17 +1,20 @@
 ---
 const currentPath = Astro.url.pathname
 
+type ServiceTint = 'workflow' | 'agents' | 'data' | 'engineering'
+type NavChild = { href: string; label: string; tint?: ServiceTint }
+
 const links = [
   {
     href: '/services',
     label: 'Services',
     children: [
       { href: '/services/ai-implementation',   label: 'AI Implementation' },
-      { href: '/services/workflow-automation', label: 'Workflow Automation' },
-      { href: '/services/ai-agents',           label: 'Custom AI Agents' },
-      { href: '/services/data-extraction',     label: 'Data Extraction' },
-      { href: '/services/ai-engineering',      label: 'AI Engineering' },
-    ],
+      { href: '/services/workflow-automation', label: 'Workflow Automation', tint: 'workflow' },
+      { href: '/services/ai-agents',           label: 'Custom AI Agents',    tint: 'agents' },
+      { href: '/services/data-extraction',     label: 'Data Extraction',     tint: 'data' },
+      { href: '/services/ai-engineering',      label: 'AI Engineering',      tint: 'engineering' },
+    ] as NavChild[],
   },
   {
     href: '/industries',
@@ -20,7 +23,7 @@ const links = [
       { href: '/industries/ai-for-law-firms',         label: 'AI for Law Firms' },
       { href: '/industries/ai-for-accountancy-firms', label: 'AI for Accountancy Firms' },
       { href: '/industries/ai-for-agencies',          label: 'AI for Agencies' },
-    ],
+    ] as NavChild[],
   },
   { href: '/work', label: 'Work' },
   { href: '/audit', label: 'Audit' },
@@ -73,8 +76,9 @@ const links = [
                 {children.map((child) => (
                   <a
                     href={child.href}
+                    data-service-card={child.tint}
                     class={`block px-4 py-2 font-body text-[12px] tracking-wide no-underline transition-colors duration-150 ${
-                      currentPath === child.href ? 'text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-bg-muted'
+                      currentPath === child.href ? 'text-accent' : 'text-text-secondary hover:text-accent hover:bg-bg-muted'
                     }`}
                   >
                     {child.label}
@@ -156,8 +160,9 @@ const links = [
               {children.map((child) => (
                 <a
                   href={child.href}
+                  data-service-card={child.tint}
                   class={`font-body text-[13px] tracking-wide no-underline ${
-                    currentPath === child.href ? 'text-accent' : 'text-text-tertiary hover:text-text-primary'
+                    currentPath === child.href ? 'text-accent' : 'text-text-tertiary hover:text-accent'
                   }`}
                 >
                   {child.label}
