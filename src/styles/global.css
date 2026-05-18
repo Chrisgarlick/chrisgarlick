@@ -129,9 +129,25 @@
   --color-text-secondary: var(--color-text-dark-muted);
   --color-text-tertiary:  var(--color-text-dark-muted);
   --color-border:         var(--color-border-dark);
-  --color-border-hover:   var(--color-border-dark);
+  /* Lighter than --color-border-dark so hover state is visible against the oxide bg */
+  --color-border-hover:   #3D4036;
+  /* Accent on monochrome dark sections: light cream so labels + links read.
+     Per-service rules above (e.g. [data-theme="dark"][data-service="workflow"])
+     are more specific and override this for service pages. */
+  --color-accent:         var(--color-text-dark);
+  --color-accent-hover:   #F0EDE8;
+  --color-accent-light:   var(--color-bg-dark-deeper);
+  /* Drop shadow on dark needs to be DEEPER not lighter to register against
+     the oxide background. Adds a subtle bright ring + a deep shadow underneath. */
+  --shadow-elevated:      0 0 0 1px rgba(228, 224, 216, 0.08), 0 12px 40px rgba(0, 0, 0, 0.45);
   background-color:       var(--color-bg-dark);
   color:                  var(--color-text-dark);
+}
+
+/* Card hover on dark sections also lifts the border to the bright variant
+   so the hover state is clearly distinguishable from rest. */
+[data-theme="dark"] .card-hover:hover {
+  border-color: var(--color-border-hover);
 }
 
 /* On service pages, the per-service accent uses the *-dark variant inside
