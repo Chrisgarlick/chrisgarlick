@@ -20,8 +20,8 @@
   --color-bg-dark-deeper:   #0D0F0B;  /* deeper dark for gaps, footer */
 
   --color-text-primary:     #1A1814;  /* near-black warm — body + primary CTA bg */
-  --color-text-secondary:   #6B6358;  /* warm brown-grey body text */
-  --color-text-tertiary:    #A09890;  /* faint warm grey for labels / timestamps */
+  --color-text-secondary:   #5C544A;  /* warm brown-grey body text (WCAG AA on parchment) */
+  --color-text-tertiary:    #6E6358;  /* labels / timestamps — passes 4.5:1 on bg-muted */
   --color-text-dark:        #E4E0D8;  /* primary text on dark sections */
   --color-text-dark-muted:  #888078;  /* secondary text on dark sections */
 
@@ -32,22 +32,27 @@
   --color-destructive:      #C0392B;
   --color-error-bg:         #F8E8E3;
 
-  /* ── Service colours (the 4 muted hues) ── */
-  --color-workflow:         #4A7A60;  /* sage forest */
-  --color-workflow-dark:    #5A8A70;  /* lighter on dark bg */
-  --color-workflow-bg:      rgba(74, 122, 96, 0.08);
+  /* ── Service colours (neon) ──
+     Light variants are electric and saturated but stay WCAG AA on parchment
+     (≥4.5:1 on bg-primary) so labels remain readable.
+     Dark variants go full neon — bright, glowing, used on oxide sections via
+     the [data-theme="dark"][data-service="X"] cascade. Pair with a glow
+     box-shadow on stat numbers / hero accents to push the neon feel further. */
+  --color-workflow:         #08743F;  /* deep emerald */
+  --color-workflow-dark:    #39FF8C;  /* neon mint */
+  --color-workflow-bg:      rgba(11, 126, 69, 0.10);
 
-  --color-agents:           #5A6E8A;  /* steel slate */
-  --color-agents-dark:      #6A7E9A;
-  --color-agents-bg:        rgba(90, 110, 138, 0.08);
+  --color-agents:           #0F60C4;  /* electric cobalt */
+  --color-agents-dark:      #39C6FF;  /* neon cyan */
+  --color-agents-bg:        rgba(15, 96, 196, 0.10);
 
-  --color-data:             #8A6A40;  /* oxidised amber */
-  --color-data-dark:        #9A7A50;
-  --color-data-bg:          rgba(138, 106, 64, 0.08);
+  --color-data:             #A14809;  /* neon copper */
+  --color-data-dark:        #FF9F40;  /* neon tangerine */
+  --color-data-bg:          rgba(161, 72, 9, 0.10);
 
-  --color-engineering:      #6A5A7A;  /* muted violet */
-  --color-engineering-dark: #7A6A8A;
-  --color-engineering-bg:   rgba(106, 90, 122, 0.08);
+  --color-engineering:      #7E1FE8;  /* electric violet */
+  --color-engineering-dark: #C97FFF;  /* neon purple */
+  --color-engineering-bg:   rgba(126, 31, 232, 0.10);
 
   /* ── Page accent — defaults to ink (monochrome) ──
      Service templates set [data-service="..."] on <html> which re-points
@@ -148,6 +153,21 @@
    so the hover state is clearly distinguishable from rest. */
 [data-theme="dark"] .card-hover:hover {
   border-color: var(--color-border-hover);
+}
+
+/* Subtle neon glow on accent-coloured large text inside dark sections.
+   Only applies to elements with the .neon-glow opt-in class so we don't
+   accidentally glow every label. Use on big stat numbers, hero accents,
+   case-study stripes that should feel electric. */
+[data-theme="dark"] .neon-glow {
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--color-accent) 45%, transparent),
+    0 0 48px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+[data-theme="dark"] .neon-glow-bg {
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--color-accent) 30%, transparent),
+    0 0 64px color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
 /* On service pages, the per-service accent uses the *-dark variant inside
