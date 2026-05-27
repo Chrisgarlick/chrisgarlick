@@ -78,8 +78,11 @@
   --shadow-elevated: 0 8px 30px rgba(26,23,21,0.08);
 
   /* ── Layout ── */
-  --container-reading: 680px;
-  --container-full: 1080px;
+  /* Note: Tailwind v4 generates utilities from --container-* tokens. Defining
+     --container-full here shadowed the built-in w-full utility (forcing every
+     w-full element to width:1080px instead of 100%). Removed 2026-05-27.
+     If you need named max-width tokens, use a non-keyword name like
+     --container-page to avoid collisions with w-full / w-screen / etc. */
   --breakpoint-xl: 1200px;
 
   /* ── Motion ── */
