@@ -107,6 +107,45 @@ function parseInline(text) {
   return nodes
 }
 
+function isTableHeaderRow(line) {
+  // A row that starts and ends with | and has at least one inner |
+  const trimmed = line.trim()
+  if (!trimmed.startsWith('|') || !trimmed.endsWith('|')) return false
+  return (trimmed.match(/\|/g) || []).length >= 2
+}
+
+function isTableSeparatorRow(line) {
+  // |---|---|... possibly with :-: alignment markers
+  const trimmed = line.trim()
+  return /^\|(\s*:?-{3,}:?\s*\|)+$/.test(trimmed)
+}
+
+function splitTableRow(line) {
+  // Drop leading + trailing pipe, split on |, trim each cell
+  const trimmed = line.trim().replace(/^\|/, '').replace(/\|$/, '')
+  return trimmed.split('|').map(c => c.trim())
+}
+
+function buildTableNode(headerCells, bodyRows) {
+  const headerRow = {
+    type: 'tableRow',
+    content: headerCells.map(cell => ({
+      type: 'tableHeader',
+      attrs: { colspan: 1, rowspan: 1, colwidth: null },
+      content: [{ type: 'paragraph', content: parseInline(cell) }],
+    })),
+  }
+  const rows = [headerRow, ...bodyRows.map(cells => ({
+    type: 'tableRow',
+    content: cells.map(cell => ({
+      type: 'tableCell',
+      attrs: { colspan: 1, rowspan: 1, colwidth: null },
+      content: [{ type: 'paragraph', content: parseInline(cell) }],
+    })),
+  }))]
+  return { type: 'table', content: rows }
+}
+
 function parseBody(md) {
   // Strip HTML comments
   md = md.replace(/<!--[\s\S]*?-->/g, '')
@@ -145,9 +184,30 @@ function parseBody(md) {
       continue
     }
 
-    // Paragraph (consume contiguous non-blank, non-heading, non-bullet lines)
+    // Table (pipe-delimited GFM): header row, separator row (|---|---|), then body rows.
+    // Detection: current line and next line both look like pipe rows, next line is the separator.
+    if (isTableHeaderRow(line) && i + 1 < lines.length && isTableSeparatorRow(lines[i+1])) {
+      const headerCells = splitTableRow(line)
+      i += 2 // skip header + separator
+      const bodyRows = []
+      while (i < lines.length && isTableHeaderRow(lines[i])) {
+        bodyRows.push(splitTableRow(lines[i]))
+        i++
+      }
+      blocks.push(buildTableNode(headerCells, bodyRows))
+      continue
+    }
+
+    // Paragraph (consume contiguous non-blank, non-heading, non-bullet, non-table lines)
     const paraLines = []
-    while (i < lines.length && lines[i].trim() !== '' && !lines[i].match(/^#/) && !lines[i].match(/^-\s/) && lines[i].trim() !== '---') {
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !lines[i].match(/^#/) &&
+      !lines[i].match(/^-\s/) &&
+      lines[i].trim() !== '---' &&
+      !(isTableHeaderRow(lines[i]) && i + 1 < lines.length && isTableSeparatorRow(lines[i+1]))
+    ) {
       paraLines.push(lines[i])
       i++
     }

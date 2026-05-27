@@ -77,6 +77,7 @@ From the pivot brand brief (`pivot.md` §1.2):
 - **API-key auth 500s on PATCH** (Kritano issue #3d). Always use a fresh JWT for writes.
 - **Kritano API returns snake_case** even when fields are declared camelCase in `cms.config.ts`. Reads need snake_case access.
 - **Static pages need a rebuild** after any CMS content change to surface on the live site.
+- **URLs use `/article/<slug>`, not `/blog/<slug>`.** The live Kritano CMS routes every published post under `/article/`. The SEO planning docs in `team/18-seo/` (`keyword-strategy.md`, `topic-clusters.md`, etc.) reference `/blog/<slug>` URLs for historical reasons, but those paths do not resolve on the live site. When writing any live-facing content (trend outputs, blog frontmatter footers, social copy, visuals, video, CTAs), translate every `/blog/<slug>` from the SEO docs into `/article/<slug>`. External source URLs that happen to contain `/blog/` (e.g. `whitehat-seo.co.uk/blog/...`) are unaffected; this rule applies only to internal chrisgarlick.com links.
 
 ## Files of note
 

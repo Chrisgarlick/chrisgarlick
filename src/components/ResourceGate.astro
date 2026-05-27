@@ -2,15 +2,18 @@
 interface Props {
   slug: string
   title: string
+  hasDocx?: boolean
 }
-const { slug, title } = Astro.props
+const { slug, title, hasDocx = false } = Astro.props
+
+const formats = hasDocx ? 'PDF, HTML, DOCX or markdown' : 'PDF, HTML or markdown'
 ---
 
 <div id="resource-gate" data-slug={slug} class="border border-border bg-bg-surface p-7 md:p-8" style="border-radius: 3px;">
   <p class="mb-2 font-body text-xs font-medium uppercase tracking-widest text-accent">Get the download</p>
   <h2 class="mb-4 font-display text-[1.5rem] text-text-primary">Enter your email to download</h2>
   <p class="mb-6 text-[14px] leading-relaxed text-text-secondary">
-    We&rsquo;ll send you a copy of <strong class="text-text-primary">{title}</strong> &mdash; choose PDF, DOCX or markdown after you submit.
+    We&rsquo;ll send you a copy of <strong class="text-text-primary">{title}</strong>. Pick {formats} after you submit.
   </p>
 
   <form id="resource-form" class="space-y-4" novalidate>
@@ -64,7 +67,7 @@ const { slug, title } = Astro.props
         class="w-full border border-border bg-bg-surface px-3.5 py-2.5 font-body text-[14px] text-text-primary focus:border-accent focus:outline-none"
         style="border-radius: 3px;"
       >
-        <option value="">Select &mdash; optional</option>
+        <option value="">Select (optional)</option>
         <option value="Legal">Legal / Law firm</option>
         <option value="Accountancy">Accountancy</option>
         <option value="Agency">Agency</option>

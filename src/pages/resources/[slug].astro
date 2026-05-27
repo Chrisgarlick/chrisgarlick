@@ -28,7 +28,7 @@ const hasDocx = resource.hasDocx === 'yes'
 // ── SEO: prefer the CMS `seo` block when populated, fall back to derived. ─────
 const seo = resource.seo || {}
 
-const seoTitle       = seo.metaTitle       || `${resource.title} — Free Download | Chris Garlick`
+const seoTitle       = seo.metaTitle       || `${resource.title} | Free Download | Chris Garlick`
 const seoDescription = seo.metaDescription || resource.summary?.slice(0, 155) || ''
 const ogTitle        = seo.ogTitle         || undefined
 const ogDescription  = seo.ogDescription   || undefined
@@ -116,7 +116,7 @@ const digitalDocumentLd = {
       )}
 
       <div id="gate-container">
-        <ResourceGate slug={slug} title={resource.title} />
+        <ResourceGate slug={slug} title={resource.title} hasDocx={hasDocx} />
       </div>
 
       <div id="picker-container" class="hidden border border-border bg-bg-surface p-7 md:p-8" style="border-radius: 3px;">

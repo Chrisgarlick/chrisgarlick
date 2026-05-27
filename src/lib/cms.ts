@@ -67,6 +67,10 @@ export function tiptapToHtml(doc: any): string {
       case 'codeBlock': return `<pre><code>${children}</code></pre>`
       case 'horizontalRule': return '<hr>'
       case 'hardBreak': return '<br>'
+      case 'table': return `<div class="prose-table-wrap"><table>${children}</table></div>`
+      case 'tableRow': return `<tr>${children}</tr>`
+      case 'tableHeader': return `<th>${children}</th>`
+      case 'tableCell': return `<td>${children}</td>`
       default: return children
     }
   }

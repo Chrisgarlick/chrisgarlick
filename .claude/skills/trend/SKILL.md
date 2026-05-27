@@ -323,6 +323,7 @@ After writing all files and publishing to Notion, output:
 - **No em dashes** - never use `---` in any output. Use ` - ` (space-hyphen-space) instead. Em dashes are a tell-tale sign of AI-generated content.
 - **No smart quotes** - use straight quotes (`'` and `"`) only, never curly/smart quotes.
 - **Plain text outputs** - all social content files (threads, captions, LinkedIn) must be `.txt` not `.md`, so they transfer cleanly to mobile devices.
+- **Article URLs use `/article/`, not `/blog/`** - the live Kritano CMS routes all blog posts under `/article/<slug>`. Every internal URL in trend outputs (blog frontmatter footers, social copy, visuals, video, brief) MUST use `/article/<slug>`. Never write `/blog/<slug>` in trend content. The SEO planning docs in `team/18-seo/` still reference `/blog/` paths for historical reasons - ignore those when generating live-facing copy. External source URLs that happen to contain `/blog/` (e.g. `whitehat-seo.co.uk/blog/...`) are unaffected; this rule applies only to internal chrisgarlick.com links.
 
 ## Reference Files
 

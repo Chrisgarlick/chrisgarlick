@@ -278,6 +278,19 @@ Without one of these, the practical workflow is: write in admin → publish (wit
 - Includes CSV export button
 - Shows empty state when no submissions exist
 
+### 18. POST/PATCH on `resource` 500s with certain free-text values
+**Severity:** High (blocks programmatic resource creation for some content)
+**Description:** Creating or PATCHing a `resource` via `POST /api/resource` or `PATCH /api/resource/:id` returns `500 INTERNAL_ERROR` when the `secondaryKeywords` text field contains certain patterns. The schema declares this field as `text().nullable()` so no client-side validation flags anything wrong. Reproduced 2026-05-27 on chrisgarlick.com when creating the LLM Cheat Sheet resource.
+
+**Reproduction:** PATCH `{ secondaryKeywords: 'claude sonnet 4.6, claude opus 4.7, gpt-5.5, gemini 3.1 pro, ...' }` returned 500. Same call with `{ secondaryKeywords: 'claude sonnet, claude opus, gpt comparison, gemini pro, ...' }` (model names without dotted version numbers like `4.6` and without hyphen+digit patterns like `gpt-5.5`) returned 200 OK. Other long text fields (`keywords`, `summary`, `markdownBody`) accepted similar characters without issue, so the bug appears specific to `secondaryKeywords` or its column-level validation.
+
+**Impact:** Forces seed scripts to strip semantic detail (model versions, technical identifiers) from SEO keyword fields, which weakens the very signals the field is meant to carry. Server returns no useful detail on the 500 — payload bisection is the only way to find the failing field.
+
+**Suggested fix:**
+1. Surface the actual validation error in the API response instead of `INTERNAL_ERROR`. If a column-level check is triggering this, return `400` with the field name and the rule that was violated.
+2. If there is a length cap or character allow-list on `secondaryKeywords`, document it in the field definition options (e.g. `text({ maxLength: 500, allowDots: true })`).
+3. Verify the same field works through the admin UI's keyword input — if the UI silently sanitises, the API should do the same on ingress.
+
 ---
 
 ## Questions for CMS Development

@@ -377,6 +377,40 @@ nav, footer, [data-monochrome] {
   margin: 2.5rem 0;
 }
 
+.prose-custom .prose-table-wrap {
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+
+.prose-custom table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.prose-custom thead th,
+.prose-custom tr:first-child th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 1rem 0.75rem 0;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.prose-custom td {
+  padding: 0.85rem 1rem 0.85rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  vertical-align: top;
+}
+
+.prose-custom tr:last-child td { border-bottom: none; }
+
+.prose-custom table p { margin: 0; }
+
 /* ── Marquee ── */
 @keyframes marquee {
   from { transform: translateX(0); }
