@@ -237,7 +237,7 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 40,
-  status: 'draft',
+  status: 'published',
 })
 
 // Day 4: /for/freelancers
@@ -257,7 +257,7 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 50,
-  status: 'draft',
+  status: 'published',
 })
 
 // Day 5: /for/solo-operators
@@ -277,7 +277,7 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 60,
-  status: 'draft',
+  status: 'published',
 })
 
 // Day 6: /for/tradespeople
@@ -297,7 +297,7 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 70,
-  status: 'draft',
+  status: 'published',
 })
 
 console.log('Done. Run `cms build` or redeploy to surface the resource on the static site.')

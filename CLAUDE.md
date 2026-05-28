@@ -70,6 +70,16 @@ From the pivot brand brief (`pivot.md` §1.2):
 - Typeset (separate service at `typeset.chrisgarlick.com`) renders markdown to PDF/DOCX
 - Content lives in CMS, never hardcoded in templates beyond layout
 
+### Two audience axes: `/industries/` and `/for/`
+
+These are orthogonal, not competing. They serve the same site from different angles, and a single visitor may legitimately land on one of each.
+
+- **`/industries/<slug>`** is the **sector axis**. CMS-driven (`page` collection). Examples: `ai-for-law-firms`, `ai-for-accountancy-firms`, `ai-for-agencies`. Answers "what industry is the firm in." Anchored on UK professional services. Pricing positioned at the £500+ engagement level.
+- **`/for/<slug>`** is the **operating-model axis**. Static `.astro` pages backed by the shared `src/components/ForPage.astro` layout. Examples: `agency-starters`, `consultants`, `freelancers`, `solo-operators`, `tradespeople`. Answers "what shape of business are you running." Wider audience reach, lower price point, each page's primary CTA is its gated resource (not `/contact`).
+- A sole-practice solicitor sees both `/industries/ai-for-law-firms` and `/for/solo-operators` and both fit. Cross-links between them live in `src/components/ForCrossLink.astro`, wired into `src/pages/industries/[slug].astro` via the `FOR_CROSS_LINK` mapping. Update that mapping when adding new `/for/` audiences if they overlap with an industry.
+
+When the next `/for/` page is needed, build it as a `.astro` file in `src/pages/for/` that passes props to `<ForPage>`. Don't add it to the CMS unless editing-in-CMS becomes a real need. The static approach avoids Kritano migration friction (see issue #1) and each new page is ~25 lines of data.
+
 ## Common pitfalls
 
 - **Don't `bun run build` on the box** — OOMs because Vite tries to rebuild the admin too. Use `bunx astro build` for frontend-only deploys.

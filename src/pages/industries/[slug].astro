@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro'
 import SEO from '../../components/SEO.astro'
 import BlockRenderer from '../../components/BlockRenderer.astro'
+import ForCrossLink from '../../components/ForCrossLink.astro'
 import { cms } from '../../lib/cms'
 
 const INDUSTRY_SLUGS = new Set([
@@ -9,6 +10,27 @@ const INDUSTRY_SLUGS = new Set([
   'ai-for-accountancy-firms',
   'ai-for-agencies',
 ])
+
+// Operating-model cross-links per industry. /industries/ is the sector axis,
+// /for/ is the operating-model axis. They're orthogonal — a sole-practice
+// solicitor sees both pages and both fit.
+const FOR_CROSS_LINK: Record<string, { slug: string; label: string; framing: string }> = {
+  'ai-for-law-firms': {
+    slug: 'solo-operators',
+    label: 'Solo operators',
+    framing: 'Sole practitioners and one-partner firms run on a different operating model than mid-sized practices. The Solo Operator stack covers content, follow-ups, reviews and SEO blogging on a two-hour-a-day admin budget.',
+  },
+  'ai-for-accountancy-firms': {
+    slug: 'solo-operators',
+    label: 'Solo operators',
+    framing: 'Sole-practice accountants face the same operating-model problem as one-person consultancies: not enough hours for the work that compounds. The Solo Operator stack is built for that constraint.',
+  },
+  'ai-for-agencies': {
+    slug: 'agency-starters',
+    label: 'Agency starters',
+    framing: 'If you\'re building an agency from scratch (or considering it) rather than running an established one, the Zero-Team Agency Playbook covers the small-team-with-AI-stack pattern that makes the first ten clients viable as a solo founder.',
+  },
+}
 
 export async function getStaticPaths() {
   const slugs = ['ai-for-law-firms', 'ai-for-accountancy-firms', 'ai-for-agencies']
@@ -103,4 +125,12 @@ const serviceLd = {
   />
 
   <BlockRenderer blocks={contentBlocks} />
+
+  {FOR_CROSS_LINK[slug as string] && (
+    <ForCrossLink
+      audienceSlug={FOR_CROSS_LINK[slug as string].slug}
+      audienceLabel={FOR_CROSS_LINK[slug as string].label}
+      framing={FOR_CROSS_LINK[slug as string].framing}
+    />
+  )}
 </Base>
