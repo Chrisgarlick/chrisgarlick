@@ -116,32 +116,141 @@ Read `content-formats.md` for the structure of each format.
 
 For each selected trend, generate:
 
-#### a) Instagram Post (via draw patterns)
-- Create a 1080x1080px HTML visual using the `/draw` skill's brand-style rules
-- Follow all rules from the draw skill's `brand-style.md` (colours, typography, atmospheric elements)
-- Use the draw skill's HTML template skeleton
-- Save to `/docs/trend/<YYYY-MM-DD>/visuals/N.html` (keep draw assets inside the trend folder, NOT in `/docs/draw/`)
-- After creating the HTML files, convert each to PNG by running Playwright screenshot:
+#### a) Instagram Carousel (length-flexible, max-virality structure)
+
+**Always produce a carousel for Instagram, never a single image.** Single-image posts underperform on IG in 2026. The carousel format is what drives saves, shares, comments, and the comment-to-DM mechanic.
+
+**Length is content-led, not fixed.** Pick the length that matches the depth of the topic. Don't pad a 3-slide idea into 10. Don't compress a 10-slide topic into 3. The viral structure adapts to each length.
+
+| Length | When to use | Structure |
+|---|---|---|
+| **3 slides** | A single sharp argument, a stat, a quick myth-bust, a tactical tip. Best for tactical wins, quick takes, hot reactions to news. | Hook → Core insight → CTA |
+| **6 slides** | A pattern interrupt with 2-3 reasons or steps. Most ad-hoc trend posts land here. | Hook → Pattern interrupt → 2-3 points → Fairness check → CTA |
+| **10 slides** | Reference content. Big topic with a real decision tree or framework at the end. Cornerstone posts like How to Choose an LLM. | Hook → Pattern interrupt → Promise → 3 points → Fairness check → Tool → Reference → CTA |
+
+If you're unsure, default to 6. The 10-slide version is for posts you'd be happy to pin as a reference.
+
+**Save the carousel-strategy.md** reference at `/docs/trend/<YYYY-MM-DD>/visuals/carousel-strategy.md` documenting what each slide does for this specific trend. Note the chosen length and the rationale at the top so future-you and future-Claude know why this one is 6 and the last was 10. (Use the 2026-05-26 LLM trend's strategy doc as the canonical 10-slide example.)
+
+**Slide structures by length:**
+
+**3-slide structure:**
+
+| # | Job | What it does |
+|---|---|---|
+| 01 | HOOK | Contrarian claim, surprising stat, or pattern recognition. Stops the scroll in <1.5s. |
+| 02 | THE INSIGHT | The single argument, framework, or takeaway. Either text-heavy with a quote/number, or a one-page visual. |
+| 03 | CTA | Save + share + a link or keyword. Single primary action. |
+
+**6-slide structure:**
+
+| # | Job | What it does |
+|---|---|---|
+| 01 | HOOK | Contrarian claim, surprising stat, or pattern recognition. |
+| 02 | PATTERN INTERRUPT | Two-column "what they say vs. what changed." Builds us-vs-them. |
+| 03 | POINT 1 | The strongest reason / step / signal. Most specific. |
+| 04 | POINT 2 | Concrete number or before/after. |
+| 05 | FAIRNESS CHECK | "But sometimes the conventional answer IS right. Here's when." Never skip. |
+| 06 | CTA | Save + share + a link or keyword. |
+
+**10-slide structure (max-virality, cornerstone posts):**
+
+| # | Job | What it does |
+|---|---|---|
+| 01 | HOOK | Contrarian claim, surprising stat, or pattern recognition. Stops the scroll in <1.5s. |
+| 02 | PATTERN INTERRUPT | Two-column "what they say vs. what changed." Builds us-vs-them. |
+| 03 | THE PROMISE | "N reasons / steps / signs" — commitment device for swipe-through. |
+| 04 | POINT 1 (deepest) | The reason that activates the most specific audience segment. Name the sector. |
+| 05 | POINT 2 | Concrete number or before/after. Numbers beat adjectives. |
+| 06 | POINT 3 | Concrete event or named pattern. Specific beats abstract. |
+| 07 | FAIRNESS CHECK | "But sometimes the conventional answer IS right. Here's when." Counter-intuitive trust move. Single biggest credibility lever in the carousel. Never skip. |
+| 08 | THE TOOL / FRAMEWORK | The decision tree, matrix, or save-trigger visual. The save bait. |
+| 09 | THE REFERENCE TABLE | A scannable comparison or summary. Second save trigger for the data-minded. |
+| 10 | CTA | Save + share + a link or keyword. |
+
+**Universal rules regardless of length:**
+
+- **Always include a HOOK (slide 1)** that stops the scroll on its own.
+- **Always include a FAIRNESS CHECK** when length is 6+. It's the single biggest credibility lever. Skip only on 3-slide quick-takes where there's no room.
+- **Always include a CTA slide** as the last slide. Never end on raw content.
+- **Always alternate colour scheme** from the previous trend (see section a.1).
+
+**Slide files:** save as `slide-01.html` through `slide-NN.html` (zero-padded, where NN matches the chosen length). Saved at `/docs/trend/<YYYY-MM-DD>/visuals/`. Match the existing brand-style rules from the `/draw` skill's `brand-style.md`.
+
+**CTA slide content:** the final slide drives action. Three optional asks (use whichever apply):
+1. **Save trigger** — "Save this for the next time someone says X" (always include)
+2. **Resource / link** — point to a specific URL on chrisgarlick.com (a `/resources/` page, an article, or `/audit`). Use a keyword + `/resources` redirect if the comment-to-DM ManyChat mechanic isn't yet wired, OR use the comment-keyword mechanic once it is.
+3. **Tag a friend** — "Tag a partner, FD or IT lead who needs to see this"
+
+**Comment-to-DM keyword (optional, when ManyChat is wired):** if the comment-to-DM flow is live for the account, the final slide can include a single memorable all-caps keyword that triggers the DM (e.g. "LLM", "RAG", "AGENT"). Document the keyword choice in `carousel-strategy.md`. If the mechanic isn't wired, redirect to `/resources` or the article URL instead.
+
+#### a.1) Colour scheme alternation (light vs dark)
+
+**Always alternate the colour scheme** from the previous trend's carousel. If the last trend ran dark, the next runs light. If light, the next is dark. This keeps the feed visually varied and signals "active account, not a single template" to the algorithm.
+
+**Before writing any slide HTML**, run this check to determine the scheme for the current trend:
+
 ```bash
-node -e "
-const { chromium } = require('playwright');
-const path = require('path');
-const fs = require('fs');
-(async () => {
-  const browser = await chromium.launch({ headless: true });
-  const dir = 'docs/trend/<YYYY-MM-DD>/visuals';
-  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html'))) {
-    const page = await browser.newPage();
-    await page.setViewportSize({ width: 1080, height: 1080 });
-    await page.goto('file://' + path.resolve(dir, f), { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
-    await page.screenshot({ path: path.resolve(dir, f.replace('.html', '.png')), type: 'png' });
-    await page.close();
-  }
-  await browser.close();
-})();
-"
+LAST=$(ls -1d docs/trend/*/visuals 2>/dev/null | sort | grep -v "^docs/trend/$(date +%Y-%m-%d)" | tail -1)
+if [ -n "$LAST" ] && [ -f "$LAST/slide-01.html" ]; then
+  if grep -qE "background:\s*#0A0A0A|background:\s*#050505|background:\s*#0E0E0E" "$LAST/slide-01.html"; then
+    echo "Last was DARK → this carousel is LIGHT"
+  else
+    echo "Last was LIGHT → this carousel is DARK"
+  fi
+else
+  echo "No previous carousel found → default to DARK"
+fi
 ```
+
+**Dark scheme tokens** (also documented in the `/draw` skill's `brand-style.md`):
+
+```
+background:        #0A0A0A
+card:              #0E0E0E or #111111
+border:            #1A1A1A
+accent gold:       #E8D5A3
+text primary:      #F0EDE8
+text secondary:    #C9C5BD
+text muted:        #8A8580
+text dim:          #4A4845
+grid overlay:      rgba(240,237,232,0.02)
+glow blob:         #E8D5A3 at opacity 0.04, blur 140px
+```
+
+**Light scheme tokens:**
+
+```
+background:        #FAF8F5
+card:              #FFFFFF
+border:            #E8E4DE
+accent gold:       #C4A96B (slightly darker so it reads on cream)
+accent ink:        #1A1715 (used in place of pure white text on dark)
+text primary:      #1A1715
+text secondary:    #4A4845
+text muted:        #8A8580
+text dim:          #C9C5BD
+grid overlay:      rgba(26,23,21,0.025)
+glow blob:         #C4A96B at opacity 0.06, blur 140px
+```
+
+Both schemes use the same fonts (Instrument Serif display, DM Mono body), same eyebrow style (uppercase tracking-widest), same slide numbering ("01 / SECTION"), same chrisgarlick.com watermark bottom-right. Only the colour values differ.
+
+#### a.2) Render to PNG
+
+After all `slide-NN.html` files exist, render in parallel. This loop handles any length (3, 6, 10, or whatever you chose):
+
+```bash
+cd docs/trend/<YYYY-MM-DD>/visuals
+for f in slide-*.html; do
+  out="${f%.html}.png"
+  npx playwright screenshot --viewport-size="1080,1080" --full-page \
+    "file://$(pwd)/$f" "$(pwd)/$out" 2>&1 | tail -1 &
+done
+wait
+```
+
+Confirm the PNG count matches the HTML count before moving on.
 
 #### b) X Thread + Standalone Tweets
 - **Thread:** 4-7 tweets structured as: Hook > Context > Insight > Practical angle > CTA
@@ -163,11 +272,26 @@ const fs = require('fs');
 
 Each standalone tweet should work completely on its own without any context from the thread.
 
-#### c) Instagram Caption
-- Hook line (first 125 chars are critical - this shows before "...more")
-- Full caption in Chris's voice
-- 15-20 hashtags mixing broad and niche
-- Soft CTA
+#### c) Instagram Caption (one per carousel, not one per slide)
+
+A carousel is a single Instagram post regardless of how many slides it contains. So write **ONE** caption that ties the whole carousel together, not one per slide.
+
+Save to `captions.txt` at the trend folder root. Structure the file as:
+
+```
+PRIMARY: <one carousel caption — use this>
+LEGACY: <optional single-image captions only if you plan to repurpose slides as standalone posts later>
+```
+
+Primary carousel caption rules:
+
+- **Hook line in the first 125 chars** (this is what shows above the "...more" cut on the feed). The hook should reinforce slide 1, not duplicate it word-for-word.
+- **Narrative arc mirrors the carousel.** Hook → context → key beats → CTA. Don't reveal everything before slide 1 — leave reason to swipe.
+- **CTAs match slide N (the final slide) exactly.** If slide N says "save / get the resource at chrisgarlick.com/resources / tag a partner", the caption ends with those same three calls in plain text. Inconsistency between caption CTA and slide CTA kills conversion.
+- **15-20 hashtags** mixing broad (#LLM, #UKBusiness) and niche (#HowToChooseAnLLM, #LawFirmUK, #SelfHostedAI).
+- **Brand voice rules apply**: no em-dashes, British spelling, no AI buzzwords, no emojis. See chrisgarlick.com CLAUDE.md voice rules.
+
+Legacy single-image captions are optional. Only include them if you'd realistically repurpose individual slides as standalone posts at a later date. Otherwise skip and just ship the carousel caption.
 
 #### d) LinkedIn Post
 - Professional tone, still Chris's voice
@@ -199,7 +323,7 @@ Save:
 - `reddit.txt` - Reddit post with title, body, and suggested subreddits (plain text)
 - `blog.md` - Full blog post (generated in step 8)
 - `video.html` - Animated HTML video (generated in step 9)
-- Visual assets go to `/docs/trend/<YYYY-MM-DD>/visuals/` (HTML + PNG files)
+- Visual assets go to `/docs/trend/<YYYY-MM-DD>/visuals/` — always a carousel, length picked from content depth (3 / 6 / 10 slides). Files named `slide-NN.html` and matching `slide-NN.png`, zero-padded. `carousel-strategy.md` documents the chosen length, the slide-by-slide rationale, and (if used) the comment-to-DM keyword. Colour scheme alternates light/dark from the previous trend. See section 5.a for the full structure.
 
 ### 7.5. SEO optimisation pass (before writing the blog)
 

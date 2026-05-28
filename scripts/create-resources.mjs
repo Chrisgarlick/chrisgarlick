@@ -80,6 +80,20 @@ async function createResource(data) {
     } else {
       console.log(`Skip: ${data.title} (already exists, no changes, ${existing.id})`)
     }
+
+    // Handle status transitions on existing resources. Status isn't part of
+    // the regular PATCH set — the API uses separate /publish and /unpublish
+    // endpoints. We compare seed → current and call the right one.
+    if (data.status === 'published' && existing.status !== 'published') {
+      const pubRes = await fetch(`${BASE}/resource/${existing.id}/publish`, { method: 'POST', headers: auth })
+      if (pubRes.ok) console.log(`  → Published (was ${existing.status})`)
+      else console.error(`  Publish failed:`, pubRes.status, await pubRes.text())
+    } else if (data.status === 'draft' && existing.status === 'published') {
+      const unpubRes = await fetch(`${BASE}/resource/${existing.id}/unpublish`, { method: 'POST', headers: auth })
+      if (unpubRes.ok) console.log(`  → Unpublished (was published)`)
+      else console.error(`  Unpublish failed:`, unpubRes.status, await unpubRes.text())
+    }
+
     return existing.id
   }
 
@@ -92,16 +106,23 @@ async function createResource(data) {
     console.error('  Payload size:', payload.length, 'bytes')
     console.error('  Payload keys:', Object.keys(data).join(', '))
     console.error('  markdownBody length:', (data.markdownBody || '').length)
-    console.error('  description JSON snippet:', JSON.stringify(data.description).slice(0, 300))
+    console.error('  description JSON snippet:', (data.description ? JSON.stringify(data.description).slice(0, 300) : '(none)'))
     return null
   }
 
   const id = result.data.id
   console.log(`Created: ${data.title} (${id})`)
 
-  const pubRes = await fetch(`${BASE}/resource/${id}/publish`, { method: 'POST', headers: auth })
-  if (pubRes.ok) console.log(`  Published`)
-  else console.error(`  Publish failed:`, await pubRes.text())
+  // Respect the seed `status` field. Only auto-publish when explicitly set to
+  // 'published'. Drafts stay drafts so we can stage resources ahead of their
+  // matching page going live.
+  if (data.status === 'published') {
+    const pubRes = await fetch(`${BASE}/resource/${id}/publish`, { method: 'POST', headers: auth })
+    if (pubRes.ok) console.log(`  Published`)
+    else console.error(`  Publish failed:`, await pubRes.text())
+  } else {
+    console.log(`  Left as draft (seed status: ${data.status || 'draft'})`)
+  }
 
   return id
 }
@@ -136,7 +157,7 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 10,
-  status: 'draft',
+  status: 'published',
 })
 
 // ─── LLM Cheat Sheet 2026 ───────────────────────────────────────
@@ -169,6 +190,113 @@ await createResource({
   funnelStage: 'TOFU',
   hasDocx: 'no',
   sortOrder: 20,
+  status: 'published',
+})
+
+// ─── /for/ audience expansion resources (kept as drafts until their page ships) ───
+//
+// Each of these is created as a stub on day 1 so the resource collection has
+// stable slugs to link to. Markdown body, full description and `status: 'draft'`
+// → `'published'` happens on the day the matched /for/<slug> page ships. See
+// `small_businesses_implementation.md` for the full sequence.
+
+// Day 2: /for/agency-starters
+const zeroTeamAgencySlug = 'zero-team-agency-playbook'
+const zeroTeamAgencyMd = await loadMarkdown(zeroTeamAgencySlug)
+
+await createResource({
+  title: 'The Zero-Team Agency Playbook',
+  slug: zeroTeamAgencySlug,
+  summary: 'How to build an AI-enabled agency that ships like a five-person team without hiring one. Stack, workflows, pricing.',
+  markdownBody: zeroTeamAgencyMd || '',
+  typesetClient: 'chris-garlick-light',
+  keywords: 'ai agency, solo agency uk, ai enabled agency, no team agency, ai agency stack',
+  secondaryKeywords: 'agency automation, agency delivery stack, ai for marketing agency, productised agency, solo founder agency, agency cost reduction, agency client onboarding, ai cold outreach',
+  sector: 'Agency',
+  tier: '2',
+  funnelStage: 'TOFU',
+  hasDocx: 'no',
+  sortOrder: 30,
+  status: 'published',
+})
+
+// Day 3: /for/consultants
+const oneFrameworkSlug = 'one-framework-six-months-of-content'
+const oneFrameworkMd = await loadMarkdown(oneFrameworkSlug)
+
+await createResource({
+  title: 'One Framework, Six Months of Content',
+  slug: oneFrameworkSlug,
+  summary: 'How independent consultants turn a single methodology into half a year of inbound content. Blog, LinkedIn, short-form video, landing pages.',
+  markdownBody: oneFrameworkMd || '',
+  typesetClient: 'chris-garlick-light',
+  keywords: 'consultant content marketing, productise consulting, thought leadership ai, consulting frameworks content',
+  secondaryKeywords: 'independent consultant marketing, repurpose content, consulting authority, framework content, consulting lead generation, linkedin consulting, consulting blog ideas',
+  sector: 'All',
+  tier: '2',
+  funnelStage: 'TOFU',
+  hasDocx: 'no',
+  sortOrder: 40,
+  status: 'draft',
+})
+
+// Day 4: /for/freelancers
+const freelancerProposalSlug = 'freelancers-ai-proposal-pack'
+const freelancerProposalMd = await loadMarkdown(freelancerProposalSlug)
+
+await createResource({
+  title: 'The Freelancer\'s AI Proposal Pack',
+  slug: freelancerProposalSlug,
+  summary: 'Win more clients, write less. Proposal templates, brief-to-proposal prompts, and the AI onboarding sequence I use with my own clients.',
+  markdownBody: freelancerProposalMd || '',
+  typesetClient: 'chris-garlick-light',
+  keywords: 'freelancer proposal template, ai proposal writing, freelance ai tools, freelancer onboarding',
+  secondaryKeywords: 'freelance scaling, freelance ai workflow, project proposal template uk, freelancer client onboarding, freelance productivity ai, freelance pricing, freelance contract template',
+  sector: 'All',
+  tier: '2',
+  funnelStage: 'TOFU',
+  hasDocx: 'no',
+  sortOrder: 50,
+  status: 'draft',
+})
+
+// Day 5: /for/solo-operators
+const soloAiStackSlug = 'ai-stack-under-two-hours-a-day'
+const soloAiStackMd = await loadMarkdown(soloAiStackSlug)
+
+await createResource({
+  title: 'The Solo Operator AI Stack',
+  slug: soloAiStackSlug,
+  summary: 'The exact tools and workflows for running a one-person business in under two hours of admin a day. Voice-note to content, automated reviews, monthly SEO post.',
+  markdownBody: soloAiStackMd || '',
+  typesetClient: 'chris-garlick-light',
+  keywords: 'solo operator ai, one person business ai, solopreneur ai stack, small business automation uk',
+  secondaryKeywords: 'sole trader ai, ai for one person business, voice note to content, automated review requests, monthly seo blog ai, solo business productivity',
+  sector: 'All',
+  tier: '2',
+  funnelStage: 'TOFU',
+  hasDocx: 'no',
+  sortOrder: 60,
+  status: 'draft',
+})
+
+// Day 6: /for/tradespeople
+const tradesToolsSlug = '5-ai-tools-tradespeople-2026'
+const tradesToolsMd = await loadMarkdown(tradesToolsSlug)
+
+await createResource({
+  title: '5 AI Tools Every Tradesperson Should Use in 2026',
+  slug: tradesToolsSlug,
+  summary: 'No marketing agency. No copywriter. The five tools that handle posting, follow-ups, Google reviews and seasonal campaigns from your phone.',
+  markdownBody: tradesToolsMd || '',
+  typesetClient: 'chris-garlick-light',
+  keywords: 'ai tools for tradespeople, ai for trades uk, plumber marketing ai, electrician marketing ai, builder marketing ai',
+  secondaryKeywords: 'checkatrade marketing, trades google business posts, trades before after video, automated quote follow up, trades local seo, trades google reviews, trades phone marketing',
+  sector: 'All',
+  tier: '2',
+  funnelStage: 'TOFU',
+  hasDocx: 'no',
+  sortOrder: 70,
   status: 'draft',
 })
 
