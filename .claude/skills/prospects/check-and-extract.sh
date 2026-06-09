@@ -1,40 +1,48 @@
 #!/bin/bash
-# check-and-extract.sh - Check agency domains for liveness, extract contacts
+# check-and-extract.sh — Check domains for liveness + extract IG handle as primary qualifier
 #
-# Usage: ./check-and-extract.sh <domains-file> <output-json>
-# Example: ./check-and-extract.sh raw-domains.txt prospects.json
+# Usage: ./check-and-extract.sh <domains-file> <output-json> <type-slug>
 #
-# Processes each domain: HTTP check, agency detection, email extraction, scoring.
-# Output: JSON array of qualified prospects.
+# <type-slug> drives the keyword filter mode:
+#   - "agencies", "agency", "marketing-agencies", "digital-agencies"  → agency mode
+#   - "freelancers", "freelance-*"                                     → freelance mode
+#   - "*-stores", "shopify-stores", "woocommerce-stores", "ecommerce"  → ecommerce mode
+#   - anything else                                                    → open mode (liveness only)
+#
+# A prospect is QUALIFIED only if:
+#   1. Domain is live and not parked
+#   2. An Instagram handle was extracted (this is what makes them DM-able)
+#   3. Quality score >= 50
 
 set -euo pipefail
 
-DOMAINS_FILE="${1:?Usage: check-and-extract.sh <domains-file> <output-json>}"
-OUTPUT_FILE="${2:?Usage: check-and-extract.sh <domains-file> <output-json>}"
+DOMAINS_FILE="${1:?Usage: check-and-extract.sh <domains-file> <output-json> <type-slug>}"
+OUTPUT_FILE="${2:?Usage: check-and-extract.sh <domains-file> <output-json> <type-slug>}"
+TYPE_SLUG="${3:-open}"
 
 if [ ! -f "$DOMAINS_FILE" ]; then
   echo "ERROR: Domains file not found: $DOMAINS_FILE"
   exit 1
 fi
 
-# Filter out known domains (already processed in previous runs)
+# Filter out already-known domains (across all previous runs)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 KNOWN_FILE="$PROJECT_ROOT/docs/prospects/known-domains.txt"
 
-if [ -f "$KNOWN_FILE" ]; then
-  BEFORE=$(wc -l < "$DOMAINS_FILE" | tr -d ' ')
-  # Create temp file with only new domains
-  TEMP_FILE=$(mktemp)
-  grep -vxFf "$KNOWN_FILE" "$DOMAINS_FILE" > "$TEMP_FILE" 2>/dev/null || true
-  AFTER=$(wc -l < "$TEMP_FILE" | tr -d ' ')
-  SKIPPED=$((BEFORE - AFTER))
-  if [ "$SKIPPED" -gt 0 ]; then
-    echo "Filtered $SKIPPED already-known domains ($BEFORE -> $AFTER new)"
-  fi
-  cp "$TEMP_FILE" "$DOMAINS_FILE"
-  rm "$TEMP_FILE"
+mkdir -p "$(dirname "$KNOWN_FILE")"
+touch "$KNOWN_FILE"
+
+BEFORE=$(wc -l < "$DOMAINS_FILE" | tr -d ' ')
+TEMP_FILE=$(mktemp)
+grep -vxFf "$KNOWN_FILE" "$DOMAINS_FILE" > "$TEMP_FILE" 2>/dev/null || true
+AFTER=$(wc -l < "$TEMP_FILE" | tr -d ' ')
+SKIPPED=$((BEFORE - AFTER))
+if [ "$SKIPPED" -gt 0 ]; then
+  echo "Filtered $SKIPPED already-known domains ($BEFORE -> $AFTER new)"
 fi
+cp "$TEMP_FILE" "$DOMAINS_FILE"
+rm "$TEMP_FILE"
 
 TOTAL=$(wc -l < "$DOMAINS_FILE" | tr -d ' ')
 
@@ -44,10 +52,9 @@ if [ "$TOTAL" -eq 0 ]; then
   exit 0
 fi
 
-echo "Processing $TOTAL new domains..."
+echo "Processing $TOTAL new domains in mode: $TYPE_SLUG"
 
-# Process all domains with python3
-python3 -c "
+python3 - "$DOMAINS_FILE" "$OUTPUT_FILE" "$TYPE_SLUG" <<'PYEOF'
 import urllib.request
 import urllib.error
 import ssl
@@ -55,65 +62,66 @@ import re
 import json
 import sys
 import time
-import socket
 from html.parser import HTMLParser
 
-# --- Config ---
+# ----- Config -----
 TIMEOUT = 10
-ALLOWED_EMAIL_PREFIXES = [
-    'info', 'hello', 'support', 'contact', 'admin', 'enquiries', 'team',
-    'sales', 'help', 'office', 'general', 'mail', 'web', 'website',
-    'hi', 'hey', 'business', 'reception', 'feedback', 'press', 'media',
-    'partnerships', 'marketing', 'studio', 'digital', 'projects', 'work',
-    'newbusiness', 'enquiry'
+CONTACT_PATHS = ['/contact', '/contact-us', '/about', '/about-us', '/get-in-touch']
+
+PARKED_SIGNALS = [
+    'domain for sale', 'this domain is for sale', 'buy this domain',
+    'parked domain', 'godaddy parked', 'sedo.com', 'afternic',
+    'coming soon', 'under construction', 'future home of',
+    'this page is not yet available', 'website coming soon',
+    'apache2 default page', 'it works!', 'welcome to nginx',
+    'default web site page', 'iis windows server',
+    'index of /', 'directory listing for',
 ]
-GENERIC_PROVIDERS = [
-    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
-    'icloud.com', 'protonmail.com', 'proton.me', 'zoho.com', 'yandex.com',
-    'mail.com', 'live.com', 'msn.com', 'btinternet.com', 'sky.com',
-    'virginmedia.com', 'talktalk.net'
-]
+
 AGENCY_KEYWORDS = [
     'agency', 'agencies', 'digital', 'web design', 'web development',
     'marketing agency', 'creative agency', 'design studio', 'studio',
     'development company', 'seo agency', 'seo company', 'media agency',
     'branding agency', 'creative studio', 'digital studio', 'consultancy',
-    'web agency', 'dev shop', 'shopify partner', 'wordpress agency',
-    'ecommerce agency', 'ux agency', 'ui/ux'
-]
-TECH_PATTERNS = {
-    'WordPress': [r'wp-content', r'wp-includes', r'wordpress'],
-    'Shopify': [r'cdn\.shopify\.com', r'shopify'],
-    'Wix': [r'wix\.com', r'wixsite\.com'],
-    'Squarespace': [r'squarespace\.com', r'sqsp\.com'],
-    'Webflow': [r'webflow\.com', r'assets\.website-files\.com'],
-    'React': [r'react', r'_next/', r'__next'],
-    'Next.js': [r'_next/', r'__next'],
-    'Vue': [r'vue\.js', r'nuxt'],
-    'Angular': [r'ng-version', r'angular'],
-    'Laravel': [r'laravel', r'csrf-token'],
-    'Drupal': [r'drupal\.js', r'/sites/default/'],
-    'HubSpot': [r'hubspot', r'hs-scripts'],
-    'Bootstrap': [r'bootstrap'],
-    'Tailwind': [r'tailwind'],
-    'jQuery': [r'jquery'],
-    'Google Analytics': [r'google-analytics\.com', r'gtag', r'googletagmanager'],
-    'WooCommerce': [r'woocommerce', r'wc-'],
-    'Gatsby': [r'gatsby'],
-    'Ghost': [r'ghost\.org', r'ghost\.io'],
-}
-CONTACT_PATHS = ['/contact', '/contact-us', '/about', '/about-us', '/get-in-touch']
-PARKED_SIGNALS = [
-    'domain for sale', 'this domain is for sale', 'buy this domain',
-    'parked domain', 'godaddy', 'sedo.com', 'afternic',
-    'coming soon', 'under construction', 'future home of',
-    'this page is not yet available', 'website coming soon',
-    'apache2 default page', 'it works!', 'welcome to nginx',
-    'default web site page', 'iis windows server',
-    'index of /', 'directory listing'
+    'web agency', 'shopify partner', 'wordpress agency', 'ecommerce agency',
 ]
 
-# --- HTML Parser ---
+FREELANCE_KEYWORDS = [
+    'freelance', 'freelancer', 'independent', 'consultant', 'portfolio',
+    'available for hire', 'available for projects', 'working with', 'i build',
+    'i design', 'i develop', "i'm a", 'hello, i', 'about me',
+]
+
+ECOM_KEYWORDS = [
+    'add to cart', 'add to basket', 'shop now', 'checkout', 'my cart',
+    'view basket', 'continue shopping', 'product reviews', '/collections/',
+    '/products/', '/shop/', '/cart',
+]
+
+ECOM_PLATFORMS = ['shopify', 'woocommerce', 'bigcommerce', 'magento']
+
+TECH_PATTERNS = {
+    'WordPress':   [r'wp-content', r'wp-includes'],
+    'Shopify':     [r'cdn\.shopify\.com', r'shopify\.com'],
+    'Wix':         [r'wix\.com', r'wixsite\.com'],
+    'Squarespace': [r'squarespace\.com', r'sqsp\.com'],
+    'Webflow':     [r'webflow\.com', r'assets\.website-files\.com'],
+    'Next.js':     [r'_next/', r'__next'],
+    'React':       [r'react\.production', r'react-dom'],
+    'WooCommerce': [r'woocommerce', r'wc-'],
+    'HubSpot':     [r'hubspot', r'hs-scripts'],
+    'Ghost':       [r'ghost\.org', r'ghost\.io'],
+}
+
+# IG handles to discard (these are paths, not accounts)
+IG_RESERVED_PATHS = {
+    'p', 'reel', 'reels', 'tv', 'stories', 'explore', 'accounts', 'about',
+    'directory', 'developer', 'legal', 'press', 'web', 'embed', 'login',
+    'signup', 'session', 'graphql', 'static', 'oauth', 'developers', 'help',
+}
+IG_HANDLE_RE = re.compile(r'^[A-Za-z0-9._]{1,30}$')
+
+# ----- HTML parser -----
 class MetaParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -121,12 +129,12 @@ class MetaParser(HTMLParser):
         self.in_title = False
         self.meta_desc = ''
         self.emails = set()
-        self.links = []
         self.social = {}
         self.has_form = False
         self.body_text = ''
         self.in_body = False
         self.internal_links = 0
+        self.og_see_also = []
 
     def handle_starttag(self, tag, attrs):
         d = dict(attrs)
@@ -134,26 +142,33 @@ class MetaParser(HTMLParser):
             self.in_title = True
         elif tag == 'meta':
             name = d.get('name', '').lower()
+            prop = d.get('property', '').lower()
             content = d.get('content', '')
             if name == 'description' and content:
                 self.meta_desc = content[:500]
+            if prop == 'og:see_also' and content:
+                self.og_see_also.append(content)
         elif tag == 'a':
             href = d.get('href', '')
             if href.startswith('mailto:'):
                 email = href.replace('mailto:', '').split('?')[0].strip().lower()
                 if '@' in email:
                     self.emails.add(email)
-            elif 'linkedin.com' in href:
+            href_lower = href.lower()
+            if 'instagram.com/' in href_lower:
+                self.social.setdefault('instagram_urls', []).append(href)
+            if 'linkedin.com/' in href_lower:
                 self.social['linkedin'] = href
-            elif 'twitter.com' in href or 'x.com' in href:
+            if 'tiktok.com/' in href_lower:
+                self.social['tiktok'] = href
+            if 'twitter.com/' in href_lower or 'x.com/' in href_lower:
                 self.social['twitter'] = href
-            elif 'facebook.com' in href:
+            if 'facebook.com/' in href_lower:
                 self.social['facebook'] = href
-            elif 'instagram.com' in href:
-                self.social['instagram'] = href
+            if 'youtube.com/' in href_lower:
+                self.social['youtube'] = href
             if not href.startswith(('http', 'mailto:', 'tel:', '#', 'javascript')):
                 self.internal_links += 1
-            self.links.append(href)
         elif tag == 'form':
             self.has_form = True
         elif tag == 'body':
@@ -171,26 +186,100 @@ class MetaParser(HTMLParser):
         if self.in_body:
             self.body_text += data + ' '
 
+
 def fetch_url(url, timeout=TIMEOUT):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
     req = urllib.request.Request(url, headers={
-        'User-Agent': 'Mozilla/5.0 (compatible; Kritano/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; ChrisGarlickProspects/1.0)',
         'Accept': 'text/html,application/xhtml+xml',
         'Accept-Language': 'en-GB,en;q=0.9',
     })
     try:
         resp = urllib.request.urlopen(req, timeout=timeout, context=ctx)
-        content_type = resp.headers.get('Content-Type', '')
-        if 'text/html' not in content_type and 'application/xhtml' not in content_type:
+        ct = resp.headers.get('Content-Type', '')
+        if 'text/html' not in ct and 'application/xhtml' not in ct:
             return None, resp.status
-        body = resp.read(500000).decode('utf-8', errors='replace')
+        body = resp.read(500_000).decode('utf-8', errors='replace')
         return body, resp.status
     except Exception:
         return None, None
 
-def check_domain(domain):
+
+def parse_ig_handle_from_url(url):
+    """Pull a clean @handle out of an instagram URL. None if not a profile URL."""
+    m = re.search(r'instagram\.com/+([^/?#\s"\']+)', url, re.I)
+    if not m:
+        return None
+    handle = m.group(1).strip().lstrip('@')
+    handle = handle.split('?')[0].split('#')[0].rstrip('/')
+    if not handle:
+        return None
+    if handle.lower() in IG_RESERVED_PATHS:
+        return None
+    if not IG_HANDLE_RE.match(handle):
+        return None
+    return handle.lower()
+
+
+def collect_ig_handles(parser_list):
+    """Pull all candidate IG handles from one or more parsed pages. Returns ordered unique list."""
+    seen = []
+    for parser in parser_list:
+        urls = list(parser.social.get('instagram_urls') or []) + list(parser.og_see_also or [])
+        for url in urls:
+            handle = parse_ig_handle_from_url(url)
+            if handle and handle not in seen:
+                seen.append(handle)
+    return seen
+
+
+def detect_tech(html_lower):
+    out = []
+    for tech, patterns in TECH_PATTERNS.items():
+        for pat in patterns:
+            if re.search(pat, html_lower):
+                out.append(tech)
+                break
+    return out
+
+
+def is_parked(text):
+    for sig in PARKED_SIGNALS:
+        if sig in text:
+            return True
+    return False
+
+
+def detect_type_signals(text, mode):
+    """Return list of matched type-signal keywords for the given mode."""
+    if mode == 'agency':
+        return [k for k in AGENCY_KEYWORDS if k in text]
+    if mode == 'freelance':
+        return [k for k in FREELANCE_KEYWORDS if k in text]
+    if mode == 'ecommerce':
+        hits = [k for k in ECOM_KEYWORDS if k in text]
+        hits += [p for p in ECOM_PLATFORMS if p in text]
+        return hits
+    return []
+
+
+def mode_from_slug(slug):
+    s = slug.lower()
+    if 'freelance' in s:
+        return 'freelance'
+    if 'agency' in s or 'agencies' in s:
+        return 'agency'
+    if 'ecommerce' in s or s.endswith('-stores') or s.endswith('-shops'):
+        return 'ecommerce'
+    if s in ('shopify', 'woocommerce', 'shopify-stores', 'woocommerce-stores'):
+        return 'ecommerce'
+    return 'open'
+
+
+# ----- Main per-domain check -----
+def check_domain(domain, mode):
     result = {
         'domain': domain,
         'is_live': False,
@@ -199,275 +288,256 @@ def check_domain(domain):
         'title': None,
         'meta_description': None,
         'technology_stack': [],
-        'page_count_estimate': 0,
-        'language': None,
         'is_parked': False,
-        'is_agency': False,
-        'agency_signals': [],
+        'type_signals': [],
     }
 
-    # Try HTTPS first
     html = None
-    for scheme in ['https', 'http']:
-        url = f'{scheme}://{domain}'
-        html, status = fetch_url(url)
-        if html:
+    parser = None
+    for scheme in ('https', 'http'):
+        body, status = fetch_url(f'{scheme}://{domain}')
+        if body:
+            html = body
             result['is_live'] = True
-            result['has_ssl'] = (scheme == 'https')
+            result['has_ssl'] = scheme == 'https'
             result['http_status'] = status
             break
 
     if not html:
-        return result
+        return result, None
 
-    # Parse HTML
     parser = MetaParser()
     try:
         parser.feed(html)
     except Exception:
         pass
 
-    result['title'] = parser.title.strip()[:200] if parser.title.strip() else None
-    result['meta_description'] = parser.meta_desc[:500] if parser.meta_desc else None
-    result['page_count_estimate'] = min(parser.internal_links, 200)
+    result['title'] = (parser.title.strip() or None)
+    result['meta_description'] = (parser.meta_desc.strip() or None) and parser.meta_desc.strip()[:500]
 
-    # Tech stack detection
     html_lower = html.lower()
-    for tech, patterns in TECH_PATTERNS.items():
-        for pat in patterns:
-            if re.search(pat, html_lower):
-                result['technology_stack'].append(tech)
-                break
+    result['technology_stack'] = detect_tech(html_lower)
 
-    # Parked domain detection
-    combined = (result['title'] or '').lower() + ' ' + (result['meta_description'] or '').lower() + ' ' + html_lower[:5000]
-    for signal in PARKED_SIGNALS:
-        if signal in combined:
-            result['is_parked'] = True
-            break
-
-    # Agency detection
-    check_text = combined[:10000]
-    for kw in AGENCY_KEYWORDS:
-        if kw in check_text:
-            result['is_agency'] = True
-            result['agency_signals'].append(kw)
+    combined = (
+        (result['title'] or '').lower() + ' ' +
+        (result['meta_description'] or '').lower() + ' ' +
+        html_lower[:8000]
+    )
+    result['is_parked'] = is_parked(combined)
+    result['type_signals'] = detect_type_signals(combined, mode)
 
     return result, parser
 
-def extract_emails(domain, has_ssl, homepage_parser):
+
+def fetch_contact_pages(domain, has_ssl):
     scheme = 'https' if has_ssl else 'http'
-    all_emails = set(homepage_parser.emails)
-    social = dict(homepage_parser.social)
-    has_form = homepage_parser.has_form
-    contact_page_url = None
-
-    # Also scan body text of homepage for emails
-    email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
-    found = re.findall(email_pattern, homepage_parser.body_text)
-    for e in found:
-        e = e.lower().strip('.')
-        if '@' in e and '.' in e.split('@')[1]:
-            all_emails.add(e)
-
-    # Check contact pages
+    extra_parsers = []
     for path in CONTACT_PATHS:
-        url = f'{scheme}://{domain}{path}'
-        html, status = fetch_url(url, timeout=8)
-        if not html:
+        body, _ = fetch_url(f'{scheme}://{domain}{path}', timeout=8)
+        if not body:
             continue
-        contact_page_url = path
-
-        cp = MetaParser()
+        p = MetaParser()
         try:
-            cp.feed(html)
+            p.feed(body)
         except Exception:
             pass
-
-        all_emails.update(cp.emails)
-        if cp.has_form:
-            has_form = True
-        for k, v in cp.social.items():
-            if k not in social:
-                social[k] = v
-
-        # Regex emails from contact page body
-        found = re.findall(email_pattern, cp.body_text)
-        for e in found:
-            e = e.lower().strip('.')
-            if '@' in e and '.' in e.split('@')[1]:
-                all_emails.add(e)
-
-        time.sleep(0.5)
-        break  # Only fetch one contact page
-
-    # Filter emails
-    qualified_emails = []
-    for email in all_emails:
-        local = email.split('@')[0].lower()
-        email_domain = email.split('@')[1].lower()
-
-        # Skip generic providers
-        if email_domain in GENERIC_PROVIDERS:
-            continue
-        # Skip spam addresses
-        if local in ['noreply', 'no-reply', 'postmaster', 'webmaster', 'abuse']:
-            continue
-        # Skip image/file extensions that regex might catch
-        if email_domain.endswith(('.png', '.jpg', '.gif', '.svg', '.css', '.js')):
-            continue
-
-        is_generic = local in ALLOWED_EMAIL_PREFIXES
-        confidence = 'high' if is_generic else 'low'
-
-        # Only keep generic business emails
-        if is_generic:
-            qualified_emails.append({
-                'email': email,
-                'source': 'page_scrape',
-                'confidence': confidence,
-            })
-
-    # Select primary email (prefer domain-matching)
-    primary_email = None
-    for e in qualified_emails:
-        if domain in e['email']:
-            primary_email = e['email']
+        extra_parsers.append(p)
+        time.sleep(0.4)
+        if len(extra_parsers) >= 2:
             break
-    if not primary_email and qualified_emails:
-        primary_email = qualified_emails[0]['email']
+    return extra_parsers
 
-    return {
-        'emails': qualified_emails,
-        'primary_email': primary_email,
-        'social_links': social,
-        'has_contact_form': has_form,
-        'contact_page_url': contact_page_url,
-    }
 
-def score_prospect(check, extract):
-    score = 0
+def score(check, ig_handles, secondary):
+    s = 0
+    if ig_handles:
+        s += 40
+        # Prefer when the handle isn't a generic share button - heuristic: at least one handle contains
+        # part of the domain root or business name keyword
+        root = check['domain'].split('.')[0].lower()
+        if any(root[:6] in h or h in root for h in ig_handles):
+            s += 10
     if check['has_ssl']:
-        score += 15
+        s += 10
     if check['title'] and len(check['title']) > 5:
-        score += 10
+        s += 5
     if check['meta_description'] and len(check['meta_description']) > 20:
-        score += 10
-    if check['page_count_estimate'] >= 5:
-        score += 10
+        s += 5
     if check['technology_stack']:
-        score += 10
-    if check['is_agency']:
-        score += 15
-    if len(check.get('agency_signals', [])) >= 2:
-        score += 5
-    if extract['primary_email']:
-        score += 15
-    if extract['has_contact_form']:
-        score += 5
-    if extract['social_links'].get('linkedin'):
-        score += 5
-    if len(extract['social_links']) >= 2:
-        score += 5
-    # Check for premium TLD
-    tld = check['domain'].split('.')[-1]
-    if tld in ['com', 'co.uk', 'org.uk', 'io', 'agency', 'digital', 'design']:
-        score += 5
-    return min(score, 100)
+        s += 5
+    if check['type_signals']:
+        s += 10
+    if secondary.get('primary_email'):
+        s += 10
+    if secondary.get('has_contact_form'):
+        s += 3
+    if any(k in secondary.get('socials', {}) for k in ('linkedin', 'tiktok', 'twitter', 'youtube')):
+        s += 5
+    return min(s, 100)
 
-# --- Main ---
-domains_file = sys.argv[1]
-output_file = sys.argv[2]
+
+def primary_email_from(emails_set, domain):
+    if not emails_set:
+        return None
+    allowed = {
+        'info', 'hello', 'contact', 'enquiries', 'team', 'sales', 'help',
+        'office', 'general', 'mail', 'hi', 'hey', 'studio', 'business',
+        'admin', 'support', 'reception', 'press', 'partnerships', 'marketing',
+        'newbusiness', 'enquiry', 'projects', 'work',
+    }
+    generic_providers = {
+        'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+        'icloud.com', 'protonmail.com', 'proton.me', 'live.com', 'msn.com',
+        'btinternet.com', 'sky.com', 'virginmedia.com', 'talktalk.net',
+    }
+    candidates = []
+    for e in emails_set:
+        if '@' not in e:
+            continue
+        local, _, edom = e.partition('@')
+        local = local.lower()
+        edom = edom.lower()
+        if edom in generic_providers:
+            continue
+        if local in {'noreply', 'no-reply', 'postmaster', 'webmaster', 'abuse'}:
+            continue
+        if edom.endswith(('.png', '.jpg', '.gif', '.svg', '.css', '.js')):
+            continue
+        if local not in allowed:
+            continue
+        candidates.append(e)
+    if not candidates:
+        return None
+    # Prefer domain-matching
+    for e in candidates:
+        if domain in e:
+            return e
+    return candidates[0]
+
+
+# ----- Driver -----
+domains_file, output_file, type_slug = sys.argv[1], sys.argv[2], sys.argv[3]
+mode = mode_from_slug(type_slug)
 
 with open(domains_file) as f:
     domains = [line.strip() for line in f if line.strip()]
 
 total = len(domains)
 prospects = []
-stats = {'total': total, 'live': 0, 'agencies': 0, 'qualified': 0, 'parked': 0, 'dead': 0, 'no_contact': 0, 'not_agency': 0}
+stats = {
+    'total': total, 'live': 0, 'qualified': 0, 'parked': 0, 'dead': 0,
+    'no_ig': 0, 'wrong_type': 0, 'low_score': 0,
+}
 
-for i, domain in enumerate(domains):
-    num = i + 1
-    sys.stdout.write(f'\r  [{num}/{total}] Checking {domain}...' + ' ' * 20)
+for i, domain in enumerate(domains, start=1):
+    sys.stdout.write(f'\r  [{i}/{total}] {domain[:50]}{"":40}')
     sys.stdout.flush()
 
     try:
-        result, parser = check_domain(domain)
-    except Exception as e:
+        check, homepage_parser = check_domain(domain, mode)
+    except Exception:
         stats['dead'] += 1
         continue
 
-    if not result['is_live']:
+    if not check['is_live']:
         stats['dead'] += 1
-        time.sleep(0.5)
+        time.sleep(0.3)
         continue
 
     stats['live'] += 1
 
-    if result['is_parked']:
+    if check['is_parked']:
         stats['parked'] += 1
-        time.sleep(0.5)
+        time.sleep(0.3)
         continue
 
-    if not result['is_agency']:
-        stats['not_agency'] += 1
-        time.sleep(0.5)
+    # In strict modes (agency / freelance / ecommerce), require at least one type signal.
+    # In open mode, skip this check.
+    if mode != 'open' and not check['type_signals']:
+        stats['wrong_type'] += 1
+        time.sleep(0.3)
         continue
 
-    stats['agencies'] += 1
-
-    # Extract emails
+    # Collect IG handles + secondary socials/emails from homepage + contact pages
+    extra_parsers = []
     try:
-        extract = extract_emails(domain, result['has_ssl'], parser)
+        extra_parsers = fetch_contact_pages(domain, check['has_ssl'])
     except Exception:
-        extract = {'emails': [], 'primary_email': None, 'social_links': {}, 'has_contact_form': False, 'contact_page_url': None}
+        pass
 
-    if not extract['primary_email'] and not extract['has_contact_form']:
-        stats['no_contact'] += 1
-        time.sleep(1)
+    all_parsers = [homepage_parser] + extra_parsers
+    ig_handles = collect_ig_handles(all_parsers)
+
+    if not ig_handles:
+        stats['no_ig'] += 1
+        time.sleep(0.3)
         continue
 
-    # Score
-    quality = score_prospect(result, extract)
-    if quality < 40:
-        time.sleep(1)
+    # Merge socials and emails across parsers
+    merged_socials = {}
+    merged_emails = set()
+    has_form = False
+    for p in all_parsers:
+        if not p:
+            continue
+        for k, v in p.social.items():
+            if k == 'instagram_urls':
+                continue
+            merged_socials.setdefault(k, v)
+        merged_emails.update(p.emails)
+        # Regex emails from body
+        for e in re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', p.body_text):
+            merged_emails.add(e.lower().strip('.'))
+        if p.has_form:
+            has_form = True
+
+    primary_email = primary_email_from(merged_emails, domain)
+
+    secondary = {
+        'primary_email': primary_email,
+        'socials': merged_socials,
+        'has_contact_form': has_form,
+    }
+
+    quality = score(check, ig_handles, secondary)
+    if quality < 50:
+        stats['low_score'] += 1
+        time.sleep(0.3)
         continue
 
     stats['qualified'] += 1
     prospects.append({
         'domain': domain,
-        'title': result['title'],
-        'meta_description': result['meta_description'],
-        'technology_stack': result['technology_stack'],
-        'has_ssl': result['has_ssl'],
-        'page_count_estimate': result['page_count_estimate'],
-        'agency_signals': result['agency_signals'],
+        'title': check['title'],
+        'meta_description': check['meta_description'],
+        'technology_stack': check['technology_stack'],
+        'has_ssl': check['has_ssl'],
+        'type_signals': check['type_signals'],
         'quality_score': quality,
-        'contact_email': extract['primary_email'],
-        'emails': extract['emails'],
-        'social_links': extract['social_links'],
-        'has_contact_form': extract['has_contact_form'],
-        'contact_page_url': extract['contact_page_url'],
+        'ig_handle': ig_handles[0],
+        'ig_handles_all': ig_handles,
+        'ig_url': f'https://instagram.com/{ig_handles[0]}',
+        'primary_email': primary_email,
+        'social_links': merged_socials,
+        'has_contact_form': has_form,
     })
 
-    time.sleep(1)
+    time.sleep(0.5)
 
-# Write output
 with open(output_file, 'w') as f:
     json.dump(prospects, f, indent=2)
 
 print()
 print()
-print(f'Results: {stats[\"qualified\"]} qualified / {total} checked')
-print(f'  Live: {stats[\"live\"]} | Agencies: {stats[\"agencies\"]} | Qualified: {stats[\"qualified\"]}')
-print(f'  Filtered: {stats[\"dead\"]} dead, {stats[\"parked\"]} parked, {stats[\"not_agency\"]} not agency, {stats[\"no_contact\"]} no contact')
+print(f'Results: {stats["qualified"]} qualified / {total} checked  (mode: {mode})')
+print(f'  Live: {stats["live"]} | Qualified: {stats["qualified"]}')
+print(f'  Filtered: {stats["dead"]} dead, {stats["parked"]} parked, '
+      f'{stats["wrong_type"]} wrong type, {stats["no_ig"]} no IG, '
+      f'{stats["low_score"]} below score')
 print(f'Output: {output_file}')
-" "$DOMAINS_FILE" "$OUTPUT_FILE"
+PYEOF
 
-# Append all processed domains (not just qualified) to known-domains.txt
-if [ -f "$KNOWN_FILE" ]; then
-  cat "$DOMAINS_FILE" >> "$KNOWN_FILE"
-  # Deduplicate in place
-  sort -u "$KNOWN_FILE" -o "$KNOWN_FILE"
-  echo "Updated known-domains.txt ($(wc -l < "$KNOWN_FILE" | tr -d ' ') total)"
-fi
+# Append all processed domains (qualified or not) to known-domains.txt so future runs skip them
+cat "$DOMAINS_FILE" >> "$KNOWN_FILE"
+sort -u "$KNOWN_FILE" -o "$KNOWN_FILE"
+echo "Updated known-domains.txt ($(wc -l < "$KNOWN_FILE" | tr -d ' ') total)"

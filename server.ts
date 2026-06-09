@@ -1098,7 +1098,8 @@ const TYPESET_MIME: Record<string, string> = {
 
 async function renderViaTypeset(opts: {
   slug: string
-  markdown: string
+  markdown: string | null
+  layoutJson?: string | null
   format: 'pdf' | 'docx'
   client?: string | null
 }): Promise<{ ok: true; bytes: ArrayBuffer } | { ok: false; status: number; error: string }> {
@@ -1106,21 +1107,35 @@ async function renderViaTypeset(opts: {
     return { ok: false, status: 503, error: 'PDF/DOCX rendering is not configured.' }
   }
 
+  // Prefer the structured JSON layout when present — gives us colour, columns,
+  // styled containers etc. Falls back to markdown for resources that haven't
+  // been migrated yet.
+  const useJson = Boolean(opts.layoutJson && opts.layoutJson.trim())
+  const content = useJson ? (opts.layoutJson as string) : (opts.markdown || '')
+  if (!content) {
+    return { ok: false, status: 404, error: 'Resource content not found.' }
+  }
+  const inputFormat: 'json' | 'markdown' = useJson ? 'json' : 'markdown'
+
   const clientKey = opts.client || ''
-  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${clientKey}|${opts.markdown}`).digest('hex').slice(0, 16)
+  const hash = createHash('sha256').update(`${opts.slug}|${opts.format}|${inputFormat}|${clientKey}|${content}`).digest('hex').slice(0, 16)
   const cachePath = join(TYPESET_CACHE_DIR, `${opts.slug}-${opts.format}-${hash}.${opts.format}`)
   const cached = Bun.file(cachePath)
   if (await cached.exists()) {
     return { ok: true, bytes: await cached.arrayBuffer() }
   }
 
-  // Document metadata (title/subtitle/author/date) lives in the markdown's YAML frontmatter.
-  // Styling theme is selected per-resource via the `typesetClient` CMS field, passed as the
-  // top-level `client` field on the API request (per typeset docs).
+  // Document metadata (title/subtitle/author/date) lives in the markdown's YAML
+  // frontmatter OR the JSON's `frontmatter` object. The Typeset API treats
+  // both identically for cover-page rendering.
+  // `input_format` is the discriminator: "markdown" (default) or "json".
+  // Styling theme is selected per-resource via the `typesetClient` CMS field,
+  // passed as the top-level `client` field on the API request.
   const body: Record<string, unknown> = {
     document_type: 'general',
     format: opts.format,
-    content: opts.markdown,
+    input_format: inputFormat,
+    content,
   }
   if (opts.client) body.client = opts.client
 
@@ -1321,20 +1336,22 @@ app.get('/api/resources/:slug/download', async (c) => {
     // Otherwise fall through to typeset render
   }
 
-  // Look up the markdown body + typeset client profile for this resource
+  // Look up the markdown body + layout JSON + typeset client profile for this resource
   let markdown: string | null = null
+  let layoutJson: string | null = null
   let typesetClient: string | null = null
   try {
-    const rows = await sql`SELECT markdown_body, typeset_client FROM resources WHERE slug = ${slug} LIMIT 1`
+    const rows = await sql`SELECT markdown_body, layout_json, typeset_client FROM resources WHERE slug = ${slug} LIMIT 1`
     if (rows.length > 0) {
       const row = rows[0] as any
       markdown = row.markdown_body || null
+      layoutJson = row.layout_json || null
       typesetClient = row.typeset_client || null
     }
   } catch (err: any) {
     console.error('[Resources] Resource lookup failed:', err)
   }
-  if (!markdown) {
+  if (!markdown && !layoutJson) {
     return c.json({ error: 'Resource content not found.' }, 404)
   }
 
@@ -1342,6 +1359,12 @@ app.get('/api/resources/:slug/download', async (c) => {
   refreshLeadCookies(c, verified.leadId)
 
   if (format === 'md') {
+    // The markdown export always serves the markdown source, even if a JSON layout
+    // exists. The JSON is a render-time concern — the canonical .md is what a
+    // reader can copy, edit, and re-use.
+    if (!markdown) {
+      return c.json({ error: 'No markdown source for this resource.' }, 404)
+    }
     return new Response(markdown, {
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
@@ -1351,8 +1374,8 @@ app.get('/api/resources/:slug/download', async (c) => {
     })
   }
 
-  // pdf | docx via typeset
-  const rendered = await renderViaTypeset({ slug, markdown, format: format as 'pdf' | 'docx', client: typesetClient })
+  // pdf | docx via typeset — layoutJson wins when present, markdown is the fallback.
+  const rendered = await renderViaTypeset({ slug, markdown, layoutJson, format: format as 'pdf' | 'docx', client: typesetClient })
   if (!rendered.ok) {
     return c.json({ error: rendered.error }, rendered.status as any)
   }

@@ -1,0 +1,487 @@
+{
+  "frontmatter": {
+    "title": "The Prompt Library for Professional Services",
+    "subtitle": "Copy-paste prompts for UK law firms, accountancies and agencies",
+    "author": "Chris Garlick",
+    "recipient": "Professional Service Firms",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What's Inside"
+        },
+        {
+          "type": "markdown",
+          "content": "A working set of copy-paste prompts for UK law firms, accountancies and agencies. Every prompt has been used in real client work. Adapt the bracketed variables to your situation."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "CLIENT COMMUNICATION"
+                },
+                {
+                  "type": "bullet_list",
+                  "items": [
+                    "First-touch reply to inbound enquiry",
+                    "Status update mid-matter",
+                    "Difficult-message draft"
+                  ]
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DOCUMENT WORK"
+                },
+                {
+                  "type": "bullet_list",
+                  "items": [
+                    "First-pass document review",
+                    "Extract key terms from a contract",
+                    "Convert messy notes to a file note"
+                  ]
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "INTERNAL OPERATIONS"
+                },
+                {
+                  "type": "bullet_list",
+                  "items": [
+                    "Weekly team standup digest",
+                    "Inbox triage",
+                    "Loom/transcript to action items",
+                    "Proposal section from discovery"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Before the prompts"
+            },
+            {
+              "type": "markdown",
+              "content": "A four-part framework for adapting any prompt to your firm comes first. The prompts are templates. They won't be perfect on the first run. **Iterate.**"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "How to adapt a prompt"
+        },
+        {
+          "type": "markdown",
+          "content": "Every prompt in this library follows the same structure. If a prompt isn't giving you what you want, it's almost always because one of these four pieces is missing."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "1. Role"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Tell the model who it is. *\"You are a senior commercial solicitor reviewing a software licence agreement.\"* Specificity matters."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "2. Context"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Give it the material to work with. Paste the document, transcript, or data in full. **Do not summarise for the model.** That's its job."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "3. Constraints"
+                },
+                {
+                  "type": "markdown",
+                  "content": "State the rules. Length, format, tone, what to include, what to exclude, what to never assume. These are the lines the model would otherwise cross."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "4. Examples"
+                },
+                {
+                  "type": "markdown",
+                  "content": "If the output has a specific shape, show one good example. **One example beats three paragraphs of description.**"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Client communication"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "1. First-touch reply to an inbound enquiry"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are a senior client manager at a UK [law firm / accountancy / agency].\nA prospective client has sent the email below. Draft a reply that:\n\n- Acknowledges their specific situation (do not paraphrase generically)\n- Asks two clarifying questions that would meaningfully change our\n  approach or quote\n- Proposes a 20-minute discovery call, offering two specific time slots\n  in the next three working days\n- Signs off in a warm but professional tone\n\nDo not promise outcomes, costs or timelines. Do not use the phrase\n\"I hope this email finds you well.\"\n\nInbound email:\n[PASTE EMAIL HERE]\n\nMy availability for the call:\n[LIST 2-3 SLOTS]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Client communication"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "2. Status update to a client mid-matter"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are [NAME], the lead [solicitor / accountant / account manager] on\nthis matter. Write a status update email to the client covering:\n\n- What has happened since the last update (use the bullet list below)\n- What is outstanding and who is doing what next\n- Any decisions the client needs to make, with a deadline\n- Any costs incurred or anticipated\n\nKeep it under 250 words. No legal jargon unless unavoidable. Use plain\nEnglish. End with a clear next step.\n\nUpdates since last contact:\n[BULLET LIST]\n\nClient's name:\n[NAME]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Client communication"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "3. Difficult-message draft"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are an experienced [partner / director] writing to a long-standing\nclient about [bad news: missed deadline / fee increase / declining the\nmatter]. Draft the email.\n\nRules:\n- Take responsibility where appropriate without inviting liability\n- State the facts clearly in the second paragraph, not buried\n- Offer a concrete remedy or next step\n- No apologies that contradict our position\n- Maintain the relationship, this client matters\n\nSituation:\n[DESCRIBE]"
+        },
+        {
+          "type": "section",
+          "background": "#7F1D1D",
+          "text_color": "#FEF2F2",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "Always proof-read difficult-message drafts twice. One pass for tone, one pass for liability."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Document and drafting"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "4. First-pass document review"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are reviewing the document below on behalf of [CLIENT NAME]. Their\nposition is [BUYER / SELLER / LANDLORD / TENANT / EMPLOYER / EMPLOYEE].\n\nProduce a review note with three sections:\n\n1. RED FLAGS, clauses that are unusual, one-sided against my client, or\n   commercially unacceptable. Quote the clause and explain.\n2. AMBER, clauses that need negotiation but are not deal-breakers.\n3. GREEN, confirm the standard protections that are present.\n\nFor each red flag, propose redrafted wording. Do not invent facts not in\nthe document. If something is unclear, say so explicitly rather than\nguessing.\n\nDocument:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Document and drafting"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "5. Extract key terms from a contract"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Read the contract below and produce a one-page key terms summary with\nthese fields, in this order:\n\n- Parties\n- Effective date\n- Term and renewal\n- Termination rights (each party)\n- Payment terms\n- Limitation of liability\n- Indemnities\n- Governing law and jurisdiction\n- Notice provisions\n- Anything unusual\n\nQuote the relevant clause number alongside each field. If a field is not\ncovered in the contract, say \"not addressed\" rather than inferring.\n\nContract:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Document and drafting"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "6. Convert handwritten or messy notes to a file note"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Below are my rough notes from a meeting with [CLIENT NAME] on [DATE].\nRewrite them as a formal file note suitable for the matter file.\n\nStructure:\n- Attendees\n- Date and time\n- Purpose\n- Discussion (chronological, third person, past tense)\n- Decisions\n- Actions (who, what, by when)\n- Follow-up required\n\nDo not add facts that are not in my notes. If something is ambiguous,\nflag it in square brackets.\n\nNotes:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Internal operations"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "7. Weekly team standup digest"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Below are the individual updates from each team member this week. Produce\na single team digest with:\n\n- Three lines on what shipped this week\n- Three lines on what's in progress and any blockers\n- Anything the partners / leadership need to know\n- One client risk or opportunity to surface\n\nKeep the total under 200 words. Tone: dry, factual, no jargon. Do not\nembellish. If an update is thin, that's fine, leave it thin.\n\nUpdates:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Internal operations"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "8. Inbox triage"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Below is a list of the last [N] emails I received. For each email,\ncategorise as:\n\n- URGENT, needs a reply today\n- CLIENT, client work, reply within 24h\n- INTERNAL, internal team, reply when convenient\n- FYI, read only, no action\n- DELETE, newsletters, sales, noise\n\nFor everything tagged URGENT or CLIENT, draft a one-sentence suggested\nresponse. Do not actually send anything.\n\nEmails:\n[PASTE, sender, subject, first 200 chars of body for each]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Internal operations"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "9. Turn a Loom or transcript into action items"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Below is the transcript of a meeting. Extract:\n\n- Decisions made (with who decided)\n- Action items (with owner and deadline if mentioned, otherwise \"TBC\")\n- Open questions\n- Anything I should follow up on personally as [ROLE]\n\nIgnore small talk. If a decision is implied rather than stated, flag it\nas \"implied\" so I can confirm.\n\nTranscript:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Internal operations"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "10. Draft a proposal section from a discovery call"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Below is the transcript of a discovery call with [PROSPECT NAME] of\n[COMPANY]. Draft the \"Understanding of your situation\" section of the\nproposal, the part that proves we listened.\n\nRules:\n- Use the prospect's own language where they were specific. Quote them\n  directly in one or two places.\n- Mirror back the three problems they prioritised, in their order.\n- Do not propose solutions in this section. That comes later.\n- 250-350 words.\n\nTranscript:\n[PASTE]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Where to go from here"
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "This starter library covers ten of the most common professional services use cases. The full library, sixty-plus prompts including client reporting, billing narratives, knowledge management and proposal writing, is shipping shortly."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#7E1FE8"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a workflow covered next?"
+            },
+            {
+              "type": "markdown",
+              "content": "Reply to the email this came with. The most-requested ones get written first. Or [book a free 30-minute call](https://chrisgarlick.com/contact) and I'll walk you through which prompts would unlock the most time in your specific practice. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for UK law firms, accountancies, and marketing agencies. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

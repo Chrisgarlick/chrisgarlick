@@ -1,4 +1,4 @@
-<!-- Version: 2 | Department: seo | Updated: 2026-05-15 -->
+<!-- Version: 3 | Department: seo | Updated: 2026-06-08 (Operating-Model axis added) -->
 
 # Keyword Strategy
 
@@ -84,6 +84,56 @@ This is the refreshed keyword map after the May 2026 refactor that:
 | AI observability for production | Info | Low | /blog/ai-observability-production |
 | AI chaining vs single-prompt | Info | Low | /blog/ai-chaining-vs-single-prompt |
 
+### Operating-Model axis BOFU/MOFU (NEW - added 2026-06-08, P1)
+
+Maps to the `/for/<slug>` pages (the operating-model axis - sector-agnostic). Orthogonal to `/industries/`. A prospect might land on both for the same conversion.
+
+| Keyword | Intent | Difficulty | Target page |
+|---------|--------|------------|-------------|
+| ai agency uk (solo founder angle) | Commercial | Med | /for/agency-starters |
+| solo agency uk | Commercial | Low | /for/agency-starters |
+| ai for consultants | Info/Commercial | Low-Med | /for/consultants |
+| productise consulting | Info/Commercial | Low | /for/consultants |
+| ai for freelancers | Info/Commercial | Low-Med | /for/freelancers |
+| freelancer proposal template | Info/Commercial | Low | /for/freelancers |
+| brief to proposal ai | Info | Very Low | /for/freelancers |
+| ai for solo operators uk | Info/Commercial | Very Low | /for/solo-operators |
+| one person business ai | Info | Low | /for/solo-operators |
+| sole trader ai uk | Info | Very Low | /for/solo-operators |
+| solopreneur ai stack | Info | Low | /for/solo-operators |
+| ai for tradespeople uk | Info/Commercial | Low | /for/tradespeople |
+| ai for trades uk | Info/Commercial | Low | /for/tradespeople |
+| plumber marketing ai | Info | Very Low | /for/tradespeople |
+| electrician marketing ai | Info | Very Low | /for/tradespeople |
+| builder marketing ai | Info | Very Low | /for/tradespeople |
+| google reviews automation tradespeople | Info | Very Low | /for/tradespeople |
+| ai for [your operating model] | Info | Low | /for (directory) |
+
+### Operating-Model axis: supporting article keywords (P1-P2)
+
+Long-tail keywords for the Cluster K supporting articles. See `topic-clusters.md` for which article targets which keyword.
+
+| Keyword | Intent | Difficulty | Cluster K position |
+|---------|--------|------------|---------------------|
+| ai agency stack solo founder | Info/Commercial | Very Low | K.1.1 |
+| first clients solo agency | Info | Low | K.1.2 |
+| productised vs hourly agency | Info | Low | K.1.3 |
+| one framework six months content | Info | Very Low | K.2.1 |
+| ai thought leadership consultants | Info | Low | K.2.2 |
+| scale consulting with ai | Info | Low | K.2.3 |
+| ai proposal pack freelancers | Info/Commercial | Very Low | K.3.1 |
+| brief to proposal ai prompt | Info | Very Low | K.3.2 |
+| freelance client onboarding ai | Info | Very Low | K.3.3 |
+| solo operator ai stack | Info/Commercial | Very Low | K.4.1 |
+| voice note to content pipeline | Info | Very Low | K.4.2 |
+| automated google review requests uk | Info | Very Low | K.4.3 |
+| ai tools for tradespeople 2026 | Info/Commercial | Low | K.5.1 |
+| ai for plumbers uk | Info | Very Low | K.5.2 |
+| ai for electricians uk | Info | Very Low | K.5.3 |
+| ai for builders uk | Info | Very Low | K.5.4 |
+| checkatrade seo | Info | Low | K.5.5 |
+| google business profile automation trades | Info | Very Low | K.5.6 |
+
 ### TOFU awareness (P2-P3)
 
 | Keyword | Intent | Difficulty | Target |
@@ -106,6 +156,20 @@ This is the refreshed keyword map after the May 2026 refactor that:
 | AI for financial advisers UK | Financial Services | /industries/ai-for-financial-advisers (future) |
 | AI for property management UK | Property | /industries/ai-for-property-management (future) |
 | AI for healthcare admin UK | Healthcare admin | /industries/ai-for-healthcare-admin (future) |
+
+## Cross-axis cross-link map (added 2026-06-08)
+
+Where the operating-model axis (`/for/`) overlaps with the sector axis (`/industries/`), both pages MUST link to each other. These pairings reflect natural audience overlap:
+
+| /for/ page | /industries/ page | Why they overlap |
+|---|---|---|
+| solo-operators | ai-for-law-firms | Sole-practice solicitors |
+| agency-starters | ai-for-agencies | Solo-founder → established agency progression |
+| consultants | ai-for-agencies | Many consultants serve agency clients or transition to agency |
+| freelancers | ai-for-agencies | Freelancers often work via or for agencies |
+| tradespeople | (no industry page yet) | Add when `/industries/ai-for-tradespeople` is built |
+
+For each pairing, both pages should link to each other in a "Related" or "Also see" block.
 
 ## Long-tail early wins (P1)
 

@@ -1,152 +1,317 @@
 ---
 name: prospects
-description: Find web agencies, digital marketing agencies, and SEO agencies in a specific location. Checks each domain for liveness, extracts contact details, and publishes qualified prospects to Notion. Use when you want to build a cold outreach list for a given city or region.
+description: Find UK businesses by type and location (agencies, freelancers, coaches, solicitors, tradespeople, ecommerce stores, etc.), extract their Instagram handle as the primary contact, and publish a DM-ready list to Notion. Use to build cold IG outreach lists for @chrisgarlick.ai.
 user-invocable: true
-argument-hint: location e.g. manchester or shopify agencies leeds
+argument-hint: <type> <location> · or --help for suggestions
 ---
 
-# Prospects Skill - Location-Based Agency Discovery
+# Prospects Skill - IG Outreach List Builder
 
-Find web/digital/SEO agencies in a specific location, check their websites, extract contact details, and publish a qualified prospect list to Notion.
+Find UK businesses of a given type in a given location, pull their Instagram handle off their website, and publish a DM-ready list to Notion under "Chris Garlick / IG Prospects".
+
+The output is built for one job: opening Notion on a phone, tapping an `@handle` link, and sending a personal DM from `@chrisgarlick.ai`. Everything else is secondary.
 
 ## Input
 
-The user's prompt: $ARGUMENTS
+The user's prompt: `$ARGUMENTS`
 
-Examples:
-- `/prospects manchester` - find all types of agencies in Manchester
-- `/prospects SEO agencies london` - find SEO-specific agencies in London
-- `/prospects shopify agencies leeds` - find Shopify specialists in Leeds
-- `/prospects web design birmingham` - find web design agencies in Birmingham
+The first token (or two tokens if they're a known multi-word type like "estate agents") is the **type**. The remaining tokens are the **location**.
+
+### Examples
+
+| Command | Type | Location |
+|---|---|---|
+| `/prospects agencies manchester` | marketing/digital agencies | Manchester |
+| `/prospects coaches london` | coaches & consultants | London |
+| `/prospects accountants newcastle` | accountancy firms | Newcastle |
+| `/prospects solicitors uk` | law firms | UK-wide |
+| `/prospects freelance developers leeds` | freelance web developers | Leeds |
+| `/prospects shopify stores bristol` | Shopify ecommerce stores | Bristol |
+| `/prospects builders north east` | building firms | North East England |
+| `/prospects dentists birmingham` | dental practices | Birmingham |
+| `/prospects estate agents glasgow` | estate agents | Glasgow |
+| `/prospects help` | shows the type cheatsheet below | - |
+
+### Special argument: `help`, `--help`, or `-h`
+
+If the user passes any of `help`, `--help`, or `-h` as the first argument, show the cheatsheet below and stop. Do not run any searches.
+
+````
+/prospects - IG outreach list builder for @chrisgarlick.ai
+
+Usage:  /prospects <type> <location>
+
+────────────────────────────────────────────────────────────────────
+SUGGESTED RUNS - copy, tweak, send.
+────────────────────────────────────────────────────────────────────
+
+▸ Quick wins (heavy IG users, fast to qualify)
+    /prospects coaches manchester
+    /prospects coaches london
+    /prospects business coaches uk
+    /prospects mindset coaches uk
+    /prospects brand consultants london
+
+▸ UK marketing & creative agencies (fit your AI Reporting blog)
+    /prospects agencies manchester
+    /prospects digital agencies leeds
+    /prospects creative studios bristol
+    /prospects independent agencies north east
+    /prospects shopify agencies uk
+
+▸ Freelancers & solo operators (fit /for/freelancers, /for/solo-operators)
+    /prospects freelance developers london
+    /prospects freelance designers manchester
+    /prospects freelance seo uk
+    /prospects copywriters uk
+    /prospects photographers newcastle
+
+▸ Professional services (fit /industries/ai-for-* pages)
+    /prospects solicitors newcastle
+    /prospects accountants leeds
+    /prospects architects manchester
+    /prospects financial advisors uk
+
+▸ Local & trades (fit /for/tradespeople)
+    /prospects electricians newcastle
+    /prospects builders north east
+    /prospects estate agents glasgow
+    /prospects dentists birmingham
+
+▸ Ecommerce & DTC brands (visual, IG-native)
+    /prospects shopify stores uk
+    /prospects fashion brands manchester
+    /prospects beauty brands london
+    /prospects food and drink brands uk
+    /prospects homeware brands bristol
+
+▸ Niche / open mode (any phrase works, skill expands it)
+    /prospects yoga studios bristol
+    /prospects vegan bakeries uk
+    /prospects boutique gyms leeds
+    /prospects independent breweries north east
+
+────────────────────────────────────────────────────────────────────
+PROSPECT TYPE REFERENCE
+────────────────────────────────────────────────────────────────────
+
+Service businesses (heaviest IG users)
+  agencies                marketing, digital, web design, creative agencies
+  coaches                 business, life, mindset, executive coaches
+  consultants             management, brand, marketing consultants
+  freelancers             freelance developers, designers, SEO, copywriters
+  photographers           photographers, videographers
+
+Professional services
+  solicitors              law firms, legal practices
+  accountants             accountancy firms, bookkeepers
+  architects              architecture practices
+  financial-advisors      IFAs, mortgage brokers, wealth managers
+
+Local / trades
+  dentists                dental practices
+  estate-agents           estate & letting agents
+  builders                construction firms
+  electricians            electrical contractors
+  plumbers                plumbing & heating firms
+
+Ecommerce
+  shopify-stores          any Shopify store
+  woocommerce-stores      any WooCommerce store
+  fashion                 fashion / clothing brands
+  beauty                  skincare, cosmetics
+  homeware                home & living
+  food-and-drink          specialty food, coffee, drinks
+
+ANY phrase also works (open mode) - the skill turns it into search queries.
+
+────────────────────────────────────────────────────────────────────
+LOCATION TIPS
+────────────────────────────────────────────────────────────────────
+  city                    manchester · london · leeds · bristol · newcastle
+  region                  north east · north west · midlands · scotland
+  national                uk · united kingdom · britain
+
+────────────────────────────────────────────────────────────────────
+WHAT A GOOD RUN LOOKS LIKE
+────────────────────────────────────────────────────────────────────
+  • 30 to 50 candidate domains discovered
+  • 15 to 25 qualified prospects with IG handles
+  • Each one gets a Notion entry with: handle (clickable), site,
+    one-line summary, score, and a "DM hook" checkbox you fill in
+    before sending from @chrisgarlick.ai
+
+A re-run for the same type + location automatically skips anything
+already checked (via docs/prospects/known-domains.txt). Delete that
+file to force a full re-scan.
+
+────────────────────────────────────────────────────────────────────
+DM PLAYBOOK
+────────────────────────────────────────────────────────────────────
+Templates by prospect type (DTC brand, trade, coach, agency, ecom)
+plus rules for hooks, timing, and follow-ups, live in:
+
+    .claude/skills/prospects/dm-playbook.md
+
+The one rule: every DM = personal hook (1 sentence, specific to them)
++ templated body (1 to 3 sentences). Never a bare template.
+
+────────────────────────────────────────────────────────────────────
+SEE ALSO
+────────────────────────────────────────────────────────────────────
+  /prospects help              this screen
+  /prospects --help            same
+  /prospects <type> <location> run a search
+````
 
 ## Workflow
 
 ### 1. Parse the input
 
-Extract:
-- **Location** (required): city, region, or country
-- **Specialisation** (optional): SEO, web design, Shopify, WordPress, ecommerce, etc.
-- If no specialisation given, search broadly across web design, digital marketing, and SEO
+- **First, check for help flags.** If the argument is `help`, `--help`, or `-h` (or empty), show the cheatsheet from the "Special argument" section below and stop. Do not run any searches.
+- Otherwise, extract `type` (one or two tokens, see examples above for multi-word types)
+- Extract `location` (everything else; treat "uk" / "united kingdom" / "britain" as national)
+- Slugify: `<type-slug>-<location-slug>` for the output folder name
 
-### 2. Search for agencies
+### 2. Search for prospects
 
 Read `search-strategy.md` for the full query playbook.
 
-Run **6-8 WebSearches** using the templates from `search-strategy.md`, replacing `{location}` and `{specialisation}` with the parsed values.
+Run **5 to 8 WebSearches** combining the type, location, and IG-flavoured modifiers (e.g. `"<type>" "<location>" instagram`, `"<type>" "<location>"`, `best <type> <location>`, `<type> <location> directory`).
 
-For each search result:
-- Extract agency names and website domains from the results
-- Use **WebFetch** on promising directory pages (Clutch, DesignRush, Manifest listings) to extract additional agency domains from the page content
-
-Focus on:
-- Agency directories (Clutch, The Manifest, DesignRush, GoodFirms, Agency Spotter)
-- Google search results for `"agency" + {location}`
-- Review/listing sites that aggregate agencies by location
+For each result:
+- Extract business names and root domains
+- WebFetch the most promising directory / listicle pages (Yell, Google Maps, Clutch for agencies, Bark, etc.) to harvest more domains
+- If a result IS an Instagram link directly (e.g. `instagram.com/<handle>`), capture that as a seed prospect with no website yet
 
 ### 3. Compile and deduplicate domains
 
-- Build a unique list of agency domains (strip www, normalise to root domain)
-- Remove obvious non-agencies (social media URLs, directory pages themselves, generic platforms)
-- Save to `docs/prospects/{location}-{YYYY-MM-DD}/raw-domains.txt`
+- Normalise each domain (strip `www.`, lowercase, root host only)
+- Drop social-media URLs, directory homepages, marketplaces (amazon, ebay, etsy, etc.)
+- Drop anything already in `docs/prospects/known-domains.txt`
+- Save the deduped list to `docs/prospects/<type-slug>-<location-slug>-<YYYY-MM-DD>/raw-domains.txt`
 
-Present the count to the user:
+Report the count to the user:
 ```
-Found 38 potential agency domains in Manchester. Checking them now...
+Found 36 candidate businesses for "agencies / manchester". Checking websites + extracting IG handles now...
 ```
 
-### 4. Check domains and extract contacts
+### 4. Check + extract (IG-focused)
 
-Run the check-and-extract script:
+Run:
 
 ```bash
-bash .claude/skills/prospects/check-and-extract.sh docs/prospects/{location}-{date}/raw-domains.txt docs/prospects/{location}-{date}/prospects.json
+bash .claude/skills/prospects/check-and-extract.sh \
+  docs/prospects/<type-slug>-<location-slug>-<date>/raw-domains.txt \
+  docs/prospects/<type-slug>-<location-slug>-<date>/prospects.json \
+  "<type-slug>"
 ```
 
-This processes each domain:
-1. HTTP liveness check (HTTPS first, then HTTP fallback)
-2. HTML parsing for title, meta description, tech stack
-3. Agency signal detection (keywords: "agency", "digital", "web design", "marketing", "creative", "studio", "development company")
-4. Email extraction from homepage + /contact + /about pages
-5. Social media link extraction (LinkedIn, Twitter, etc.)
-6. Quality scoring (0-100)
-7. Filtering: only agencies with email or contact form, score >= 40
+The third argument is the type slug - passed in so the script can apply the right keyword filter (agency keywords for `agencies`, freelance keywords for `freelancers`, ecommerce signals for `*-stores`, none / open mode for everything else).
 
-For ~40 domains this takes about 2-3 minutes. Report progress as the script runs.
+Per domain the script does:
 
-If the script fails partway through, it can be re-run - it will skip domains already processed.
+1. HTTPS / HTTP liveness check
+2. Homepage HTML parse (title, meta description, tech stack, social links, has-form)
+3. Fetch `/contact`, `/about`, footer-linked pages to harvest more social links
+4. **Extract Instagram handle** from any `instagram.com/<handle>` URL, plus `<meta property="og:see_also">` tags, plus body-text `@handle` mentions where consistent
+5. Optional email extraction (generic prefixes only - `hello@`, `info@`, etc.) as a secondary contact
+6. Score the prospect 0 to 100, weighted heavily on **IG presence**:
+    - IG handle found: +40
+    - IG handle is a real account (looks human, not a generic share button): +10 more
+    - Site is live, has SSL, has real content: +20
+    - Type signal matches (agency keyword for agencies, etc.): +10
+    - Secondary signals (email, contact form, other socials): +20
+7. Filter: keep prospects with score >= 50 AND an IG handle (the handle is what makes them DM-able)
 
-### 5. Present results and publish to Notion
+For ~40 domains this takes 2 to 4 minutes. The script reports per-domain progress and is restartable.
 
-Show a summary table of qualified prospects, then **immediately publish to Notion** (no confirmation needed).
+### 5. Present a summary table
+
+Show the user a compact table before publishing:
 
 ```
-## Qualified Prospects: Manchester (22/38)
+## IG Prospects: Agencies / Manchester (19/36)
 
-| Agency | Domain | Email | Score | Tech |
-|--------|--------|-------|-------|------|
-| Acme Digital | acme.digital | hello@acme.digital | 85 | WordPress |
-| ... | ... | ... | ... | ... |
+| Business             | @ handle              | Score | Website        |
+|----------------------|------------------------|-------|----------------|
+| Acme Digital         | @acmedigital           |   88  | acme.digital   |
+| ...                  | ...                    |  ...  | ...            |
 
-16 domains filtered out (8 parked, 4 no contact info, 3 not agencies, 1 dead)
+17 dropped: 6 no IG handle, 5 parked / dead, 4 not the right type, 2 already known
 ```
 
 ### 6. Publish to Notion
 
 Run:
+
 ```bash
-bash .claude/skills/prospects/publish-to-notion.sh docs/prospects/{location}-{date}/prospects.json "Agency Prospects - {Location} - {date}"
+bash .claude/skills/prospects/publish-to-notion.sh \
+  docs/prospects/<type-slug>-<location-slug>-<date>/prospects.json \
+  "<Type>" "<Location>" <total-discovered>
 ```
 
-This creates a single Notion page under Kritano with:
-- A callout summarising the search (location, date, stats)
-- Each prospect as a heading + detail block:
-  - Agency name (heading)
-  - Domain, email, tech stack, quality score
-  - Social links (LinkedIn, Twitter, etc.)
-  - Whether they have a contact form
-  - Any notable details (e.g. "WordPress agency", "Shopify partner")
+Notion structure:
 
-All prospects on ONE scrollable page for easy browsing.
+```
+Workspace root
+  └── Chris Garlick - IG Prospects   (auto-created on first run)
+        └── <Type>                   (auto-created per type)
+              └── <Type> - <Location> - <YYYY-MM-DD>   (this run)
+```
+
+On first run, the publisher searches Notion for "Chris Garlick - IG Prospects". If not found, it creates the page under the first accessible anchor it finds (looks for a "Chris Garlick" page, falls back to "Kritano", then to the workspace root). It caches the page ID in `.claude/skills/prospects/.notion-ids.json`. Same nesting pattern for each type.
+
+**Note for first-time setup:** if you want the IG Prospects hierarchy to live under a specific page (e.g. a "Chris Garlick" workspace page), share that page with the Notion integration first. Otherwise the script will park it under whatever it can reach (typically the Kritano page) and you can drag it to its final home in Notion.
+
+Each prospect appears as a sub-block with:
+
+- Business name (heading)
+- IG handle as a clickable link to `https://instagram.com/<handle>`
+- Website link
+- One-line "what they do" summary (from meta description, trimmed)
+- Score
+- Other socials (LinkedIn, TikTok) if present
+- An empty `DM hook:` line for the user to write a personal opener before sending
 
 ### 7. Output summary
 
 Report:
-- Number of prospects found and qualified
-- File paths (raw-domains.txt, prospects.json)
+- Count qualified / discovered
+- Local file paths
 - Notion page link
-- Reminder: outreach is done manually via external mailbox
+- Reminder: every DM should be personalised. The IG handle is the door, the hook is the key.
 
 ## Deduplication
 
-The skill maintains a `docs/prospects/known-domains.txt` file that tracks every domain ever processed. When you run `/prospects` for the same location (or overlapping locations), already-known domains are automatically skipped. After each run, all processed domains (qualified or not) are appended to the known list.
-
-This means running `/prospects newcastle` twice will only check new domains the second time.
+`docs/prospects/known-domains.txt` is the shared memory across every run. Every domain ever checked (qualified or not) gets appended after each run, so future runs skip it automatically. Delete the file to force a fresh pass.
 
 ## Output Files
 
-All output goes to `docs/prospects/{location}-{YYYY-MM-DD}/`:
+`docs/prospects/<type-slug>-<location-slug>-<YYYY-MM-DD>/`:
 
-- `raw-domains.txt` - All discovered domains (one per line, after dedup filtering)
-- `prospects.json` - Qualified prospects with full extracted data
+- `raw-domains.txt` - all candidate domains discovered (after dedup, before checks)
+- `prospects.json` - qualified prospects with full extracted data
 
 ## Content Rules
 
-- **Generic emails only** - never store or display personal emails (john@, j.smith@). Only info@, hello@, contact@, team@, sales@, etc.
-- **No automated outreach** - this skill produces a list. Emails are sent manually.
-- **British English** throughout
-- **No competitor promotion** - never recommend competing audit tools
+- **IG handle is the primary qualifier.** No handle, no DM, no inclusion (regardless of score).
+- **Personalisation is mandatory.** This skill outputs a list. The user writes every DM by hand from `@chrisgarlick.ai`. No mass / templated DMs.
+- **Generic / role-based emails only** if extracted as a secondary contact. Never `firstname@`.
+- **British English** in all surfaced text.
+- **No competitor bashing** in suggested hooks if hooks are ever added.
 
 ## Compliance
 
-- Generic/role-based business emails only (per GDPR Legitimate Interest Assessment)
-- Personal emails are filtered out and never displayed
-- Data stored locally as JSON + Notion only (no database changes)
-- The skill does NOT send emails - it produces a list for manual, personalised outreach
+- All data extracted is publicly visible on the prospect's own website.
+- IG handles are listed where the prospect themselves linked to them publicly.
+- The skill produces a list. Outreach is manual and one-to-one. No automation, no scraping IG itself.
 
 ## Reference Files
 
 | File | Purpose |
 |------|---------|
-| `search-strategy.md` | WebSearch query templates per location and specialisation |
-| `check-and-extract.sh` | Domain checking + email extraction script |
-| `publish-to-notion.sh` | Publish prospect list to Notion |
+| `search-strategy.md` | WebSearch query templates by type + location |
+| `check-and-extract.sh` | Domain liveness + IG handle extraction script (Python inside bash) |
+| `publish-to-notion.sh` | Auto-creates / reuses the Notion IG Prospects hierarchy |
+| `dm-playbook.md` | DM templates by prospect type + personalisation guide + IG-specific rules |

@@ -1,125 +1,97 @@
-# Search Strategy - Agency Discovery
+# Search Strategy — IG Prospect Discovery
 
-Query templates for finding web/digital/SEO agencies by location. Replace `{location}` with the target city/region and `{specialisation}` with any niche focus.
+This is the query playbook used by the `/prospects` skill. The job is to discover businesses of a given type in a given location, prioritising businesses likely to be active on Instagram.
 
-## Core Queries (always run these)
+## Universal queries (run for every prospect type)
 
-### 1. Broad agency search
-```
-"web design agency" {location}
-```
-Picks up most web agencies. High volume, broad coverage.
+Replace `{type}` and `{location}` with the parsed values. Run 3 to 4 of these.
 
-### 2. Digital marketing agencies
-```
-"digital marketing agency" {location}
-```
-Catches marketing-focused agencies that also do web work.
+1. `"{type}" "{location}"`
+2. `"{type}" "{location}" instagram`
+3. `best {type} {location}`
+4. `top {type} {location} 2026`
+5. `{type} {location} directory`
+6. `{type} near {location}`
 
-### 3. SEO agencies
-```
-"SEO agency" {location}
-```
-SEO specialists - high-value targets as they understand audit tools.
+## Type-specific extras
 
-### 4. Development companies
-```
-"web development company" {location}
-```
-Catches dev shops that may not call themselves "agencies".
+Pick 2 to 4 of these depending on what `{type}` resolves to.
 
-## Directory Queries (run 2-3 of these)
+### Agencies (marketing, digital, web design, creative)
 
-### 5. Clutch
-```
-site:clutch.co web development {location}
-```
-Clutch is the largest agency directory. Results include agency profiles with links to their websites.
+- `site:clutch.co {type} {location}`
+- `site:thedrum.com {location} agency`
+- `"creative agency" {location} instagram`
+- `"design studio" {location}`
+- `independent agency {location}`
 
-### 6. The Manifest
-```
-site:themanifest.com web agency {location}
-```
-Sister site to Clutch, similar directory format.
+### Coaches & consultants
 
-### 7. DesignRush
-```
-site:designrush.com digital agency {location}
-```
-Good for design-focused agencies.
+- `"business coach" {location} instagram`
+- `"{specialism} coach" {location}`  (life, mindset, executive, leadership)
+- `"consultant" {location} "instagram.com"`
 
-### 8. GoodFirms
-```
-site:goodfirms.co web development {location}
-```
-Another major agency directory.
+### Freelancers
 
-## Specialisation Queries (run if user specified a niche)
+- `"freelance {specialism}" {location}`  (developer, designer, SEO, copywriter)
+- `site:peopleperhour.com {specialism} {location}`
+- `independent {specialism} {location}`
+- `"available for projects" {location} {specialism}`
 
-### Shopify agencies
-```
-"shopify agency" {location}
-"shopify partner" {location}
-```
+### Professional services (solicitors, accountants, architects, financial advisors)
 
-### WordPress agencies
-```
-"wordpress agency" {location}
-"wordpress development" {location}
-```
+- `"{type} firm" {location}`
+- `"{type} practice" {location}`
+- `site:yell.com {type} {location}`
+- `top {type} {location} review`
 
-### Ecommerce agencies
-```
-"ecommerce agency" {location}
-"ecommerce development" {location}
-```
+### Local / trades (dentists, builders, plumbers, electricians, estate agents)
 
-### Accessibility specialists
-```
-"accessibility agency" {location}
-"WCAG compliance" agency {location}
-```
+- `site:yell.com {type} {location}`
+- `"{type}" {location} reviews`
+- `local {type} {location} website`
+- `recommended {type} {location}`
 
-## Review/Ranking Queries (bonus, run if core queries yield < 20 domains)
+### Ecommerce (Shopify, WooCommerce, fashion, beauty, homeware, food)
 
-### 9. Top/best lists
-```
-top digital agencies {location} 2026
-best web design agencies {location}
-```
-Blog posts and ranking articles that list agencies with links.
+- `"{niche}" online shop {location}`
+- `"{niche}" Shopify store {location}`
+- `independent {niche} brand {location}`
+- `British {niche} brand instagram`
+- `small {niche} business {location}`
 
-### 10. Google Business
-```
-web design agency {location} reviews
-```
-Surfaces Google Business profiles which link to agency websites.
+## Directory pages worth fetching
 
-## WebFetch Targets
+When a directory or listicle page shows up in results, fetch the full page with WebFetch. These usually yield 10 to 50 extra domains each.
 
-When search results include directory listing pages, use WebFetch to extract additional agency domains:
+- Yell.com — UK-wide, every sector
+- Google Maps results (the local pack)
+- Clutch.co — agencies
+- The Drum — agencies, UK marketing
+- Bark.com — local services
+- Peopleperhour — freelancers
+- The Manifest, DesignRush, GoodFirms — agencies
+- Industry-specific directories (e.g. RICS for surveyors, Solicitors Regulation Authority for law firms, ICAEW for accountants)
 
-- **Clutch listing pages**: Extract agency names and "Visit Website" links
-- **The Manifest listing pages**: Same pattern as Clutch
-- **DesignRush listing pages**: Agency cards with website links
-- **"Top agencies" blog posts**: Usually contain bulleted lists with agency names and URLs
-- **Google Maps results**: Business names with website links
+## What to skip
 
-### What to extract from directory pages
-- Agency name
-- Website URL (the agency's own domain, not the directory profile URL)
-- Any noted specialisation (WordPress, Shopify, etc.)
+Drop these from candidate lists before checking:
 
-### What to skip
-- The directory site's own pages (clutch.co, designrush.com, etc.)
-- Social media profiles (linkedin.com, twitter.com, facebook.com)
-- Generic platform URLs (wordpress.com, wix.com, squarespace.com)
-- Review sites (trustpilot.com, google.com/maps)
+- Social media URLs (instagram.com, facebook.com, linkedin.com, tiktok.com — except when the IG URL IS the only signal of an otherwise unknown business)
+- Marketplaces: amazon, ebay, etsy, notonthehighstreet
+- Directory homepages (yell.com root, clutch.co root) — the directory itself isn't a prospect
+- Generic platforms (wordpress.com, wix.com, squarespace.com root domains)
+- Government & regulator domains (.gov.uk, .org.uk regulators)
+- Wikipedia, Quora, Reddit threads (use as discovery but not as prospects)
 
-## Expected Yield
+## When the type is unknown / unusual
 
-| Location Size | Domains Found | After Filtering |
-|---------------|---------------|-----------------|
-| Large city (London, Manchester) | 40-80 | 20-40 |
-| Medium city (Leeds, Bristol) | 20-40 | 10-25 |
-| Small city/town | 10-20 | 5-15 |
+If the user passes a phrase you don't recognise (e.g. "vegan bakeries", "yoga studios", "boutique gyms"):
+
+1. Use the universal queries with the phrase verbatim
+2. Pick the closest type-specific extras (a vegan bakery is closest to ecommerce + local; a yoga studio is closest to local + coaches)
+3. Run one extra query: `"{phrase}" {location} site:instagram.com` — direct IG discovery
+
+## Output
+
+Append discovered domains to `docs/prospects/<type-slug>-<location-slug>-<YYYY-MM-DD>/raw-domains.txt`, one per line, lowercase, no `www.` prefix, root domain only.

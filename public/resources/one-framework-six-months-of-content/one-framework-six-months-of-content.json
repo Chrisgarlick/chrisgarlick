@@ -1,0 +1,626 @@
+{
+  "frontmatter": {
+    "title": "One Framework, Six Months of Content",
+    "subtitle": "The content extraction system independent consultants use to build authority without writing every word themselves",
+    "author": "Chris Garlick",
+    "recipient": "Independent Consultants",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Core Idea"
+        },
+        {
+          "type": "markdown",
+          "content": "How to take one consulting methodology and turn it into a half-year content calendar. Blog, LinkedIn, email, short-form video, SEO landing pages. The prompts, the cadence, the sequencing."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Your methodology is the product"
+            },
+            {
+              "type": "markdown",
+              "content": "Content is how that product reaches the market. If your methodology is good, twenty pieces of content from it should all be true, all be useful, and all sound like you."
+            },
+            {
+              "type": "blockquote",
+              "text": "The job isn't to invent content. It's to extract it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The starting asset"
+        },
+        {
+          "type": "markdown",
+          "content": "You need one document. A clear write-up of your methodology in your own words. Not slides. A markdown or Google Doc."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "What it needs to cover"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**The problem** it solves (one paragraph)",
+                "**The core principles** (three to six numbered principles, one paragraph each)",
+                "**The steps or stages** (the actual sequence you walk clients through)",
+                "**The common failure modes** (where it goes wrong, what to do about it)",
+                "**The proof** (one or two anonymised client outcomes, with numbers if you can)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#A14809"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "LENGTH TARGET"
+                },
+                {
+                  "type": "markdown",
+                  "content": "2,000 to 4,000 words. The seed of everything else."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "RED FLAGS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Under 2,000:** your methodology isn't crisp enough yet.\n**Over 4,000:** you're rambling."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What you'll produce in six months"
+        },
+        {
+          "type": "markdown",
+          "content": "A realistic six-month calendar from one strong methodology."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Format",
+            "Quantity",
+            "Cadence"
+          ],
+          "rows": [
+            [
+              "Blog posts",
+              "6 to 8",
+              "Roughly every three weeks"
+            ],
+            [
+              "LinkedIn posts",
+              "24 to 26",
+              "One per week, plus reactive"
+            ],
+            [
+              "Email newsletter",
+              "6 to 8",
+              "One per blog cycle"
+            ],
+            [
+              "Short-form video scripts",
+              "18 to 24",
+              "Three per blog post"
+            ],
+            [
+              "SEO landing pages",
+              "3 to 5",
+              "Front-loaded in month 1"
+            ],
+            [
+              "Lead magnet or mini-course",
+              "1",
+              "Built in month 1, refreshed in month 4"
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "Roughly 60 to 70 distinct pieces of content from one methodology doc. Each one true, useful, and unmistakably yours. Each one referencing the same underlying framework so the audience sees the through-line."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 1 · Blog posts"
+        },
+        {
+          "type": "markdown",
+          "content": "Identifies the eight strongest blog angles your methodology generates. Run once. Schedule the posts across six months."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are a senior content editor working with a consultant whose methodology\nis pasted below. Your job is to identify the eight strongest blog post angles\nthat this methodology generates.\n\nFor each angle:\n- Headline (must include the keyword the consultant would want to rank for)\n- One-sentence promise to the reader\n- Three sub-headings the post would cover\n- The single most counter-intuitive insight from the methodology that the post leads with\n\nThe audience is [audience description]. Reading level: senior practitioner.\nNo buzzwords. Specific over generic. Each blog post should stand alone\nwithout referencing the others.\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 2 · LinkedIn (26 posts)"
+        },
+        {
+          "type": "markdown",
+          "content": "One per weekday for five months. The compounding-presence prompt."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are a LinkedIn content strategist working with a consultant whose\nmethodology is pasted below. Generate 26 LinkedIn posts, each in the\nconsultant's voice.\n\nEach post must:\n- Lead with a hook in the first line (visible above the \"see more\" cut)\n- Be 100 to 200 words\n- End with either a specific question to the audience, or a single\n  practical action they can take this week\n- Pull from a specific part of the methodology, not be generic\n\nMix angles across the 26 posts: stat/observation (5), contrarian take (5),\npractical tip (5), client story (5), framework explainer (3), industry\ncommentary (3).\n\nVoice notes: direct, technical, never uses \"leverage\" or \"synergy\". UK English\nspelling. Short sentences carry weight. Vary length but lean shorter.\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 3 · Email newsletter"
+        },
+        {
+          "type": "markdown",
+          "content": "Eight editions, sequenced to build on each other across the six-month cycle."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Generate 8 email newsletter editions from the methodology below. Each one\nshould:\n- Have a subject line in the consultant's voice (no clickbait, specific\n  reader benefit, under 50 chars)\n- Be 300 to 500 words\n- Centre on one principle or stage from the methodology\n- End with one clear ask (reply with X, book a call, share, forward)\n\nThe cadence is one email roughly every three weeks. Sequence the eight so\nthey build on each other, early ones explain the problem, middle ones go\ndeep on principles, later ones cover failure modes and proof.\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 4 · Short-form video scripts"
+        },
+        {
+          "type": "markdown",
+          "content": "24 scripts. Mix of insight, mistake, and alternative. Three per blog post."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Generate 24 short-form video scripts (Reels, TikTok, Shorts) from the\nmethodology below. Each script must be:\n- 30 to 60 seconds when read aloud at a natural pace\n- Have a hook in the first 3 seconds (the first sentence must do the work)\n- End with a single line of advice the viewer can act on today\n- Be three paragraphs maximum, written for spoken delivery, not reading\n\nMix formats:\n- 8 \"did you know\" insight videos (lead with a counter-intuitive stat or claim)\n- 8 \"common mistake\" videos (lead with the wrong thing most people do)\n- 8 \"do this instead\" videos (lead with a specific alternative)\n\nNo music suggestions, no on-screen text suggestions, no production notes.\nJust the spoken script.\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 5 · SEO landing pages"
+        },
+        {
+          "type": "markdown",
+          "content": "Three to five distinct vertical-specific landing pages. The compounding organic traffic asset."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "For the methodology below, identify the three to five distinct niches or\nverticals the methodology applies to most strongly. For each, produce an\nSEO landing page brief:\n\n- Primary keyword (long-tail, UK-focused, commercial intent)\n- Three to five secondary keywords\n- H1, H2 structure (six to eight H2s)\n- The angle that makes this version of the methodology specific to this\n  niche (not just \"for X firms\" tacked on the front)\n- The single proof point that's most credible to this audience\n- The right CTA (book, download, audit, contact)\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Extraction prompt 6 · Lead magnet"
+        },
+        {
+          "type": "markdown",
+          "content": "One downloadable asset. Establishes authority without giving away the entire system."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Design a single lead magnet from the methodology below. It should:\n- Be downloadable in 5 minutes of reading\n- Solve one specific problem the methodology addresses\n- Establish the consultant's authority without giving away the entire system\n- End with a clear path to the paid engagement (audit, scoping call, project)\n\nOutput:\n- Title (specific, benefit-led)\n- One-paragraph promise\n- Full outline (sections + 2-3 bullet points per section)\n- Sample of the opening 200 words to confirm the voice is right\n\nMethodology:\n[paste methodology document]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The cadence that compounds"
+        },
+        {
+          "type": "markdown",
+          "content": "You don't ship all 60+ pieces in week one. You ship on a cadence the audience can keep up with."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "WEEK 1  ·  Front-load"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Lead magnet live. First SEO landing page live. First blog post published. Three LinkedIn posts."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "WEEKS 2-3  ·  Cadence locks in"
+                },
+                {
+                  "type": "markdown",
+                  "content": "One LinkedIn per weekday. First email newsletter goes out. Three short-form videos."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "WEEK 4  ·  Second cycle"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Second blog post. Second SEO landing page. Three more videos. LinkedIn continues at one per weekday."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "MONTHS 2-6  ·  Compound"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Steady cadence. One blog every three weeks. One email per cycle. One LinkedIn per weekday. Three videos per blog. Lead magnet refreshed in month four."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#A14809"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "The compounding effect kicks in around month three. By month six, someone landing on one blog post finds five more relevant pieces from it. That's the whole game."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What to do yourself, what to automate"
+        },
+        {
+          "type": "markdown",
+          "content": "The temptation is to automate everything. Don't."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Always you"
+                },
+                {
+                  "type": "bullet_list",
+                  "items": [
+                    "The methodology document (it's the source of truth, must be yours)",
+                    "The voice editing pass on every piece (5 to 10 minutes per piece)",
+                    "All replies to comments and DMs",
+                    "The actual consulting delivery"
+                  ]
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#A14809"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "AI does the lifting"
+                },
+                {
+                  "type": "bullet_list",
+                  "items": [
+                    "First drafts of every format",
+                    "The mechanical extraction (six prompts, six outputs)",
+                    "The repurposing (blog → video script, blog → LinkedIn)",
+                    "The SEO research (keyword expansion, related queries)"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "The split is roughly 80% AI, 20% you. The 20% is what makes it not sound like AI. Skip it and the whole system reads as generic."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "When this stops working"
+        },
+        {
+          "type": "markdown",
+          "content": "The system has predictable failure modes. Watch for them."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "STAGNATION"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Your methodology stops evolving. Six months of content from one framework is fine. Eighteen months gets repetitive. Develop the next layer or shift focus."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "POSTING TO POST"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Shipping content with nothing new to say. The audience disengages faster than they engaged. **Better to pause than to coast.**"
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "AUDIENCE DRIFT"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Followers have broadened past what the framework speaks to. Broaden the framework, or focus harder."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#A14809"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a second opinion on whether your methodology is crisp enough to be the seed for this system?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute scoping call](https://chrisgarlick.com/contact). I'll read your methodology doc beforehand and tell you whether it's ready, what's missing, and where the highest-leverage extraction would start. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for independent consultants and solo operators. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

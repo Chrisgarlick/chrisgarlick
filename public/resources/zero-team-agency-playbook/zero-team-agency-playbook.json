@@ -1,0 +1,749 @@
+{
+  "frontmatter": {
+    "title": "The Zero-Team Agency Playbook",
+    "subtitle": "First client to £10k/month using the small-team-with-AI-stack pattern",
+    "author": "Chris Garlick",
+    "recipient": "Solo-Founder Agencies",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Premise"
+        },
+        {
+          "type": "markdown",
+          "content": "How to build an AI-enabled agency that delivers like a five-person team, without hiring one. The operational stack, the templates, and the pricing maths I use with solo-founder agency clients."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The model"
+            },
+            {
+              "type": "markdown",
+              "content": "Not *\"AI replaces your team.\"* It's *\"you + a thoughtful stack does the work a five-person team used to.\"*"
+            },
+            {
+              "type": "blockquote",
+              "text": "The shape of work changed in 2025. Onboarding, ad copy, funnel pages, reporting and outreach all moved from \"needs a human\" to \"needs a human reviewer at the end of an automated pipeline.\" For solo founders, this changes the maths on starting an agency completely."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The shift, in plain numbers"
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "20pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Old model"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Five-person agency team. Junior strategist, copywriter, account manager, ad ops, sales setter. Loaded UK cost including tools, software, employer NI and overhead:"
+                },
+                {
+                  "type": "blockquote",
+                  "text": "£8,000 to £12,000 per month"
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "20pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "New model"
+                },
+                {
+                  "type": "markdown",
+                  "content": "One founder plus an AI stack. Same outputs. Slightly slower on edge cases, much faster on standard work. Loaded cost:"
+                },
+                {
+                  "type": "blockquote",
+                  "text": "£200 to £500 per month"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#0F60C4"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "The work itself doesn't get cheaper. **The overhead does.** That's the entire business case. Margin that used to fund five salaries now sits with the founder. Or, more usefully, it funds the early years when you're under-charging on purpose to land the first ten clients."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The stack"
+        },
+        {
+          "type": "markdown",
+          "content": "The toolkit changes every six months but the structure doesn't. Six categories, each with one primary tool."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "1. ONBOARDING + CONTRACTS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "One tool takes a discovery call transcript and produces the welcome pack: signed contract, scoped SoW, kickoff schedule, comms template."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "2. AD + FUNNEL COPY"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Variants at scale, not just first drafts. Ten ad variants per campaign brief: hooks, CTAs, audience framings. Run them, kill losers fast, keep winners."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "3. FUNNEL PAGES"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Same prompt structure produces long-form landing page, short-form mobile version, email opt-in version. One brief, three formats, ten minutes."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "4. REPORTING"
+                },
+                {
+                  "type": "markdown",
+                  "content": "The boring monthly report becomes a five-minute job. Data piped through a template, AI writes the insights paragraph, you check the numbers haven't done anything weird, ship."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "5. COLD OUTREACH"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Personalised first lines at scale. Agent reads the prospect's website or LinkedIn, writes one specific opening sentence, slots it into a sequence. **3x to 5x** reply rate vs generic templates."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "6. BOOKING + FOLLOW-UP"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Calendly plus a follow-up sequence written once and triggered automatically. Day 3, day 10, day 21. All automated."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The onboarding template"
+        },
+        {
+          "type": "markdown",
+          "content": "This is the asset that compounds the most. Build it once, refine it every five clients, and your \"I've got a new client starting Monday\" moment becomes a 30-minute job."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Structure"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**Brief intake form** the client fills before kickoff. Eight to twelve questions: goals, audience, deliverables, brand assets, calendars, access. Nothing should be guessed at later.",
+                "**Auto-generated contract and SoW** produced from the brief plus your standard terms.",
+                "**Welcome email sequence** that introduces you, sets expectations, and tells them what's happening in week one.",
+                "**Kickoff meeting agenda** generated from the brief, with the right questions for their specific situation.",
+                "**Slack or shared workspace** spun up with the right folders and the right access already configured."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "FIRST CLIENT"
+                },
+                {
+                  "type": "markdown",
+                  "content": "A day to build the template properly. That's an investment, not the cost of doing business."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#0F60C4"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "CLIENT TWO ONWARDS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Thirty minutes. Clone the template, fill the variables, fire the welcome sequence."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The delivery model"
+        },
+        {
+          "type": "markdown",
+          "content": "The mistake most solo agency founders make is delivering bespoke for every client. Bespoke doesn't scale."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            4,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "18pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Productised core"
+                },
+                {
+                  "type": "markdown",
+                  "content": "The thing every client gets, exactly the same way, every time. **This is what the AI stack delivers.** Roughly 80% of delivery."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "18pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Bespoke"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**20%.** Your judgment, client-specific recs, strategy. Your high-leverage hour."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#7F1D1D",
+          "text_color": "#FEF2F2",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "If it's flipped the other way, you're building a job, not a business."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Reporting cadence"
+        },
+        {
+          "type": "markdown",
+          "content": "The number-one thing that makes a solo agency look amateur is bad reporting. Inconsistent format, late, missing context, no narrative."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "WEEKLY"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Short Slack update. Auto-generated from this week's metrics, edited by you in five minutes. **Three lines:** what happened, what's next, what we need from you."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "MONTHLY"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Proper report. Branded, in their colours, **insights not just numbers.** AI drafts from the data. You add strategic context. Twenty minutes."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "QUARTERLY"
+                },
+                {
+                  "type": "markdown",
+                  "content": "The actual conversation. In person or on Zoom, no slides. The numbers go in an email afterwards."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The outreach cadence"
+        },
+        {
+          "type": "markdown",
+          "content": "If you're starting from zero clients, you need to be doing personalised cold outreach for the first six months. Not generic sequences. Specific to the prospect, sent at a sustainable cadence."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The 5-step outreach model"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "Build a list of 200 ideal prospects. Same vertical, same operating model, same approximate size.",
+                "Agent enriches each row with one specific personalisation note: something true about their business that a real human would notice.",
+                "Send 10 to 15 per day. Not 200. **Burnout pace is also throttle pace.**",
+                "Three-touch sequence: opener, follow-up, closing-the-loop.",
+                "Reply tracking goes into a simple spreadsheet or CRM. Anyone who replies gets a real human conversation, not another automation."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "UK compliance note"
+            },
+            {
+              "type": "markdown",
+              "content": "Under PECR, B2B cold outreach has a *legitimate interest* basis as long as the recipient could reasonably expect contact about your services. Don't scrape consumer data. Don't ignore unsubscribe requests. Don't use a sender domain that looks like a one-shot mailer. The compliance overhead is real but manageable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "When this breaks (when to actually hire)"
+        },
+        {
+          "type": "markdown",
+          "content": "The model is not \"never hire anyone.\" It's *\"don't hire until the maths obviously demands it.\"*"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The signals it's time"
+            },
+            {
+              "type": "bullet_list",
+              "items": [
+                "You're routinely doing 60-hour weeks AND the bottleneck is bespoke client work, not productised delivery",
+                "A single client is 40%+ of revenue (concentration risk; a hire reduces this by freeing you to chase the next)",
+                "A specific repeatable task (video editing, account management) is consuming 20+ hours a week and a £30-40k specialist would clear it"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The hire-order rule"
+            },
+            {
+              "type": "markdown",
+              "content": "Hire for the highest-leverage repeatable task first. **Account management before strategy. Production before strategy.** Strategy is the last thing you hire for, and only when you genuinely don't want to do it any more."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The first 90 days"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "WEEKS 1-2  ·  Build the stack"
+            },
+            {
+              "type": "markdown",
+              "content": "Don't sign clients yet. The onboarding template, the ad copy prompt, the reporting prompt. Test each one on a fake client to make sure the outputs are good."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "WEEKS 3-4  ·  Client one"
+            },
+            {
+              "type": "markdown",
+              "content": "Land them through your existing network or a single referral. **Charge them less than you should.** Use them to stress-test the stack. Fix everything that breaks."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "MONTH 2  ·  Clients two and three"
+            },
+            {
+              "type": "markdown",
+              "content": "Don't lower the price further. Iterate the stack based on what client one taught you."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "MONTH 3  ·  Cold outreach begins"
+            },
+            {
+              "type": "markdown",
+              "content": "By now your case study from client one is real. Target clients four to ten.\n\n**By month 6:** £5-8k MRR. **By month 12:** £10-20k MRR. If you're well behind those numbers it's the offer or the pricing, not the work."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#0F60C4"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a second opinion on your specific stack and where the leverage is?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute scoping call](https://chrisgarlick.com/contact). I'll tell you where the obvious wins are, what you're over-engineering, and whether the model fits your specific vertical. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI stacks for UK solo-founder agencies. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,718 @@
+{
+  "frontmatter": {
+    "title": "The LLM Cheat Sheet 2026",
+    "subtitle": "Every model that matters, on a page. UK business edition.",
+    "author": "Chris Garlick",
+    "recipient": "UK Business Operators",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Field at a Glance"
+        },
+        {
+          "type": "markdown",
+          "content": "Closed-API frontier models and the open-source field that closed the gap in 2025. Price, strengths, gotchas, and when each one is the right pick for a UK business."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "How to use this sheet"
+            },
+            {
+              "type": "markdown",
+              "content": "This is the companion to the article *How to Choose an LLM for Business Use (UK 2026)*. Read that for the reasoning. Keep this for the reference. Each model has its own one-page cheat: price, what it's best at, where it fails, when it's the right pick."
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "SECTION 1"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Closed-API frontier models.** Hosted, billed per token, no infrastructure. The right choice when volume is low and engineering capacity is zero."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#7E1FE8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "SECTION 2"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Open-source, self-hosted.** Runs on your own GPU. Data residency is automatic. The right choice for regulated work and high volume."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Claude Sonnet 4.6 · Anthropic"
+        },
+        {
+          "type": "markdown",
+          "content": "The safest default for general UK SME work."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Price per million tokens",
+              "$3 in, $15 out"
+            ],
+            [
+              "Context window",
+              "200K (1M in beta)"
+            ],
+            [
+              "Best at",
+              "Coding, document work, low hallucination"
+            ],
+            [
+              "UK data residency",
+              "Via Azure UK or AWS Bedrock UK only"
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Pick when"
+            },
+            {
+              "type": "markdown",
+              "content": "You want the safest default for general UK SME work. Pair with Haiku 4.5 for cheap calls in a hybrid setup."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Claude Opus 4.7 · Anthropic"
+        },
+        {
+          "type": "markdown",
+          "content": "The frontier reasoning model. Wasted on anything that doesn't need it."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Price per million tokens",
+              "$5 in, $25 out"
+            ],
+            [
+              "SWE-bench Verified",
+              "83.5% (leading the field)"
+            ],
+            [
+              "Best at",
+              "Hardest coding tasks, lowest hallucination rate (36%)"
+            ],
+            [
+              "UK data residency",
+              "Via Azure UK or AWS Bedrock UK only"
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Pick when"
+            },
+            {
+              "type": "markdown",
+              "content": "The task genuinely needs frontier reasoning. **Not a sensible default.** Wasted on classification or simple drafting."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "GPT-5.5 · OpenAI"
+        },
+        {
+          "type": "markdown",
+          "content": "Best agentic ecosystem. Hallucinates more than Claude on long-form writing."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Price per million tokens",
+              "$3 in, $15 out (50% via the Batch API)"
+            ],
+            [
+              "Terminal-Bench",
+              "82.7% (leading the field)"
+            ],
+            [
+              "Best at",
+              "Agentic tool use, multi-hour autonomous runs, deepest ecosystem (function calls, Codex)"
+            ],
+            [
+              "UK data residency",
+              "Via Azure OpenAI UK region"
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Pick when"
+            },
+            {
+              "type": "markdown",
+              "content": "The workload is agent loops, function calling, or Codex-shaped work."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Gemini 3.1 Pro and Flash · Google"
+        },
+        {
+          "type": "markdown",
+          "content": "Best value of the frontier field. Native multimodal, biggest context window."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Price per million tokens",
+              "$1.25 in / $12 out (Pro). Flash ~10x cheaper."
+            ],
+            [
+              "Context window",
+              "2M native"
+            ],
+            [
+              "Best at",
+              "Multimodal work, huge contexts, cheapest of the frontier models"
+            ],
+            [
+              "UK data residency",
+              "EU region via Vertex AI. No UK-specific region."
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Pick when"
+            },
+            {
+              "type": "markdown",
+              "content": "Volume is high and tasks are bulk: classification, extraction, summarisation. Flash for cheap, Pro for hard cases."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "DeepSeek V4 · DeepSeek (China)"
+        },
+        {
+          "type": "section",
+          "background": "#7F1D1D",
+          "text_color": "#FEF2F2",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Read this section carefully"
+            },
+            {
+              "type": "markdown",
+              "content": "There are two ways to use this model and they have **completely different risk profiles.**"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Price per million tokens",
+              "$0.44 in, $0.87 out"
+            ],
+            [
+              "Quality",
+              "Roughly 10x cheaper than Claude Sonnet at similar quality on many tasks"
+            ]
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "VENDOR API (HOSTED)"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Do not use for UK business data.** Prompts transit to servers in China. No GDPR rep in the EU. The hosted database leaked publicly in early 2025."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#7E1FE8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "SELF-HOSTED WEIGHTS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Safe.** MIT licence. Weights are static and cannot phone home. Run on your own UK or EU GPU box."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Pick when"
+            },
+            {
+              "type": "markdown",
+              "content": "You self-host the open weights AND your use case isn't politically sensitive. **Never call the vendor-hosted API for client data.**"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Open-source field · The big picture"
+        },
+        {
+          "type": "markdown",
+          "content": "Run on your own GPU. Data residency is automatic, not a contractual promise. The right choice for regulated UK firms (legal, financial services, accountancy, NHS-adjacent) and for any business processing more than 50 million tokens a month."
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Llama 4 Maverick · Meta (Apache 2.0)"
+        },
+        {
+          "type": "markdown",
+          "content": "The closest equivalent to *Claude but on your hardware*. The safest open-source default for UK regulated work."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Architecture",
+              "400B total parameters, 17B active (Mixture-of-Experts)"
+            ],
+            [
+              "Hardware needed",
+              "2 to 4 x A100 or H100"
+            ],
+            [
+              "Best at",
+              "General reasoning, long agent runs, English-first business work"
+            ],
+            [
+              "UK data residency",
+              "Wherever your GPU box lives"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Qwen 3.5 · Alibaba (Apache 2.0)"
+        },
+        {
+          "type": "markdown",
+          "content": "Best open-source coding model. Most-downloaded family in 2025. Avoid for any workflow touching geopolitical content."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Architecture",
+              "397B total, 17B active (Mixture-of-Experts)"
+            ],
+            [
+              "Adoption",
+              "700M+ downloads on Hugging Face, most-downloaded family in 2025"
+            ],
+            [
+              "Best at",
+              "Coding, maths, instruction following. Wins several 2026 benchmarks outright."
+            ],
+            [
+              "UK data residency",
+              "Safe when self-hosted from open weights. Never use the hosted API."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Mistral Large 3 · Mistral (EU, Apache 2.0)"
+        },
+        {
+          "type": "markdown",
+          "content": "The strongest procurement story of the open-source field. The easiest \"yes\" from a UK or EU compliance team."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Architecture",
+              "675B total, 41B active (Mixture-of-Experts)"
+            ],
+            [
+              "Hardware needed",
+              "4 to 8 x A100 or H100 for full quality"
+            ],
+            [
+              "Best at",
+              "European-language work, GDPR-friendly procurement story, document RAG"
+            ],
+            [
+              "UK data residency",
+              "Native. EU-headquartered vendor."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Gemma 4 and smaller open models"
+        },
+        {
+          "type": "markdown",
+          "content": "Pick when the task is repetitive, narrow and high-volume. Fine-tune on 10,000 of your own examples. Beats frontier models on the specific task at 1% of the runtime cost."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Field",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Sizes",
+              "7B to 70B parameters"
+            ],
+            [
+              "Hardware needed",
+              "A single GPU, often a consumer card"
+            ],
+            [
+              "Best at",
+              "Narrow fine-tuned tasks: extraction, classification, format conversion"
+            ],
+            [
+              "UK data residency",
+              "Native. Cheap to run anywhere."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The honest summary"
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Most UK SMEs (<10M tokens/month)"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Frontier API as daily driver (Claude Sonnet 4.6 default, GPT-5.5 for agents, Gemini Flash for price headroom), plus a cheap fallback for high-volume bulk tasks."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#7E1FE8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Regulated work or >50M tokens/month"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Self-hosted open-source on UK or EU infrastructure. Not the \"free LLM\" of three years ago. Production-grade systems that close the quality gap and never let your data leave."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The two mistakes"
+            },
+            {
+              "type": "markdown",
+              "content": "**Picking a model before defining the workflow.** Always start with the workflow. The model is the last decision, not the first."
+            },
+            {
+              "type": "markdown",
+              "content": "**Treating model choice as one-time.** In 2026 the right answer is almost always a *routing layer*: frontier API for the hard 20%, cheap or self-hosted for the predictable 80%."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#7E1FE8"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a second opinion on which model setup fits the work you're actually trying to ship?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute scoping call](https://chrisgarlick.com/contact). I'll give you the honest answer, including when that answer is *\"you don't need any of this yet.\"*"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for UK businesses. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

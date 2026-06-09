@@ -1,27 +1,56 @@
 /**
- * Push a markdown blog post (with frontmatter) into Kritano as a DRAFT article.
+ * Push a markdown blog post (with frontmatter) into Kritano.
  *
- * Run: JWT_TOKEN=<token> bun scripts/draft-blog-from-md.mjs docs/trend/2026-05-15-data-extraction-uk-guide/blog.md
+ * Default behaviour: creates a DRAFT.
+ * Pass --publish (or set STATUS=published) to publish immediately.
  *
- * Supports a small markdown subset that matches what /trend blogs produce:
- *   - # / ## / ### headings
- *   - paragraphs with **bold**, *italic*, and [link](url) inline
- *   - - bullet lists
- *   - --- thematic breaks (rendered as TipTap horizontal rule)
- *   - HTML comments stripped
+ * Usage:
+ *   node scripts/draft-blog-from-md.mjs <path-to-blog.md>                       # create draft
+ *   node scripts/draft-blog-from-md.mjs <path-to-blog.md> --publish             # create + publish
+ *   node scripts/draft-blog-from-md.mjs <path-to-blog.md> --update <article-id> # PATCH existing
+ *
+ * JWT_TOKEN must be set in .env or env.
+ *
+ * Markdown subset supported (matches what /trend blogs produce):
+ *   # / ## / ### headings (H1 is skipped — comes from frontmatter title)
+ *   paragraphs with **bold**, *italic*, and [link](url) inline
+ *   - bullet lists
+ *   1. ordered lists
+ *   --- thematic breaks (rendered as TipTap horizontal rule)
+ *   | pipe | tables | (GFM with header + separator + body rows)
+ *   <!-- comments --> stripped
+ *
+ * Required frontmatter:
+ *   title, slug, description, keyword, secondary_keywords (array)
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 
+// Auto-load JWT from .env if not in process env
+if (!process.env.JWT_TOKEN && fs.existsSync('.env')) {
+  for (const line of fs.readFileSync('.env', 'utf8').split('\n')) {
+    const m = line.match(/^JWT_TOKEN=(.+)$/)
+    if (m) { process.env.JWT_TOKEN = m[1].trim(); break }
+  }
+}
+
 const JWT = process.env.JWT_TOKEN
 const BASE = process.env.CMS_API_BASE || 'https://chrisgarlick.com/api'
-if (!JWT) { console.error('Set JWT_TOKEN'); process.exit(1) }
+if (!JWT) { console.error('Set JWT_TOKEN (in .env or env)'); process.exit(1) }
 
 const auth = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${JWT}` }
 
-const mdPath = process.argv[2]
-if (!mdPath) { console.error('Usage: draft-blog-from-md.mjs <path-to-blog.md>'); process.exit(1) }
+const args = process.argv.slice(2)
+const SHOULD_PUBLISH = args.includes('--publish') || process.env.STATUS === 'published'
+const updateIdx = args.indexOf('--update')
+const UPDATE_ID = updateIdx >= 0 ? args[updateIdx + 1] : null
+const mdPath = args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--update')
+
+if (!mdPath) {
+  console.error('Usage: node scripts/draft-blog-from-md.mjs <path-to-blog.md> [--publish] [--update <id>]')
+  process.exit(1)
+}
 const raw = fs.readFileSync(path.resolve(mdPath), 'utf8')
 
 // ─── frontmatter parser ────────────────────────────────────────────────────
@@ -226,7 +255,7 @@ console.log(`Posting "${meta.title}" as DRAFT...`)
 console.log(`Slug: ${meta.slug}`)
 console.log(`Body blocks: ${tiptap.content.length}`)
 
-const STATUS = process.env.STATUS || 'draft'
+const STATUS = SHOULD_PUBLISH ? 'published' : 'draft'
 
 const payload = {
   title: meta.title,
@@ -245,28 +274,51 @@ const payload = {
   },
 }
 
-const res = await fetch(`${BASE}/article`, {
-  method: 'POST',
-  headers: auth,
-  body: JSON.stringify(payload),
-})
-if (!res.ok) {
-  const err = await res.text()
-  console.error(`HTTP ${res.status}: ${err.slice(0, 500)}`)
-  process.exit(1)
+let articleId
+if (UPDATE_ID) {
+  // PATCH existing article (body + seo + excerpt)
+  console.log(`\nUpdating existing article ${UPDATE_ID}...`)
+  const patchPayload = { body: tiptap, seo: payload.seo, excerpt: payload.excerpt }
+  const res = await fetch(`${BASE}/article/${UPDATE_ID}`, {
+    method: 'PATCH',
+    headers: auth,
+    body: JSON.stringify(patchPayload),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error(`PATCH HTTP ${res.status}: ${err.slice(0, 500)}`)
+    process.exit(1)
+  }
+  const data = await res.json()
+  articleId = data.data.id
+  console.log(`✓ Article updated (${articleId})`)
+  console.log(`  Status: ${data.data.status}`)
+  console.log(`  Body blocks now: ${data.data.body?.content?.length}`)
+} else {
+  // POST new article
+  const res = await fetch(`${BASE}/article`, {
+    method: 'POST',
+    headers: auth,
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    console.error(`HTTP ${res.status}: ${err.slice(0, 500)}`)
+    process.exit(1)
+  }
+  const data = await res.json()
+  articleId = data.data.id
+  console.log(`\n✓ Article created (${articleId})`)
+  console.log(`  Slug: ${data.data.slug}`)
+  console.log(`  Status (as returned): ${data.data.status}`)
 }
-const data = await res.json()
-const newId = data.data.id
-console.log(`\n✓ Article created (${newId})`)
-console.log(`  Slug: ${data.data.slug}`)
-console.log(`  Status (as returned): ${data.data.status}`)
 
 // Kritano typically ignores `status` on POST and creates as draft. Call the
 // explicit publish endpoint if the caller asked for publish.
 if (STATUS === 'published') {
-  const pub = await fetch(`${BASE}/article/${newId}/publish`, { method: 'POST', headers: auth })
+  const pub = await fetch(`${BASE}/article/${articleId}/publish`, { method: 'POST', headers: auth })
   if (pub.ok) console.log('  ✓ Published via /publish endpoint')
   else console.error(`  ✗ Publish endpoint failed: HTTP ${pub.status}`)
 }
-console.log(`  Admin URL: https://chrisgarlick.com/admin/article/${newId}`)
-console.log(`  Live URL (after build): https://chrisgarlick.com/article/${data.data.slug}`)
+console.log(`  Admin URL: https://chrisgarlick.com/admin/article/${articleId}`)
+console.log(`  Live URL (after build): https://chrisgarlick.com/article/${meta.slug}`)

@@ -1,4 +1,4 @@
-<!-- Version: 2 | Department: seo | Updated: 2026-05-15 -->
+<!-- Version: 3 | Department: seo | Updated: 2026-06-08 (Cluster K added) -->
 
 # Topic Clusters
 
@@ -191,6 +191,105 @@ Each one, when triggered, gets the same cluster shape: pillar + 5-8 supporting a
 
 ---
 
+## Cluster K — Operating-Model Axis (NEW, /for/)
+
+**Pillars (5):**
+- `/for/agency-starters` ✓
+- `/for/consultants` ✓
+- `/for/freelancers` ✓
+- `/for/solo-operators` ✓
+- `/for/tradespeople` ✓
+- `/for` ✓ (directory landing)
+
+Funnel: MOFU + BOFU at each pillar. Each pillar has a gated `/resources/<slug>` lead magnet attached.
+
+This axis is **orthogonal** to Clusters F/G/H/I (the sector axis). A prospect can legitimately convert through either path. Cross-link map at the bottom of this doc.
+
+### Cluster K.1 — Agency Starters (`/for/agency-starters`)
+
+Focus keyword: "solo agency UK" / "AI agency stack solo founder"
+Gated resource: `/resources/zero-team-agency-playbook`
+
+Cluster pages:
+
+1. ☐ AI Agency Stack: What a Solo Founder Actually Needs → `/blog/ai-agency-stack-solo-founder` (MOFU, P1)
+2. ☐ First 5 Clients Without a Team → `/blog/first-5-clients-solo-agency` (MOFU, P1)
+3. ☐ Productised vs Hourly Agency in 2026 → `/blog/productised-vs-hourly-agency` (MOFU comparison, P1)
+4. ☐ When Should a Solo-Founder Agency Make Its First Hire? → `/blog/solo-agency-first-hire` (MOFU, P2)
+5. ☐ AI Onboarding for Agency Clients → `/blog/ai-onboarding-agency-clients` (MOFU, P2)
+6. ☐ From Freelancer to Agency: When and How → `/blog/freelancer-to-agency-transition` (TOFU/MOFU, P3)
+
+### Cluster K.2 — Consultants (`/for/consultants`)
+
+Focus keyword: "AI for consultants" / "productise consulting"
+Gated resource: `/resources/one-framework-six-months-of-content`
+
+Cluster pages:
+
+1. ☐ One Framework, Six Months of Content (The Extraction System) → `/blog/one-framework-six-months-content` (BOFU, P1)
+2. ☐ AI Thought Leadership Without Ghostwriters → `/blog/ai-thought-leadership-consultants` (MOFU, P1)
+3. ☐ From 1-to-1 to 1-to-Many: Scaling Consulting with AI → `/blog/scale-consulting-with-ai` (MOFU, P1)
+4. ☐ SEO Landing Pages for Niche Consulting Practices → `/blog/consulting-seo-landing-pages` (MOFU, P2)
+5. ☐ Repurpose a Workshop into 10 Content Pieces → `/blog/repurpose-workshop-content` (MOFU how-to, P2)
+6. ☐ Consulting Methodology Documentation Using AI → `/blog/document-consulting-methodology` (TOFU/MOFU, P3)
+
+### Cluster K.3 — Freelancers (`/for/freelancers`)
+
+Focus keyword: "AI for freelancers" / "freelancer proposal template"
+Gated resource: `/resources/freelancers-ai-proposal-pack`
+
+Cluster pages:
+
+1. ☐ The AI Proposal Pack for UK Freelancers → `/blog/ai-proposal-pack-freelancers` (BOFU, P1)
+2. ☐ Brief-to-Proposal AI: The Prompt That Works → `/blog/brief-to-proposal-ai-prompt` (MOFU how-to, P1)
+3. ☐ Freelance Client Onboarding Automation → `/blog/freelance-client-onboarding-ai` (MOFU, P1)
+4. ☐ Scaling Freelance Income Without Becoming an Agency → `/blog/scale-freelance-without-agency` (MOFU, P2)
+5. ☐ LinkedIn for Freelancers: AI-Driven Cadence → `/blog/freelance-linkedin-ai-cadence` (MOFU, P2)
+6. ☐ Freelance vs Productised Service: 2026 Math → `/blog/freelance-vs-productised` (TOFU/MOFU comparison, P3)
+
+### Cluster K.4 — Solo Operators (`/for/solo-operators`)
+
+Focus keyword: "AI for solo operators UK" / "one person business AI"
+Gated resource: `/resources/ai-stack-under-two-hours-a-day`
+
+Cluster pages:
+
+1. ☐ The Solo Operator AI Stack: Two Hours of Admin a Day → `/blog/solo-operator-ai-stack` (BOFU, P1)
+2. ☐ Voice Note to Week of Content (The Pipeline) → `/blog/voice-note-to-content-pipeline` (MOFU how-to, P1)
+3. ☐ Automated Google Review Requests for UK Small Business → `/blog/automated-google-review-requests-uk` (MOFU, P1)
+4. ☐ Solo Business Case Studies from a 5-Min Debrief → `/blog/case-studies-from-debrief` (MOFU, P2)
+5. ☐ Monthly SEO Blog Post in 30 Minutes (Solo Operator Edition) → `/blog/monthly-seo-post-30-minutes` (TOFU/MOFU, P2)
+6. ☐ One-Person Business Tools Comparison: 2026 → `/blog/one-person-business-tools-2026` (MOFU comparison, P3)
+
+### Cluster K.5 — Tradespeople (`/for/tradespeople`)
+
+Focus keyword: "AI for tradespeople UK" / "AI for trades"
+Gated resource: `/resources/5-ai-tools-tradespeople-2026`
+
+Cluster pages:
+
+1. ☐ 5 AI Tools Every UK Tradesperson Should Use in 2026 → `/blog/5-ai-tools-tradespeople-2026` (BOFU, P1)
+2. ☐ AI for Plumbers: Marketing Without an Agency → `/blog/ai-for-plumbers-uk` (MOFU, P1)
+3. ☐ AI for Electricians: Posts, Reviews, Follow-ups → `/blog/ai-for-electricians-uk` (MOFU, P1)
+4. ☐ AI for Builders: Before/After Reels from Your Phone → `/blog/ai-for-builders-uk` (MOFU, P1)
+5. ☐ Checkatrade SEO: Beyond the Profile → `/blog/checkatrade-seo` (MOFU, P2)
+6. ☐ Google Business Profile Automation for Trades → `/blog/gbp-automation-trades` (MOFU, P2)
+7. ☐ Seasonal Marketing Calendar for UK Trades → `/blog/seasonal-marketing-trades-uk` (MOFU, P3)
+
+**Cluster K internal linking:**
+
+- Every cluster page links UP to its `/for/<slug>` pillar
+- Pillars link DOWN to all their cluster pages (via a new "Deep dives" block to add in `ForPage.astro`)
+- Cross-axis links (see cross-link map at bottom of this doc):
+  - `/for/solo-operators` ↔ `/industries/ai-for-law-firms`
+  - `/for/agency-starters` ↔ `/industries/ai-for-agencies`
+  - `/for/consultants` ↔ `/industries/ai-for-agencies`
+  - `/for/freelancers` ↔ `/industries/ai-for-agencies`
+- Sibling `/for/` pages link across (already in place via `siblings` prop)
+- Gated `/resources/<slug>` pages link UP to their `/for/` pillar
+
+---
+
 ## Cluster J — Conversion / Trust assets (BOFU support)
 
 These aren't a topic cluster in the traditional sense, but they support every other cluster's BOFU conversion. Owned by Content + Marketing.
@@ -206,31 +305,49 @@ These aren't a topic cluster in the traditional sense, but they support every ot
 
 ---
 
-## Cross-cluster internal-link map
+## Cross-cluster internal-link map (v3 - 2026-06-08, with /for/ axis)
 
 ```
-                       /industries (directory)
-                       │
-        ┌──────────────┼──────────────┬──────────────┐
-        ▼              ▼              ▼              ▼
-    Law Firms     Accountancy      Agencies      Future
-    (Cluster F)   (Cluster G)      (Cluster H)   (Cluster I)
-        │              │              │
-        │              │              │
-        └──────┬───────┴───────┬──────┘
-               │               │
-               ▼               ▼
-        /services/ai-implementation (Cluster A pillar)
-               │
-        ┌──────┼──────────────┬──────────────┐
-        ▼      ▼              ▼              ▼
-   Workflow  AI Agents   Data Extraction  AI Engineering
-   (B)       (C)         (D)              (E)
-                                          │
-                                          ▼
-                                   RAG + LLM choice
-                                   + private AI articles
+                              chrisgarlick.com
+                                     │
+              ┌──────────────────────┴──────────────────────┐
+              ▼                                              ▼
+      /industries (directory)                          /for (directory)
+              │                                              │
+   ┌──────────┼──────────┬──────────┐         ┌──────────┬──┼──┬──────────┬──────────┐
+   ▼          ▼          ▼          ▼         ▼          ▼  ▼  ▼          ▼          ▼
+ Law      Accountancy  Agencies  Future   Agency      Consult Free  Solo      Trades
+ Firms                                    starters             lancers Op
+  (F)        (G)        (H)       (I)      (K.1)        (K.2)  (K.3)  (K.4)    (K.5)
+   │          │          │                   │           │      │      │        │
+   └──────┬───┴────┬─────┴─────────────┐    └─────┬─────┴──────┴──────┴────────┘
+          │        │                   │          │
+          ▼        ▼                   ▼          ▼
+   /services/ai-implementation   (cross-axis: K.4 ↔ F, K.1/K.2/K.3 ↔ H)
+                  (Cluster A)
+                  │
+   ┌──────┼──────┼──────┐
+   ▼      ▼      ▼      ▼
+ Workflow  Agents  Data   AI Eng
+   (B)     (C)    (D)     (E)
+                          │
+                          ▼
+                   RAG + LLM choice
+                   + private AI articles
 ```
+
+**Critical edges:**
+- Every industry page (F/G/H) must link to at least one outcome service (B/C/D) and to AI Engineering (E)
+- Every `/for/` pillar (K.1-K.5) must link to at least one outcome service AND to its cross-axis industry partner
+- AI Engineering (E) should link to industry pages that have regulatory data requirements (Law, Accountancy)
+- AI Implementation pillar (A) is the hub everything funnels to for BOFU conversion
+- `/industries` directory must link to all four industry pillars
+- `/for` directory must link to all five operating-model pillars
+- Cross-axis pairings (must link both ways):
+  - K.4 (solo operators) ↔ F (law firms) - sole-practice
+  - K.1 (agency starters) ↔ H (agencies) - solo founder to team
+  - K.2 (consultants) ↔ H (agencies) - consultancy/agency overlap
+  - K.3 (freelancers) ↔ H (agencies) - freelancers serving agencies
 
 **Critical edges:**
 - Every industry page (F/G/H) must link to at least one outcome service (B/C/D) and to AI Engineering (E)
@@ -242,7 +359,7 @@ These aren't a topic cluster in the traditional sense, but they support every ot
 
 ## Content priority for next 90 days
 
-**P1 — write before anything else (10 articles):**
+**P1 — write before anything else (13 articles):**
 1. AI Implementation Cost UK
 2. AI Consultant vs AI Agency UK
 3. Zapier vs Custom AI Automation
@@ -250,9 +367,12 @@ These aren't a topic cluster in the traditional sense, but they support every ot
 5. How to Choose an LLM for Business Use
 6. AI Document Automation for UK Solicitors
 7. AI Client Intake Automation for Law Firms
-8. AI Reporting Automation for UK Agencies
+8. ✓ AI Reporting Automation for UK Agencies (live: /article/ai-reporting-automation-agencies)
 9. AI for Xero Practices
 10. AI vs Hiring: UK Accountancy
+11. NEW: The AI Proposal Pack for UK Freelancers (K.3.1, pairs with gated resource)
+12. NEW: The Solo Operator AI Stack (K.4.1, pairs with gated resource)
+13. NEW: 5 AI Tools Every UK Tradesperson Should Use (K.5.1, pairs with gated resource)
 
 **P2 — next 90 days after P1 ships:**
 - The remaining MOFU comparisons (Claude vs Llama vs GPT, pgvector vs Qdrant, Custom AI Agent vs Chatbot)

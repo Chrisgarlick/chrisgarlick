@@ -222,6 +222,10 @@ export default defineConfig({
         summary:           textarea().maxLength(300),
         description:       richText(),
         markdownBody:      textarea(),
+        // Optional Typeset JSON layout. When populated, the PDF/DOCX render path
+        // sends this as `content` with `input_format: "json"`, bypassing the
+        // markdown path. Resources without a layoutJson keep using markdownBody.
+        layoutJson:        textarea().nullable(),
         // SEO keywords — comma-separated. `keywords` are 3–5 primary terms,
         // `secondaryKeywords` are 5–15 LSI / supporting terms. Both get
         // combined into the `<meta name="keywords">` tag at render time.

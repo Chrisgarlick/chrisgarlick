@@ -1,0 +1,793 @@
+{
+  "frontmatter": {
+    "title": "The Solo Operator AI Stack",
+    "subtitle": "Running a one-person business in under two hours of admin a day",
+    "author": "Chris Garlick",
+    "recipient": "Solo Operators",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Setup"
+        },
+        {
+          "type": "markdown",
+          "content": "The exact tools, workflows and weekly cadence I use with one-person businesses. By the end of week four you should be running everything outside of paid client work in under two hours a day."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The honest version"
+            },
+            {
+              "type": "markdown",
+              "content": "This isn't magic. It's the elimination of the four or five tasks that quietly eat your week without you noticing. Voice-note-to-content. Review chasing. Case study writing. Monthly SEO. Quote follow-ups. They don't take any single big block of time. They take 15 minutes here, 30 minutes there, plus the mental tax of *\"I should be doing that.\"* Cumulatively they cost six to ten hours a week."
+            },
+            {
+              "type": "blockquote",
+              "text": "You're not going to outwork the trap. You're going to set up systems that do the work in the background."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Before vs after the stack"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "System",
+            "Time you spend now",
+            "Time after the stack"
+          ],
+          "rows": [
+            [
+              "Weekly social content",
+              "2-3 hrs (when it happens at all)",
+              "10 mins a Monday"
+            ],
+            [
+              "Review requests",
+              "5 mins per client, often skipped",
+              "Zero, fully automated"
+            ],
+            [
+              "Case studies",
+              "2-3 hrs per project, usually never",
+              "15 mins per project"
+            ],
+            [
+              "Monthly blog post",
+              "Never",
+              "30 mins, once a month"
+            ],
+            [
+              "Quote follow-ups",
+              "10 mins per quote, often skipped",
+              "Zero, fully automated"
+            ],
+            [
+              "Inbox triage",
+              "30-45 mins a day",
+              "10 mins a day"
+            ]
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "TOTAL DAILY ADMIN"
+            },
+            {
+              "type": "markdown",
+              "content": "Roughly 90 minutes a day. The other six hours go back to paid work or to your evenings."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The stack (categories, not lock-in)"
+        },
+        {
+          "type": "markdown",
+          "content": "Listing categories rather than specific tools because the specific tools change every six months. The category is what matters."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Category",
+            "What it does",
+            "Example tools (2026)"
+          ],
+          "rows": [
+            [
+              "LLM assistant",
+              "The brain - drafts content, replies, summaries",
+              "Claude Sonnet 4.6, GPT-5.5"
+            ],
+            [
+              "Voice transcription",
+              "Voice notes become text fast",
+              "OtterAI, Whisper, Apple Voice Memos"
+            ],
+            [
+              "Scheduling",
+              "Auto-publishes social content",
+              "Buffer, Hootsuite, native scheduling"
+            ],
+            [
+              "Form-to-action",
+              "Form fills trigger sequences",
+              "Tally, Typeform, Fillout"
+            ],
+            [
+              "Email automation",
+              "Sequences, follow-ups, review chasing",
+              "Loops, MailerLite, Sender"
+            ],
+            [
+              "CRM-lite",
+              "Where leads live (don't over-build this)",
+              "Notion, Airtable, a single Google Sheet"
+            ]
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DONE RIGHT"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**£30 to £80** a month in tool subscriptions. Start at the bottom of every category."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DONE WRONG"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**£200+** a month. Every category at the top tier, before you have the workflow."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Workflow 1 · Voice-note to a week of content"
+        },
+        {
+          "type": "markdown",
+          "content": "The single highest-leverage workflow in the pack. One voice note on a Monday morning produces seven days of social posts. Ten minutes recording, ten minutes editing the drafts, the rest is automatic."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Setup (20 mins, one-off)"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "Pick a single platform you'll post to (Instagram, LinkedIn, or X, not all three at first).",
+                "Pick a posting cadence (one a day is plenty for most operators).",
+                "Set up a scheduling tool with the platform connected.",
+                "Build the system prompt below."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "The voice-note-to-week prompt"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are a content strategist for a solo operator in [your trade / business].\nThe voice note below is the operator thinking out loud about their week.\n\nTurn it into 7 social media posts for [Instagram / LinkedIn / X], one per\nday. Each post should:\n\n- Open with a specific hook in the first line\n- Be 60 to 150 words\n- Pull from a specific thing the operator actually said in the voice note,\n  never invent stories or claims\n- End with either a clear takeaway, a specific question to the reader,\n  or a soft call to action (book, follow, save)\n- Sound like the operator wrote it. Direct, no buzzwords, no \"leverage\".\n  UK English.\n\nMix the angles across the 7:\n- 2 specific tips or how-tos\n- 2 stories from real work\n- 1 contrarian observation\n- 1 question to the audience\n- 1 short, punchy one-liner\n\nVoice note transcript:\n[paste transcript]"
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "**Weekly loop:** Monday morning, 3-5 min voice note, run the prompt, edit each post in ~1 minute, schedule. Done for the week."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Workflow 2 · Automated review requests"
+        },
+        {
+          "type": "markdown",
+          "content": "The single highest-ROI automation. Every Google review compounds your local SEO. Most solo operators ask once and then never. This fixes it forever."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "SETUP (30 MINS)"
+                },
+                {
+                  "type": "ordered_list",
+                  "items": [
+                    "Build a form (Tally/Typeform): \"Job complete, final check.\"",
+                    "Three questions: star rating, open feedback, email.",
+                    "Connect to email automation with two branches.",
+                    "Trigger 48 hours after job completion."
+                  ]
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "THE TWO BRANCHES"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**4 or 5 stars** triggers a review-request email with a direct Google review link.\n\n**3 or below** sends an internal alert to you. No automated reply. You call them yourself."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "The 4-5 star branch email"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Subject: One quick favour, [First Name]\n\nHi [First Name],\n\nReally glad to hear it went well, thanks for the kind feedback.\n\nIf you've got 60 seconds, leaving a Google review would help a lot.\nIt's the single biggest thing that brings me new work from people in\nyour area.\n\nLink: [Google review link]\n\nThanks again,\n[You]"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#08743F"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "Every job that ends in a review makes the next ten jobs easier to find."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Workflow 3 · Case study from a 5-min debrief"
+        },
+        {
+          "type": "markdown",
+          "content": "The case study is the asset that closes future clients. You should have one per project. Most solo operators have zero because writing them is the kind of \"important not urgent\" work that never happens."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The 5-question debrief"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "What was the situation before we started?",
+                "What did we actually do?",
+                "What was the result, in numbers if possible?",
+                "What was the moment that mattered most?",
+                "Anything you'd want a future client like you to know?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "The debrief-to-case-study prompt"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are writing a case study for a solo operator's website. The transcript\nbelow is a 5-minute debrief with a recent client.\n\nProduce a case study of 600 to 900 words structured as:\n\n1. The client (one sentence on who they are, anonymised if needed)\n2. The situation before (their words, lightly tidied)\n3. The work (what was actually done, not jargon)\n4. The result (specific numbers or outcomes, never softened)\n5. The client's own words (one direct quote, pulled from the transcript)\n6. What this means for similar clients (one paragraph)\n\nVoice rules: direct, no marketing language, UK English. Read like a human\nwrote it, not a marketing agency.\n\nDebrief transcript:\n[paste transcript]"
+        },
+        {
+          "type": "markdown",
+          "content": "Edit in ten minutes, publish that night, schedule a social post linking to it the next day."
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Workflow 4 · Monthly SEO blog post"
+        },
+        {
+          "type": "markdown",
+          "content": "One blog post a month, from your own expertise. After a year, that's twelve indexable pages targeting specific search terms in your area. Compounding traffic."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "ONE-OFF SETUP"
+                },
+                {
+                  "type": "markdown",
+                  "content": "List ten questions clients actually ask you in the first call. **Real ones**, not assumed ones. These are your first ten blog post topics. Already buyer-intent keywords."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#08743F"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "MONTHLY LOOP (30 MINS)"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Pick the next question on the list. Voice note your answer for 2-3 minutes. Run the prompt. Edit. Schedule."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are writing a blog post for a solo [trade / business] in the UK.\n\nThe post answers this question that real clients ask: \"[question]\"\n\nThe voice note below is the operator answering it in their own words.\n\nTurn it into a 700 to 1,000 word blog post that:\n\n- Opens with a one-paragraph answer (so the post answers the search intent\n  even if the reader doesn't scroll)\n- Then expands into the detail, 3 to 5 H2 sections covering nuance,\n  examples, the common mistakes\n- Closes with one specific call to action\n\nSEO: include the exact question in the H1. Use natural variations of the\nkeyword through the H2s. UK English. No fluff opening like \"in today's\nworld\".\n\nVoice note:\n[paste transcript]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Workflow 5 · Quote follow-ups"
+        },
+        {
+          "type": "markdown",
+          "content": "Every quote you send needs three follow-ups if it goes quiet. Most solo operators send zero. This automation gets you to three without any thought."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The three-touch sequence"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**Day 3** - short, low-pressure check-in",
+                "**Day 7** - one specific addition or thought about their situation",
+                "**Day 14** - the closing-the-loop email (the one that gets the most replies)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "The day-14 email"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "Subject: Closing this one out, [First Name]?\n\nHi [First Name],\n\nClosing this one out on my side so I can free up the slot. If timing\nshifts in a few weeks, just reply to this thread, I keep quotes warm\nfor 60 days.\n\nBest,\n[You]"
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "Most operators are surprised how many \"actually yes please\" replies come back from that one email."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The two-hour day"
+        },
+        {
+          "type": "markdown",
+          "content": "With the five workflows running, your typical Monday-to-Friday day looks like this."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "FIRST 30 MINS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Triage inbox. Reply to what needs you. Mark the rest for the AI to draft."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "MID-MORNING 10 MINS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Approve scheduled post. Monday only: record the weekly voice note."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "END OF DAY 20 MINS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Log quotes sent today. Confirm automations firing. Check anything client-confidential manually."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#08743F"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Plus monthly"
+            },
+            {
+              "type": "markdown",
+              "content": "30 mins on the SEO blog post. 15 mins per finished project on the case study. Everything else - content cadence, review chasing, follow-ups, social scheduling - runs without you."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The first 90 days"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "DAYS 1-7  ·  Review requests"
+            },
+            {
+              "type": "markdown",
+              "content": "Workflow 2. Quickest win, biggest compounding effect."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "DAYS 8-21  ·  Voice-note content"
+            },
+            {
+              "type": "markdown",
+              "content": "Workflow 1. Run it for two weeks to find a voice that works."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "DAYS 22-45  ·  Case studies"
+            },
+            {
+              "type": "markdown",
+              "content": "Workflow 3. Catch every project that wraps in this period and turn each into a case study."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "DAYS 46-60  ·  Quote follow-ups"
+            },
+            {
+              "type": "markdown",
+              "content": "Workflow 5. Even if you only have a handful of quotes out, the automation costs nothing to run."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "DAYS 61-90  ·  Monthly blog"
+            },
+            {
+              "type": "markdown",
+              "content": "Workflow 4. Ship the first post. Then the second. After that it's a rhythm.\n\n**By day 90 the stack is running. By day 180 you'll wonder how you ever ran the business without it.**"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#08743F"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a read on which workflow would give you the biggest week-one return?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute call](https://chrisgarlick.com/contact). I'll look at how you work now and tell you which one to set up first. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for UK solo operators, freelancers and small service businesses. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

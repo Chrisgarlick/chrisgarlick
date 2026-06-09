@@ -1,0 +1,673 @@
+{
+  "frontmatter": {
+    "title": "The Freelancer's AI Proposal Pack",
+    "subtitle": "Win more clients without writing every word yourself",
+    "author": "Chris Garlick",
+    "recipient": "UK Freelancers",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Honest Framing"
+        },
+        {
+          "type": "markdown",
+          "content": "The exact proposal system I use with freelance clients. Three templates, one extraction prompt, a follow-up sequence and the onboarding kit. Clone it, fill in the variables, ship."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "What this is not"
+            },
+            {
+              "type": "markdown",
+              "content": "AI doesn't write your proposal. You write it once, well, in your voice. Then AI takes the brief from each new prospect and adapts the proposal to fit. The output is 80% there in ten minutes. The remaining 20% is the human read-through that makes it actually sound like you."
+            },
+            {
+              "type": "blockquote",
+              "text": "Two hours per opportunity drops to roughly fifteen minutes. Proposals get more consistent because the underlying structure is locked in."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "What's inside"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Asset",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "Three proposal templates",
+              "Project, retainer, scoped paid-discovery"
+            ],
+            [
+              "Brief-to-proposal prompt",
+              "Takes a client brief, fills the chosen template, produces a first draft"
+            ],
+            [
+              "Follow-up sequence (4 emails)",
+              "What to send if a proposal goes quiet"
+            ],
+            [
+              "Onboarding kit",
+              "Welcome email, kickoff agenda, week-one check-in"
+            ],
+            [
+              "LinkedIn extraction prompt",
+              "Turns a finished project into 3 to 5 LinkedIn posts"
+            ],
+            [
+              "Pricing notes",
+              "When to charge for proposals, when to scope a paid discovery instead"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Template 1 · The project proposal"
+        },
+        {
+          "type": "markdown",
+          "content": "For one-off projects with a clear scope. The most defensible structure I've found."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The 9-section structure"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**The situation as I understand it** (one paragraph, in their language)",
+                "**What success looks like for you** (specific metrics, deadlines, deliverables)",
+                "**What I'd do about it** (the approach, not the tasks)",
+                "**What's in scope** (clear, bulleted)",
+                "**What's out of scope** (the protection against scope creep)",
+                "**The timeline** (week-by-week or phase-by-phase)",
+                "**Investment** (the price, presented confidently, not buried)",
+                "**What I need from you** (the dependencies)",
+                "**Next step** (one specific action: sign, call, reply)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#0F60C4"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "LENGTH"
+                },
+                {
+                  "type": "markdown",
+                  "content": "800 to 1,200 words. Long enough to feel considered. Short enough that a busy buyer will read it."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "WHY THIS WORKS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Most freelance proposals lead with the freelancer. The buyer doesn't care yet. They want to know you understand their situation first."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Template 2 · The retainer proposal"
+        },
+        {
+          "type": "markdown",
+          "content": "For ongoing relationships. Different shape because the question isn't \"can you do this thing\" but \"can I trust you with this thing every month.\""
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The 9-section structure"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**Where you are now** (current state, in their words)",
+                "**Where you want to be in 6 months** (their stated goal, plus one you'd add if you were them)",
+                "**What ongoing support looks like** (cadence, comms, what gets shipped each month)",
+                "**The retainer scope** (what's included, what's out, what's bolt-on)",
+                "**The first 30 days** (the disproportionately important onboarding period)",
+                "**Monthly investment** (the price, with what changes if scope changes)",
+                "**How we know it's working** (the success metric, reviewed quarterly)",
+                "**How we end if it's not** (the off-ramp, included on purpose)",
+                "**Next step**"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "The off-ramp section matters more than people think. It makes saying yes safer."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Template 3 · The paid-discovery proposal"
+        },
+        {
+          "type": "markdown",
+          "content": "For prospects with a vague brief, ambitious goals and no clear scope. Charging for discovery is what separates freelancers who win these from freelancers who burn weeks on free scoping."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The 7-section structure"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "**What we don't know yet** (the open questions a real plan can't answer)",
+                "**Why a paid discovery is the honest answer** (not a hedge, a stance)",
+                "**What the discovery produces** (written plan, scope, fixed price for phase two)",
+                "**Timeline** (1 to 2 weeks, usually)",
+                "**Investment** (£X for discovery, credited against phase two if they proceed)",
+                "**What happens if you don't proceed** (they keep the plan, no obligation)",
+                "**Next step**"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "500 to 800 words. The shorter, the more confident it reads."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The brief-to-proposal prompt"
+        },
+        {
+          "type": "markdown",
+          "content": "The single biggest time-saver in the pack. Paste this with your filled-in template and the client's brief."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are a senior freelance [discipline] writing a proposal in your own voice.\nBelow you have:\n\n1. Your standard [project / retainer / paid-discovery] proposal template,\n   already filled out for a similar past client.\n2. The new client's brief.\n\nYour job is to adapt the template to the new brief. Do not invent details\nyou can't see in the brief. Where the brief is silent on a section, flag\nit for the human author to fill in (use square brackets, e.g.\n[CLARIFY WITH CLIENT: their current marketing budget]).\n\nThe proposal must:\n- Open with the situation as the client described it, in their language\n- Use the same structure and tone as the template\n- Quote actual numbers, deadlines and dependencies from the brief,\n  never paraphrase to be safe\n- Be 800 to 1,200 words (project / paid-discovery) or 1,000 to 1,400\n  (retainer)\n- Sign off with the same specific next step as the template\n\nVoice rules: no buzzwords (\"leverage\", \"synergy\"), no consultant-vague,\nshort sentences carry weight. UK English. Direct.\n\nYour standard template (already filled out for a similar past client):\n[paste filled-in template here]\n\nNew client's brief:\n[paste brief here]"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#0F60C4"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "Run this once per new opportunity. Read the output. Edit the bracketed gaps and the bits that don't sound quite like you. Ship."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The follow-up sequence"
+        },
+        {
+          "type": "markdown",
+          "content": "What to send if the proposal goes quiet. Four emails over fourteen days."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "EMAIL 1  ·  Day 3  ·  Short check-in"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "content": "Subject: Quick check on the [project name] proposal\n\nHi [Name],\n\nJust checking the proposal I sent on [date] landed and made sense. Happy to\njump on a 15-minute call this week if it'd be useful to walk through any\nof it, or to answer questions over email if that's easier.\n\nEither way, no pressure on timing.\n\nChris"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "EMAIL 2  ·  Day 7  ·  Value add"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "content": "Subject: One thing I'd add to the proposal\n\nHi [Name],\n\nWas thinking about [their problem] over the weekend and wanted to add one\nthing to the proposal that didn't make it in the first draft.\n\n[Specific, useful observation about their situation, not a sales angle]\n\nHappy to update the proposal if any of this changes how you're thinking\nabout it.\n\nChris"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "EMAIL 3  ·  Day 11  ·  Gentle disqualifier (the high-converter)"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "content": "Subject: Should I close this one out?\n\nHi [Name],\n\nRealised I haven't heard back on [project name]. Totally fine if this isn't\nthe right time or if you've gone in a different direction, wanted to ask\ndirectly rather than assume.\n\nShould I close it out, or is it just been a busy fortnight?\n\nChris"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 4,
+              "text": "EMAIL 4  ·  Day 14  ·  Close the loop"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "content": "Subject: Closing the loop on [project name]\n\nHi [Name],\n\nClosing this one out on my side so I can free up the slot. If the timing\nshifts in a few weeks or months, just reply to this thread, I keep\nproposals warm for 90 days.\n\nBest,\nChris"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#0F60C4"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "The day-11 email converts more replies than the other three combined. Most people don't reply because they're embarrassed about not deciding, not because they're not interested."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The onboarding kit"
+        },
+        {
+          "type": "markdown",
+          "content": "Three emails sent in the 48 hours after a \"yes.\" These three emails do more for the relationship than the first month of project work. New clients are anxious. Your job in week one is to make them feel like saying yes was the right call."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "EMAIL 1"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Welcome (within 1 hour of yes).** Thank them, confirm the next step, set expectations for what's happening this week."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "EMAIL 2"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Kickoff agenda (24 hours later).** What we'll cover in the kickoff call, what they need to bring, what they should have ready."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "EMAIL 3"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Week-one check-in (5 days in).** Quick \"here's where we are, here's what's next, anything I should know?\" Rhythm without a meeting."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "LinkedIn extraction prompt"
+        },
+        {
+          "type": "markdown",
+          "content": "Take a finished project and turn it into 3 to 5 LinkedIn posts. Run this once per project wrap. Inbound enquiries spike when there's a steady cadence of real work being talked about."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "content": "You are helping a senior freelance [discipline] write LinkedIn posts about\na recently completed project.\n\nThe post must:\n- Be 100 to 200 words\n- Open with a hook in the first line (visible above \"see more\")\n- Tell one specific story from the project, what was the problem, what\n  did we try, what worked\n- Avoid any client identifier the client hasn't agreed to share\n- End with either a concrete takeaway the reader can use, or one specific\n  question\n- Sound like the freelancer wrote it, not a marketing agency\n\nGenerate 5 posts from the project below, each from a different angle:\n1. The specific problem\n2. The unexpected technical detail\n3. The decision point that changed the project\n4. The result, with the number\n5. The lesson for anyone considering similar work\n\nProject details:\n[paste project notes / final write-up]"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "When proposals don't convert"
+        },
+        {
+          "type": "markdown",
+          "content": "If your win rate drops below 30%, the issue is almost always one of these four."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "VAGUE BRIEF, FREE PROPOSAL"
+                },
+                {
+                  "type": "markdown",
+                  "content": "You wrote a free 3-hour proposal and got beaten on price by someone who did the same. **Charge for discovery.**"
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "LED WITH YOURSELF"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Section 1 was \"about me\" instead of \"the situation as I understand it.\" Buyers tune out by paragraph two."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "PRICE WAS BURIED"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Find your price. Confidently put it where the buyer expects it. Don't make them hunt for it."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "NEXT STEP WAS VAGUE"
+                },
+                {
+                  "type": "markdown",
+                  "content": "\"Let me know if you'd like to chat\" loses. \"Reply yes to start Monday\" wins. **Pick one specific action.**"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#0F60C4"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a read on your current proposal template before you adapt it to this system?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute call](https://chrisgarlick.com/contact). I'll read one recent proposal beforehand and tell you the three things to change first. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for UK freelancers and solo operators. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

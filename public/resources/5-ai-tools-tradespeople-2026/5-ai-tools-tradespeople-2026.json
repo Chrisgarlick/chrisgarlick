@@ -1,0 +1,908 @@
+{
+  "frontmatter": {
+    "title": "5 AI Tools Every Tradesperson Should Use in 2026",
+    "subtitle": "Photos, posts, reviews, follow-ups and seasonal ads, all from your phone",
+    "author": "Chris Garlick",
+    "recipient": "UK Tradespeople",
+    "date": "2026-06-09",
+    "client": "chris-garlick-light"
+  },
+  "pages": [
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The Honest Setup"
+        },
+        {
+          "type": "markdown",
+          "content": "No marketing agency. No copywriter. No studio. Five tools that handle the bits of running a trade business that always get pushed to the bottom of the list. All from your phone, in under thirty minutes a week."
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "What you'll have running by week two"
+            },
+            {
+              "type": "markdown",
+              "content": "The hard part isn't the tools. It's setting them up once and then letting them run. By the end of this, your marketing department is a phone in your pocket, and the £500-a-month agency conversation never has to happen."
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "MONTHLY COST"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Around **£20 to £40** all-in, on the lean tier. Three of five tools have free plans that genuinely work."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#08743F"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "TIME TO SET UP"
+                },
+                {
+                  "type": "markdown",
+                  "content": "A **Saturday afternoon**, total, spread across two weekends. After that, ten to thirty minutes a week."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "By the end you'll have"
+        },
+        {
+          "type": "ordered_list",
+          "items": [
+            "A way to make a video of every job in five minutes",
+            "A weekly Google post that goes out without you doing anything",
+            "A review request that fires every time you finish a job",
+            "A quote follow-up sequence that chases for you",
+            "Seasonal campaigns ready to fire when the right time of year hits"
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Tool 1 · Phone-to-Reel for before-and-after videos"
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            2,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "What it does"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Turns the phone photos you already take (before and after each job) into a 15-second video that's good enough to post on Instagram, TikTok or Facebook Reels."
+                },
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "Why this one first"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Before-and-after videos are the single best content a trade business can post. They show your actual work. People save them, share them, send them to mates. The algorithm pushes them. One good Reel a week from a roofer, plumber or builder beats every fancy marketing thing put together."
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "THE TOOL"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**CapCut.** Free, on your phone, has built-in templates for before-and-after content."
+                },
+                {
+                  "type": "blockquote",
+                  "text": "Drop in two photos. It does the transition, the music, the text overlay. Three minutes from start to posted."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "How to use it"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "Before you start a job, take three photos. Wide shot, close-up of the problem, the area you'll be working on.",
+                "When you finish, take three photos from the same angles.",
+                "In the van before you drive off, open CapCut. Pick a before-and-after template. Drop your photos in. Add one line of text (\"Boiler swap, Stockport, same day\"). Done in three minutes.",
+                "Post straight to Instagram and Facebook. Use 3 to 5 hashtags max, local ones, not generic."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "**Target:** one Reel per finished job, posted same day. Twenty Reels a month if you're doing five jobs a week. After three months you have a body of work people scroll through and trust before they even call."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Tool 2 · AI text writer (Claude or ChatGPT mobile)"
+        },
+        {
+          "type": "markdown",
+          "content": "Writes Instagram captions, Facebook posts, Google replies and email follow-ups for you. You talk to it, it writes. Free version is enough to start. £15 to £20 a month for the paid tier when you're using it daily."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#08743F"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The one prompt that earns its keep"
+            },
+            {
+              "type": "markdown",
+              "content": "Save this in your notes. Reuse for everything."
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "content": "You are writing a social media post for a [your trade] in [your area].\nVoice: direct, plain English, no marketing nonsense. UK English.\nPost this caption alongside the photo I describe:\n\n[describe the job in your own words - voice note transcribed if quicker]\n\nOutput:\n- One caption, 60 to 100 words\n- One question to ask at the end so people comment\n- 5 location-specific hashtags\n- No emojis at the start"
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1,
+            1
+          ],
+          "gutter": "6mm",
+          "children": [
+            {
+              "background": "#FFFFFF",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "GOOGLE POSTS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Add to prompt: *Google Business post, 200 chars*. Done."
+                }
+              ]
+            },
+            {
+              "background": "#FFFFFF",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "REVIEW REPLIES"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Ask for *polite, brief, mentions the area*. Sounds like you."
+                }
+              ]
+            },
+            {
+              "background": "#FFFFFF",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "14pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "QUOTE FOLLOW-UPS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Paste the original quote. Ask for *day 3 nudge, friendly, no pressure*."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "markdown",
+          "content": "**The pattern:** voice note to your phone for 30 seconds describing the job, paste the transcript into the prompt, get back a caption that sounds like you, not a marketing agency."
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Tool 3 · Google Business Profile (with post scheduler)"
+        },
+        {
+          "type": "markdown",
+          "content": "Your Google Business Profile is the most important thing you own online. It's what shows when someone searches \"[trade] near me.\" Posting weekly improves where you show up in those searches. Google rewards consistency."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 3,
+                  "text": "The four steps"
+                },
+                {
+                  "type": "ordered_list",
+                  "items": [
+                    "Claim your Google Business Profile if you haven't. Verify by post or video call.",
+                    "Fill out everything. Hours, services, photos, the works.",
+                    "Post once a week. A photo from a job, two sentences, one call to action.",
+                    "Use Tool 2 to write the post. Use Tool 1 to make a 15-second video to attach. Schedule via Buffer for Tuesday or Wednesday mornings."
+                  ]
+                }
+              ]
+            },
+            {
+              "background": "#131510",
+              "text_color": "#E4E0D8",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DO NOT SKIP"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Reply to every Google review within 48 hours. The replies count more than people think."
+                },
+                {
+                  "type": "blockquote",
+                  "text": "Four Google posts a month, every month, with a photo on each. After six months you'll notice you're showing up higher when local people search for your trade."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Tool 4 · Automatic review requests"
+        },
+        {
+          "type": "markdown",
+          "content": "Every time you finish a job, the customer gets a short message asking for a Google review. You don't have to remember. You don't have to ask awkwardly. It just happens."
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "The cheap version (£0 to £5 a month)"
+            },
+            {
+              "type": "ordered_list",
+              "items": [
+                "Build a simple form on Tally with two questions: \"How did it go on a scale of 1 to 5?\" and \"Email address.\"",
+                "When you finish a job, send the customer a one-line WhatsApp or text: \"Thanks again, would you mind taking 10 seconds to fill this in?\" with the form link.",
+                "If they pick 4 or 5, the form auto-sends them an email with the Google review link.",
+                "If they pick 1 to 3, you get an alert and can call them yourself."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Why this compounds harder than anything else"
+            },
+            {
+              "type": "markdown",
+              "content": "Every Google review compounds. Tradespeople with 50+ reviews show up first in local searches. Tradespeople with 5 reviews are buried. Two thirds of customers will leave a review if you ask. **Most never get asked.**"
+            },
+            {
+              "type": "blockquote",
+              "text": "Target: ten new Google reviews a month if you're doing twenty jobs a month."
+            }
+          ]
+        },
+        {
+          "type": "markdown",
+          "content": "The fancier version is NiceJob, around £40 to £60 a month, which does it all for you and integrates with Tradify, Jobber and Housecall Pro. Worth upgrading once the cheap version is running and you're past 50 reviews."
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Tool 5 · Voice-note to everything"
+        },
+        {
+          "type": "markdown",
+          "content": "You talk to your phone in the van between jobs. It turns it into text. That text becomes social posts, quote emails, follow-up messages, whatever you need."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "THE TOOLS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "**Apple Voice Memos** (built in, free, transcribes automatically) or **Otter** on Android. Plus Tool 2 (Claude or ChatGPT) to turn the transcripts into whatever format you need."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#08743F"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "THE PATTERN"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Drive between jobs, talk into the phone, sort it out at the end of the day. 15 minutes of admin handles everything."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "What good looks like"
+            },
+            {
+              "type": "markdown",
+              "content": "Zero time sitting at a laptop writing. All the social, all the follow-ups, all the quote emails come out of voice notes between jobs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "The order to set them up"
+        },
+        {
+          "type": "markdown",
+          "content": "Don't try to do all five at once. Pick the one that solves your biggest problem first."
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "LEAKY PIPELINE"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Start with **Tool 4** (review requests). Every job ending without a review is money walking away. Week one job."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "PATCHY SOCIAL"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Start with **Tools 1 and 5** (Reels + voice notes). Run for two weeks. Then add Tool 2 for captions."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "POOR QUOTE REPLY RATE"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Start with **Tool 2 plus an email automation** for follow-ups. The day-three nudge gets more replies than people expect."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "INVISIBLE IN GOOGLE"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Start with **Tool 3** (Google Business). Slowest to compound but biggest long-term win."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "What NOT to do"
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DON'T BE EVERYWHERE"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Pick one platform. Instagram or Facebook. Get good at one before you add the next."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DON'T SHIP RAW AI"
+                },
+                {
+                  "type": "markdown",
+                  "content": "AI captions sometimes sound off. Read every one. Change two words. Make it sound like you."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DON'T USE STOCK PHOTOS"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Your before-and-after photos beat anything fancy. People want to see your actual work, not a stock photo of a boiler."
+                }
+              ]
+            },
+            {
+              "background": "#7F1D1D",
+              "text_color": "#FEF2F2",
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "DON'T PAY FOR ADS YET"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Get the organic stuff running first (Reels, posts, reviews, Google Business). Ads work much better once you have proof on your profile."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "Don't outsource any of this in the first six months. The reason this works for solo tradespeople is the voice. An agency posting \"we provide professional plumbing services\" loses every time to a real video of you fixing a real boiler with one sentence about it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Monthly cost done right"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Tool",
+            "Tier",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "CapCut",
+              "Free",
+              "£0"
+            ],
+            [
+              "Claude / ChatGPT (optional)",
+              "Paid tier",
+              "£15 to £20"
+            ],
+            [
+              "Buffer scheduler",
+              "Free tier",
+              "£0"
+            ],
+            [
+              "Tally form + Sender email",
+              "Free tier",
+              "£0"
+            ],
+            [
+              "Google Business Profile",
+              "Free",
+              "£0"
+            ]
+          ]
+        },
+        {
+          "type": "columns",
+          "ratios": [
+            1,
+            1
+          ],
+          "gutter": "10mm",
+          "children": [
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#D8D2C8"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "TOTAL MONTHLY COST"
+                },
+                {
+                  "type": "markdown",
+                  "content": "Around **£15 to £20** if you take the paid AI tier. **£0** if you stay on free."
+                }
+              ]
+            },
+            {
+              "background": "#F6F2EB",
+              "border": {
+                "width": "1pt",
+                "color": "#08743F"
+              },
+              "padding": "16pt",
+              "radius": "6pt",
+              "blocks": [
+                {
+                  "type": "heading",
+                  "level": 4,
+                  "text": "SETUP TIME"
+                },
+                {
+                  "type": "markdown",
+                  "content": "A **Saturday afternoon**, total, spread over two weekends."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "text": "What this gets you in six months"
+        },
+        {
+          "type": "bullet_list",
+          "items": [
+            "50+ Google reviews (up from wherever you are now)",
+            "80+ before-and-after Reels in your Instagram grid",
+            "25+ Google Business posts",
+            "A follow-up sequence that's recovered 5 to 10 quotes you'd otherwise have lost",
+            "A first-page Google result for \"[your trade] [your area]\" if your trade isn't too crowded"
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#131510",
+          "text_color": "#E4E0D8",
+          "padding": "18pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "blockquote",
+              "text": "It's not magic. It's not quick. It's the steady compounding that most tradespeople never set up."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Next step"
+        },
+        {
+          "type": "section",
+          "background": "#F6F2EB",
+          "border": {
+            "width": "1pt",
+            "color": "#08743F"
+          },
+          "padding": "20pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "heading",
+              "level": 3,
+              "text": "Want a steer on which tool to start with for your specific situation?"
+            },
+            {
+              "type": "markdown",
+              "content": "[Book a free 30-minute call](https://chrisgarlick.com/contact). I'll have a quick look at your Google Business Profile and your last few posts beforehand, then tell you the one thing to fix this week. No pitch."
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "background": "#FFFFFF",
+          "border": {
+            "width": "1pt",
+            "color": "#D8D2C8"
+          },
+          "padding": "16pt",
+          "radius": "6pt",
+          "blocks": [
+            {
+              "type": "markdown",
+              "content": "*Chris Garlick builds custom AI workflows for UK tradespeople, solo operators and professional service firms. chrisgarlick.com*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
